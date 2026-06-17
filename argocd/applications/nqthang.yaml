@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nqthang
+  namespace: argocd
+spec:
+  project: yas
+  source:
+    repoURL: https://github.com/ducquan19/yas-gitops.git
+    targetRevision: main
+    path: helm/yas
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-nqthang.yaml
+  destination:
+    server: https://100.122.97.48:32801
+    namespace: yas
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
