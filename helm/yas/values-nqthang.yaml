@@ -1,0 +1,39 @@
+storefront:
+  enabled: true
+  image:
+    tag: main
+
+storefront-bff:
+  enabled: true
+  image:
+    tag: main
+
+backoffice:
+  enabled: true
+  image:
+    tag: main
+
+backoffice-bff:
+  enabled: true
+  image:
+    tag: main
+
+customer:
+  enabled: true
+  image:
+    tag: main
+
+identity:
+  enabled: true
+  image:
+    tag: main
+
+kafka:
+  enabled: true
+  image:
+    tag: main
+
+rating:
+  enabled: true
+  image:
+    tag: main

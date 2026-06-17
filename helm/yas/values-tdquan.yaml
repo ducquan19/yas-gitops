@@ -1,0 +1,24 @@
+postgres:
+  enabled: true
+  image:
+    tag: main
+
+elasticsearch:
+  enabled: true
+  image:
+    tag: main
+
+promotion:
+  enabled: true
+  image:
+    tag: main
+
+location:
+  enabled: true
+  image:
+    tag: main
+
+webhook:
+  enabled: true
+  image:
+    tag: main

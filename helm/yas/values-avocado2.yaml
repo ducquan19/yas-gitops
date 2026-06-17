@@ -1,0 +1,24 @@
+cart:
+  enabled: true
+  image:
+    tag: main
+
+order:
+  enabled: true
+  image:
+    tag: main
+
+payment:
+  enabled: true
+  image:
+    tag: main
+
+delivery:
+  enabled: true
+  image:
+    tag: main
+
+tax:
+  enabled: true
+  image:
+    tag: main

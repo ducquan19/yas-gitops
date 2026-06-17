@@ -1,0 +1,24 @@
+product:
+  enabled: true
+  image:
+    tag: main
+
+inventory:
+  enabled: true
+  image:
+    tag: main
+
+search:
+  enabled: true
+  image:
+    tag: main
+
+media:
+  enabled: true
+  image:
+    tag: main
+
+recommendation:
+  enabled: true
+  image:
+    tag: main
