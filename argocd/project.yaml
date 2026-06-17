@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: yas
+  namespace: argocd
+spec:
+  description: YAS GitOps project for multi-cluster deployment
+
+  sourceRepos:
+    - https://github.com/ducquan19/yas-gitops.git
+
+  destinations:
+    - namespace: yas
+      server: https://100.91.182.4:56511
+    - namespace: yas
+      server: https://100.84.105.114:8443
+    - namespace: yas
+      server: https://100.122.97.48:32801
+    - namespace: yas
+      server: https://100.65.39.31:50983
+
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
