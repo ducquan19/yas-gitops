@@ -1,0 +1,95 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    environment {
+        PLAN_FILE = 'developer-build-plan.tsv'
+    }
+
+    parameters {
+        string(
+            name: 'SOURCE_REPO_URL',
+            defaultValue: 'https://github.com/ducquan19/yas.git',
+            description: 'Source code repository used to resolve branch to commit id'
+        )
+
+        string(name: 'POSTGRES_BRANCH', defaultValue: 'main', description: 'Branch/image tag for postgres')
+        string(name: 'ELASTICSEARCH_BRANCH', defaultValue: 'main', description: 'Branch/image tag for elasticsearch')
+        string(name: 'PROMOTION_BRANCH', defaultValue: 'main', description: 'Branch/image tag for promotion')
+        string(name: 'LOCATION_BRANCH', defaultValue: 'main', description: 'Branch/image tag for location')
+        string(name: 'WEBHOOK_BRANCH', defaultValue: 'main', description: 'Branch/image tag for webhook')
+
+        string(name: 'PRODUCT_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for product-service')
+        string(name: 'INVENTORY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for inventory-service')
+        string(name: 'SEARCH_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for search-service')
+        string(name: 'MEDIA_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for media-service')
+        string(name: 'RECOMMENDATION_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for recommendation-service')
+
+        string(name: 'CART_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for cart-service')
+        string(name: 'ORDER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for order-service')
+        string(name: 'PAYMENT_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for payment-service')
+        string(name: 'DELIVERY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for delivery-service')
+        string(name: 'TAX_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for tax-service')
+
+        string(name: 'STOREFRONT_BRANCH', defaultValue: 'main', description: 'Branch/image tag for storefront')
+        string(name: 'STOREFRONT_BFF_BRANCH', defaultValue: 'main', description: 'Branch/image tag for storefront-bff')
+        string(name: 'BACKOFFICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for backoffice')
+        string(name: 'BACKOFFICE_BFF_BRANCH', defaultValue: 'main', description: 'Branch/image tag for backoffice-bff')
+        string(name: 'CUSTOMER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for customer-service')
+        string(name: 'IDENTITY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for identity-service')
+        string(name: 'KAFKA_BRANCH', defaultValue: 'main', description: 'Branch/image tag for kafka')
+        string(name: 'RATING_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for rating-service')
+    }
+
+    stages {
+        stage('Resolve branches to image tags') {
+            steps {
+                echo 'Job: developer_build'
+                echo 'Mode: update GitOps values; ArgoCD deploys changed applications.'
+                sh 'bash jenkins/scripts/resolve-branch-tags.sh "$PLAN_FILE"'
+            }
+        }
+
+        stage('Update GitOps values') {
+            steps {
+                sh 'bash jenkins/scripts/update-values.sh "$PLAN_FILE"'
+            }
+        }
+
+        stage('Commit and push GitOps change') {
+            steps {
+                script {
+                    def changed = sh(
+                        script: 'git status --porcelain helm/yas/values-*.yaml',
+                        returnStdout: true
+                    ).trim()
+
+                    if (!changed) {
+                        echo 'No values changes. ArgoCD is already at requested image tags.'
+                        return
+                    }
+
+                    sh """
+                        git config user.email "jenkins@yas-gitops.local"
+                        git config user.name "Jenkins developer_build"
+                        git add helm/yas/values-*.yaml
+                        git commit -m "developer_build: update service image tags"
+                        git push
+                    """
+
+                    echo 'GitOps changes pushed. ArgoCD will sync the affected applications.'
+                }
+            }
+        }
+
+        stage('Print access URLs') {
+            steps {
+                sh 'bash jenkins/scripts/print-access-urls.sh "$PLAN_FILE"'
+            }
+        }
+    }
+}
