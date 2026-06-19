@@ -1,75 +1,70 @@
 # Developer Build Flow
 
-Job `developer_build` dùng cho developer deploy nhanh branch đang làm việc để test trên Kubernetes. Theo đề bài, developer nhập branch của service cần test, các service còn lại giữ `main` hoặc `latest`.
+Job `developer_build` dung de developer deploy nhanh branch dang lam viec vao moi truong `dev`.
 
-## Yêu cầu từ đề bài
+## Yeu cau
 
-- Job tên `developer_build`.
-- Developer input parameter là branch muốn deploy cho từng service.
-- CI đã build image từ branch và push lên Docker Hub với tag là commit id cuối của branch.
-- CD dùng tag từ branch đó để deploy service cần test.
-- Sau deploy, developer nhận được domain/IP + NodePort để truy cập.
+- Developer nhap branch/tag cho service can test.
+- CI da build image tu branch va push image tag tuong ung.
+- Jenkins chi cap nhat values file tren branch `main` cua GitOps repo.
+- ArgoCD dev tu dong sync Application theo branch `main`.
+- Staging chi deploy khi merge/push config sang branch `staging`.
 
-## Luồng GitOps
+## Luong GitOps
 
 ```text
-1. Developer mở Jenkins job developer_build.
-2. Nhập branch cho service cần test, ví dụ TAX_SERVICE_BRANCH=dev_tax_service.
-3. Jenkins resolve branch dev_tax_service -> commit id/tag image đã build bởi CI.
-4. Jenkins tìm service tax thuộc cluster avocado2.
-5. Jenkins update helm/yas/values-avocado2.yaml:
-   tax.image.tag=<commit-id>
-6. Jenkins commit và push thay đổi vào GitOps repo.
-7. ArgoCD app avocado2 tự động sync và deploy cluster-3.
-8. Jenkins in URL NodePort để developer test.
+1. Developer mo Jenkins job developer_build.
+2. Nhap branch cho service can test, vi du TAX_SERVICE_BRANCH=dev_tax_service.
+3. Jenkins resolve branch -> image tag.
+4. Jenkins update values file theo cluster, vi du helm/yas/values-avocado2.yaml.
+5. Jenkins commit va push thay doi vao branch `main`.
+6. ArgoCD dev sync Application tuong ung, vi du avocado2-dev.
+7. Khi release ready, merge `main` sang `staging`.
+8. ArgoCD staging sync Application tuong ung, vi du avocado2-staging.
+9. Jenkins in access hint de developer test qua NodePort.
 ```
 
-## Vi du tax-service
+## Vi du tax-service vao dev
 
 Input:
 
-| Parameter | Giá trị |
+| Parameter | Gia tri |
 | --- | --- |
 | `TAX_SERVICE_BRANCH` | `dev_tax_service` |
-| Các service khác | `main` |
+| Cac service khac | `main` |
 
-Kết quả:
+Ket qua trong `helm/yas/values-avocado2.yaml` tren branch `main`:
 
 ```yaml
 tax:
-  enabled: true
   image:
-    tag: <commit-id-của-branch-dev_tax_service>
+    tag: <commit-id-cua-branch-dev_tax_service>
 ```
 
-Trong bản đơn giản nếu chưa resolve được commit id, có thể tạm dùng branch name làm tag image, nhưng cần đảm bảo CI cũng push image với tag đó.
+ArgoCD app `avocado2-dev` se sync vi app dev theo doi branch `main`. Khi config nay duoc merge sang branch `staging`, app `avocado2-staging` se sync vao namespace `yas-staging`.
 
-## Trạng thái Jenkinsfile hiện tại
+## Parameters chinh
 
-`jenkins/Jenkinsfile.developer_build` hiện nhận branch/tag parameter nhưng deploy trực tiếp bằng Helm:
-
-```text
-helm upgrade --install ...
-```
-
-Để đúng yêu cầu "ArgoCD deploy từng phần lên nhiều cluster", cần chỉnh job theo hướng:
-
-- Không `helm upgrade` trực tiếp.
-- Dùng script resolve branch -> image tag.
-- Update values file theo mapping service -> cluster.
-- Commit và push lên GitOps repo.
-- Để ArgoCD automated sync deploy.
-
-## Parameters nên có
-
-| Parameter | Default | Mô tả |
+| Parameter | Default | Mo ta |
 | --- | --- | --- |
-| `NAMESPACE` | `yas` | Namespace deploy. |
-| `TAX_SERVICE_BRANCH` | `main` | Branch/tag của tax service. |
-| `ORDER_SERVICE_BRANCH` | `main` | Branch/tag của order service. |
-| `PRODUCT_SERVICE_BRANCH` | `main` | Branch/tag của product service. |
-| `SEARCH_SERVICE_BRANCH` | `main` | Branch/tag của search service. |
-| `CUSTOMER_SERVICE_BRANCH` | `main` | Branch/tag của customer service. |
-| `FRONTEND_BRANCH` | `main` | Branch/tag của frontend/storefront. |
+| `SOURCE_REPO_URL` | `https://github.com/ducquan19/yas.git` | Source repo dung de resolve branch thanh commit id. |
+| `TAX_SERVICE_BRANCH` | `main` | Branch/tag cua tax service. |
+| `ORDER_SERVICE_BRANCH` | `main` | Branch/tag cua order service. |
+| `PRODUCT_SERVICE_BRANCH` | `main` | Branch/tag cua product service. |
+| `SEARCH_SERVICE_BRANCH` | `main` | Branch/tag cua search service. |
+| `CUSTOMER_SERVICE_BRANCH` | `main` | Branch/tag cua customer service. |
+| `STOREFRONT_BRANCH` | `main` | Branch/tag cua storefront. |
 
-Có thể thêm parameter cho các service còn lại nếu cần test độc lập.
+Co the them parameter cho cac service con lai neu can test doc lap.
+
+## Release len staging
+
+Khi da test xong tren dev:
+
+```bash
+git checkout staging
+git merge main
+git push origin staging
+```
+
+ArgoCD staging apps co `targetRevision: staging`, nen staging chi deploy khi branch `staging` thay doi.
