@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: avocado2
+  name: nqthang-dev
   namespace: argocd
 spec:
   project: yas
@@ -12,10 +12,11 @@ spec:
     helm:
       valueFiles:
         - values.yaml
-        - values-avocado2.yaml
+        - values-nqthang.yaml
+        - values-dev.yaml
   destination:
-    server: https://100.65.39.31:50983
-    namespace: yas
+    server: https://100.122.97.48:32801
+    namespace: yas-dev
   syncPolicy:
     automated:
       prune: true

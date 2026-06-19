@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tdquan-staging
+  namespace: argocd
+spec:
+  project: yas
+  source:
+    repoURL: https://github.com/ducquan19/yas-gitops.git
+    targetRevision: staging
+    path: helm/yas
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-tdquan.yaml
+        - values-staging.yaml
+  destination:
+    server: https://100.91.182.4:53567
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

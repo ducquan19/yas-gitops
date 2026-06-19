@@ -1,21 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nqthang
+  name: nqthang-staging
   namespace: argocd
 spec:
   project: yas
   source:
     repoURL: https://github.com/ducquan19/yas-gitops.git
-    targetRevision: main
+    targetRevision: staging
     path: helm/yas
     helm:
       valueFiles:
         - values.yaml
         - values-nqthang.yaml
+        - values-staging.yaml
   destination:
     server: https://100.122.97.48:32801
-    namespace: yas
+    namespace: yas-staging
   syncPolicy:
     automated:
       prune: true

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tdquan
+  name: tdquan-dev
   namespace: argocd
 spec:
   project: yas
@@ -13,9 +13,10 @@ spec:
       valueFiles:
         - values.yaml
         - values-tdquan.yaml
+        - values-dev.yaml
   destination:
-    server: https://100.91.182.4:56511
-    namespace: yas
+    server: https://100.91.182.4:53567
+    namespace: yas-dev
   syncPolicy:
     automated:
       prune: true

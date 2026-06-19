@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tbnguyen274
+  name: avocado2-dev
   namespace: argocd
 spec:
   project: yas
@@ -12,10 +12,11 @@ spec:
     helm:
       valueFiles:
         - values.yaml
-        - values-tbnguyen274.yaml
+        - values-avocado2.yaml
+        - values-dev.yaml
   destination:
-    server: https://100.84.105.114:8443
-    namespace: yas
+    server: https://100.65.39.31:50983
+    namespace: yas-dev
   syncPolicy:
     automated:
       prune: true

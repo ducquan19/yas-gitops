@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: avocado2-staging
+  namespace: argocd
+spec:
+  project: yas
+  source:
+    repoURL: https://github.com/ducquan19/yas-gitops.git
+    targetRevision: staging
+    path: helm/yas
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-avocado2.yaml
+        - values-staging.yaml
+  destination:
+    server: https://100.65.39.31:50983
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
