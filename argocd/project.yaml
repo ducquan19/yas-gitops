@@ -10,13 +10,21 @@ spec:
     - https://github.com/ducquan19/yas-gitops.git
 
   destinations:
-    - namespace: yas
-      server: https://100.91.182.4:56511
-    - namespace: yas
+    - namespace: yas-dev
+      server: https://100.91.182.4:53567
+    - namespace: yas-staging
+      server: https://100.91.182.4:53567
+    - namespace: yas-dev
       server: https://100.84.105.114:8443
-    - namespace: yas
+    - namespace: yas-staging
+      server: https://100.84.105.114:8443
+    - namespace: yas-dev
       server: https://100.122.97.48:32801
-    - namespace: yas
+    - namespace: yas-staging
+      server: https://100.122.97.48:32801
+    - namespace: yas-dev
+      server: https://100.65.39.31:50983
+    - namespace: yas-staging
       server: https://100.65.39.31:50983
 
   clusterResourceWhitelist:
