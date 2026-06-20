@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+        timeout(time: 10, unit: 'MINUTES')
+    }
+
+    parameters {
+        choice(
+            name: 'TARGET_ENV',
+            choices: ['dev', 'staging'],
+            description: 'Môi trường cần cleanup: namespace yas-dev hoặc yas-staging'
+        )
+        choice(
+            name: 'TARGET_CLUSTER',
+            choices: ['all', 'tdquan', 'tbnguyen274', 'avocado2', 'nqthang'],
+            description: 'Cluster cần cleanup'
+        )
+        choice(
+            name: 'CLEANUP_MODE',
+            choices: ['delete-failed-pods', 'delete-namespace'],
+            description: 'Xóa pod Failed hoặc xóa toàn bộ namespace'
+        )
+        booleanParam(
+            name: 'DRY_RUN',
+            defaultValue: true,
+            description: 'Chỉ hiển thị tài nguyên sẽ bị ảnh hưởng, chưa thực hiện xóa'
+        )
+        booleanParam(
+            name: 'CONFIRM_CLEANUP',
+            defaultValue: false,
+            description: 'Bắt buộc bật khi DRY_RUN=false'
+        )
+    }
+
+    stages {
+        stage('Validate request') {
+            steps {
+                script {
+                    echo "Environment: ${params.TARGET_ENV}"
+                    echo "Namespace: yas-${params.TARGET_ENV}"
+                    echo "Cluster: ${params.TARGET_CLUSTER}"
+                    echo "Mode: ${params.CLEANUP_MODE}"
+                    echo "Dry run: ${params.DRY_RUN}"
+
+                    if (!params.DRY_RUN && !params.CONFIRM_CLEANUP) {
+                        error('Phải bật CONFIRM_CLEANUP khi DRY_RUN=false.')
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'tdquan-kubeconfig', variable: 'KUBECONFIG_TDQUAN'),
+                    file(credentialsId: 'tbnguyen274-kubeconfig', variable: 'KUBECONFIG_TBNGUYEN274'),
+                    file(credentialsId: 'avocado2-kubeconfig', variable: 'KUBECONFIG_AVOCADO2'),
+                    file(credentialsId: 'nqthang-kubeconfig', variable: 'KUBECONFIG_NQTHANG')
+                ]) {
+                    sh 'bash scripts/cleanup.sh "$TARGET_ENV" "$TARGET_CLUSTER" "$CLEANUP_MODE" "$DRY_RUN"'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Cleanup job hoàn tất.'
+        }
+        failure {
+            echo 'Cleanup job thất bại. Kiểm tra console log, kubeconfig và kết nối cluster.'
+        }
+        always {
+            echo 'Lưu ý: ArgoCD auto-sync có thể tạo lại resource nếu desired state vẫn còn trong Git.'
+        }
+    }
+}
