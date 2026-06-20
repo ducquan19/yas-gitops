@@ -1,47 +1,209 @@
-# ArgoCD Setup
+# ArgoCD Setup From Scratch
 
-Mục tiêu của phần nâng cao là dùng ArgoCD để deploy GitOps cho nhiều cluster. Jenkins không nên deploy trực tiếp lên cluster trong luồng GitOps chuẩn; Jenkins chỉ cập nhật Git repo, ArgoCD sẽ sync.
+Muc tieu:
 
-## Thành phần
+```text
+Developer test -> Jenkins update main -> ArgoCD deploy dev
+Release ready  -> merge main/tag config sang staging branch
+               -> ArgoCD deploy staging
+```
 
-| File | Vai trò |
+ArgoCD quan ly hai moi truong:
+
+- `dev`: theo branch `main`, namespace `yas-dev`
+- `staging`: theo branch `staging`, namespace `yas-staging`
+
+## 1. Jenkins credentials
+
+Tao 4 Secret file credentials cho kubeconfig:
+
+| Credential ID | Cluster |
 | --- | --- |
-| `argocd/project.yaml` | Định nghĩa AppProject `yas`, source repo và các destination cluster được phép deploy. |
-| `argocd/applications/tdquan.yaml` | Application cho cluster `tdquan`, dùng `values-tdquan.yaml`. |
-| `argocd/applications/tbnguyen274.yaml` | Application cho cluster `tbnguyen274`, dùng `values-tbnguyen274.yaml`. |
-| `argocd/applications/avocado2.yaml` | Application cho cluster `avocado2`, dùng `values-avocado2.yaml`. |
-| `argocd/applications/nqthang.yaml` | Application cho cluster `nqthang`, dùng `values-nqthang.yaml`. |
+| `tdquan-kubeconfig` | `tdquan` |
+| `tbnguyen274-kubeconfig` | `tbnguyen274` |
+| `avocado2-kubeconfig` | `avocado2` |
+| `nqthang-kubeconfig` | `nqthang` |
 
-## Điều kiện trước khi apply
+Sau khi cai ArgoCD va lay duoc admin password, tao them Username/password credential:
 
-- ArgoCD đã được cài trong namespace `argocd`.
-- Các cluster đích đã được add vào ArgoCD.
-- `repoURL` trong manifest trỏ đúng GitOps repository.
-- Helm chart trong `helm/yas` render được Kubernetes manifest hợp lệ.
-- Namespace đích là `yas`.
+| Credential ID | Username | Password |
+| --- | --- | --- |
+| `argocd-admin` | `admin` | Initial/current ArgoCD admin password |
 
-## Apply ArgoCD resources
+## 2. Cai ArgoCD
+
+Tao Jenkins Pipeline job tro toi:
+
+```text
+jenkins/Jenkinsfile.argocd_install
+```
+
+Parameters:
+
+| Parameter | Goi y |
+| --- | --- |
+| `TARGET_ARGOCD_CLUSTER` | Chon cluster de cai ArgoCD, vi du `tdquan`. |
+| `ARGOCD_NAMESPACE` | `argocd` |
+| `ARGOCD_INSTALL_URL` | `https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml` |
+| `ARGOCD_SERVER_SERVICE_TYPE` | `NodePort` neu can truy cap tu ngoai cluster; `ClusterIP` neu chi dung port-forward. |
+| `PRINT_INITIAL_ADMIN_PASSWORD` | `false` mac dinh; bat `true` neu chap nhan password xuat hien trong Jenkins log. |
+
+Job nay chay:
+
+```text
+kubectl create namespace argocd
+kubectl apply -n argocd -f <ARGOCD_INSTALL_URL>
+kubectl rollout status ...
+kubectl patch svc argocd-server type=<ARGOCD_SERVER_SERVICE_TYPE>
+```
+
+Neu khong in password trong Jenkins log, lay password tren may co kubectl:
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+```
+
+Dang nhap:
+
+```bash
+argocd login <ARGOCD_SERVER> --username admin --password <password> --insecure
+```
+
+Sau do tao Jenkins credential `argocd-admin`.
+
+## 3. Tao branch staging
+
+Staging apps theo doi branch `staging`, nen branch nay phai ton tai:
+
+```bash
+git checkout -b staging
+git push origin staging
+git checkout main
+```
+
+Neu branch da ton tai:
+
+```bash
+git fetch origin
+git checkout staging
+git pull
+git checkout main
+```
+
+## 4. Register 4 clusters vao ArgoCD
+
+Tao Jenkins Pipeline job tro toi:
+
+```text
+jenkins/Jenkinsfile.argocd_cluster_register
+```
+
+Parameters:
+
+| Parameter | Goi y |
+| --- | --- |
+| `ARGOCD_SERVER` | Dia chi ArgoCD server, vi du `<tailscale-ip>:<nodeport>` hoac DNS. |
+| `ARGOCD_CREDENTIALS_ID` | `argocd-admin` |
+| `INSECURE_ARGOCD_TLS` | `true` neu dung self-signed/default cert. |
+
+Job nay dung 4 kubeconfig secret files de chay:
+
+```text
+argocd cluster add <context> --name tdquan
+argocd cluster add <context> --name tbnguyen274
+argocd cluster add <context> --name avocado2
+argocd cluster add <context> --name nqthang
+```
+
+Kiem tra:
+
+```bash
+argocd cluster list
+```
+
+## 5. Apply AppProject va Applications
+
+Tao Jenkins Pipeline job tro toi:
+
+```text
+jenkins/Jenkinsfile.argocd_apps_apply
+```
+
+Parameters:
+
+| Parameter | Goi y |
+| --- | --- |
+| `TARGET_ARGOCD_CLUSTER` | Cluster da cai ArgoCD. |
+| `ARGOCD_NAMESPACE` | `argocd` |
+
+Job nay apply:
 
 ```bash
 kubectl apply -f argocd/project.yaml
 kubectl apply -f argocd/applications/
 ```
 
-Kiểm tra:
+## 6. Mo hinh Application
 
-```bash
-kubectl -n argocd get app
-argocd app list
-argocd app get tdquan
-argocd app get tbnguyen274
-argocd app get avocado2
-argocd app get nqthang
+Moi Application dung chung chart `helm/yas`, nhung ghep values theo thu tu:
+
+```text
+values.yaml
+values-<cluster>.yaml
+values-<environment>.yaml
 ```
 
-## Sync policy
+Vi du `tdquan-dev`:
 
-Các Application đang bật:
+```yaml
+targetRevision: main
+helm:
+  valueFiles:
+    - values.yaml
+    - values-tdquan.yaml
+    - values-dev.yaml
+destination:
+  namespace: yas-dev
+```
 
-- `automated.prune=true`: xóa resource không còn trong Git.
-- `automated.selfHeal=true`: tự sửa drift nếu cluster bị thay đổi ngoài Git.
-- `CreateNamespace=true`: tạo namespace `yas` nếu chưa có.
+Vi du `tdquan-staging`:
+
+```yaml
+targetRevision: staging
+helm:
+  valueFiles:
+    - values.yaml
+    - values-tdquan.yaml
+    - values-staging.yaml
+destination:
+  namespace: yas-staging
+```
+
+## 7. Test dev flow
+
+Chay Jenkins job:
+
+```text
+jenkins/Jenkinsfile.developer_build
+```
+
+Nhap branch cho service can test. Jenkins update values tren branch `main`, ArgoCD app `*-dev` sync vao `yas-dev`.
+
+Kiem tra bang:
+
+```text
+jenkins/Jenkinsfile.cluster_health_check
+jenkins/Jenkinsfile.nodeport_report
+```
+
+## 8. Release staging
+
+Khi dev on dinh:
+
+```bash
+git checkout staging
+git merge main
+git push origin staging
+```
+
+Sau khi branch `staging` thay doi, cac Application `*-staging` sync vao namespace `yas-staging`.

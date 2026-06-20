@@ -1,50 +1,60 @@
 # Cleanup Job
 
-Theo đề bài cần có Jenkins job để xóa phần deploy của mục `developer_build`. Job này nên xóa môi trường test theo namespace hoặc release/application tương ứng.
+Cleanup job dung kubeconfig cua cac cluster de xu ly cac tac vu van hanh sau deploy.
 
-## Mục tiêu
-
-- Xóa deployment developer đã tạo.
-- Giải phóng resource trong cluster.
-- Để lại log và link để reviewer thấy cleanup đã chạy.
-
-## Luồng cleanup khuyến nghị với ArgoCD
+Deploy chinh van di qua GitOps:
 
 ```text
-1. Developer hoặc reviewer chạy Jenkins job cleanup.
-2. Jenkins nhận namespace/app/cluster cần cleanup.
-3. Jenkins revert tag values về main hoặc disable service test.
-4. Jenkins commit và push GitOps repo.
-5. ArgoCD prune/selfHeal để đưa cluster về trạng thái mong muốn.
+Jenkins update Git -> ArgoCD sync -> Kubernetes
 ```
 
-Nếu muốn xóa toàn bộ namespace test:
+Cleanup truc tiep bang `kubectl` chi nen dung cho tinh huong van hanh, demo, hoac don resource loi.
 
-```bash
-kubectl delete namespace yas
+## Jenkins Job
+
+File:
+
+```text
+jenkins/Jenkinsfile.cleanup
 ```
 
-Nhưng với GitOps, nếu ArgoCD app vẫn còn desired state, ArgoCD có thể tạo lại resource. Cách sạch hơn là:
+Credential Secret file can co:
 
-- Xóa/sửa desired state trong Git.
-- Để ArgoCD prune resource.
-- Chỉ dùng `kubectl delete` khi cần cleanup khẩn cấp.
+```text
+tdquan-kubeconfig
+tbnguyen274-kubeconfig
+avocado2-kubeconfig
+nqthang-kubeconfig
+```
 
-## Parameters nên có cho Jenkins cleanup
+## Parameters
 
-| Parameter | Default | Mô tả |
+| Parameter | Default/values | Mo ta |
 | --- | --- | --- |
-| `NAMESPACE` | `yas` | Namespace cần cleanup. |
-| `TARGET_CLUSTER` | `all` | Cluster cần cleanup hoặc `all`. |
-| `CLEANUP_MODE` | `reset-tags` | `reset-tags`, `disable-service`, hoặc `delete-namespace`. |
+| `TARGET_ENV` | `dev`, `staging` | Moi truong can cleanup. |
+| `TARGET_CLUSTER` | `all`, `tdquan`, `tbnguyen274`, `avocado2`, `nqthang` | Cluster can cleanup. |
+| `CLEANUP_MODE` | `delete-failed-pods`, `delete-namespace` | Tac vu cleanup. |
+| `CONFIRM_CLEANUP` | `false` | Phai check truoc khi job chay. |
 
-## Bằng chứng cần chụp cho báo cáo
+## Modes
 
-- Trang Jenkins cleanup job.
-- Console log cleanup thành công.
-- ArgoCD sync/prune sau cleanup.
-- `kubectl get pods -n yas` cho thấy resource đã reset/xóa theo mode.
+`delete-failed-pods`:
 
-## Trạng thái repo
+```text
+Xoa cac pod Failed trong namespace yas-dev hoac yas-staging.
+```
 
-`jenkins/Jenkinsfile.cleanup` và `scripts/cleanup.sh` hiện đang trống. Cần bổ sung logic cleanup trước khi demo.
+`delete-namespace`:
+
+```text
+Xoa toan bo namespace yas-dev hoac yas-staging.
+```
+
+`delete-namespace` la tac vu pha huy. Neu ArgoCD Application van ton tai va automated sync dang bat, ArgoCD co the tao lai namespace/resource theo desired state trong Git.
+
+## Evidence cho bao cao
+
+- Jenkins cleanup job console log.
+- Output `kubectl get namespace`.
+- Output `kubectl get pods -n yas-dev` hoac `kubectl get pods -n yas-staging`.
+- Trang ArgoCD cho thay app da sync/self-heal neu namespace bi tao lai.

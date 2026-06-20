@@ -15,7 +15,7 @@ spec:
         - values-tdquan.yaml
         - values-dev.yaml
   destination:
-    server: https://100.91.182.4:53567
+    server: https://100.91.182.4:8443
     namespace: yas-dev
   syncPolicy:
     automated:
