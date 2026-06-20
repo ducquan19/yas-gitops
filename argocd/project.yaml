@@ -11,9 +11,9 @@ spec:
 
   destinations:
     - namespace: yas-dev
-      server: https://100.91.182.4:53567
+      server: https://100.91.182.4:8443
     - namespace: yas-staging
-      server: https://100.91.182.4:53567
+      server: https://100.91.182.4:8443
     - namespace: yas-dev
       server: https://100.84.105.114:8443
     - namespace: yas-staging
@@ -28,9 +28,9 @@ spec:
       server: https://100.65.39.31:50983
 
   clusterResourceWhitelist:
-    - group: ''
+    - group: ""
       kind: Namespace
 
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"

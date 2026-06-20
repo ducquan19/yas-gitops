@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        choice(name: 'TARGET_ENV', choices: ['dev', 'staging', 'all'], description: 'Environment namespace to inspect')
+    }
+
+    stages {
+        stage('Print NodePort access URLs') {
+            steps {
+                withCredentials([
+                    file(credentialsId: 'tdquan-kubeconfig', variable: 'KUBECONFIG_TDQUAN'),
+                    file(credentialsId: 'tbnguyen274-kubeconfig', variable: 'KUBECONFIG_TBNGUYEN274'),
+                    file(credentialsId: 'avocado2-kubeconfig', variable: 'KUBECONFIG_AVOCADO2'),
+                    file(credentialsId: 'nqthang-kubeconfig', variable: 'KUBECONFIG_NQTHANG')
+                ]) {
+                    sh 'bash scripts/get-nodeports.sh "$TARGET_ENV"'
+                }
+            }
+        }
+    }
+}
