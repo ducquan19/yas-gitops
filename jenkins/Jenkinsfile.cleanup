@@ -132,8 +132,8 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
                     }
 
                     sh """
-                        git config user.email "jenkins@yas-gitops.local"
-                        git config user.name  "Jenkins cleanup_dev"
+                        git config user.email "ducq317@gmail.com"
+                        git config user.name "ducquan19"
                         git add helm/yas/values-*.yaml
                         git commit -m "cleanup_dev: reset image tags to main [build #${BUILD_NUMBER}]"
                         git push origin HEAD:main
