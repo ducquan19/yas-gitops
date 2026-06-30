@@ -58,3 +58,19 @@ Xoa toan bo namespace yas-dev hoac yas-staging.
 - Output `kubectl get namespace`.
 - Output `kubectl get pods -n yas-dev` hoac `kubectl get pods -n yas-staging`.
 - Trang ArgoCD cho thay app da sync/self-heal neu namespace bi tao lai.
+
+---
+
+## Developer Build Cleanup Job
+
+Job này (`jenkins/Jenkinsfile.cleanup_dev`) dùng để xóa / reset các triển khai thử nghiệm của developer được tạo ra bởi `developer_build`.
+
+### Cơ chế hoạt động
+Thay vì tác động trực tiếp vào Kubernetes cluster bằng `kubectl`, job này hoạt động thông qua GitOps:
+1. Reset tag của các service được chọn trong file `helm/yas/values-*.yaml` về `"main"`.
+2. Commit và push thay đổi lên Git repository.
+3. ArgoCD tự động nhận biết thay đổi và đồng bộ (sync) kéo các service về image tag ổn định (`main`).
+
+### Hyperlink từ `developer_build`
+Sau khi chạy thành công job `developer_build`, ở phần mô tả của build (Build description) và trong Console Log sẽ xuất hiện một đường dẫn hyperlink động.
+Khi nhấp vào liên kết này, Jenkins sẽ tự động mở trang chạy job `developer_build_cleanup` và truyền sẵn các tham số (ví dụ `CLEANUP_MODE=SELECTIVE`, `DRY_RUN=false`, `CONFIRM=true` cùng với danh sách các service cần reset dựa trên build vừa rồi) giúp người dùng thực hiện cleanup nhanh chóng và an toàn.

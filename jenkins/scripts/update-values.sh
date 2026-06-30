@@ -53,7 +53,7 @@ update_tag() {
   mv "$temp_file" "$values_file"
 }
 
-while IFS=$'\t' read -r service_name branch image_tag cluster_name values_file values_key argocd_app access_host; do
+while IFS=$'\t' read -r service_name branch image_tag cluster_name values_file values_key argocd_app access_host node_port; do
   [[ -z "${service_name:-}" ]] && continue
   echo "Updating ${values_file}: ${values_key}.image.tag=${image_tag} (${service_name}, branch=${branch})"
   update_tag "$values_file" "$values_key" "$image_tag"

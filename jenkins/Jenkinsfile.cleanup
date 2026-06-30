@@ -1,3 +1,14 @@
+// ============================================================
+// Jenkinsfile.cleanup_dev
+//
+// Xóa / reset triển khai do developer_build tạo ra.
+// Cơ chế: reset image tag trong các values-*.yaml về "main",
+// commit + push → ArgoCD tự sync lại về image stable.
+//
+// Có 2 chế độ:
+//   RESET_TO_MAIN  – reset TẤT CẢ 14 service về tag "main"
+//   SELECTIVE      – chỉ reset service nào developer chọn
+// ============================================================
 pipeline {
     agent any
 
@@ -9,58 +20,126 @@ pipeline {
 
     parameters {
         choice(
-            name: 'TARGET_ENV',
-            choices: ['dev', 'staging'],
-            description: 'Môi trường cần cleanup: namespace yas-dev hoặc yas-staging'
-        )
-        choice(
-            name: 'TARGET_CLUSTER',
-            choices: ['all', 'tdquan', 'tbnguyen274', 'avocado2', 'nqthang'],
-            description: 'Cluster cần cleanup'
-        )
-        choice(
             name: 'CLEANUP_MODE',
-            choices: ['delete-failed-pods', 'delete-namespace'],
-            description: 'Xóa pod Failed hoặc xóa toàn bộ namespace'
+            choices: ['RESET_TO_MAIN', 'SELECTIVE'],
+            description: '''RESET_TO_MAIN → reset tất cả 14 service về tag "main".
+SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.'''
         )
+
+        // ── Selective toggles ──────────────────────────────────────────────
+        // Bật = reset service đó về "main". Tắt = giữ nguyên.
+        booleanParam(name: 'RESET_PRODUCT',         defaultValue: false, description: 'Reset product-service → main')
+        booleanParam(name: 'RESET_INVENTORY',       defaultValue: false, description: 'Reset inventory-service → main')
+        booleanParam(name: 'RESET_SEARCH',          defaultValue: false, description: 'Reset search-service → main')
+        booleanParam(name: 'RESET_MEDIA',           defaultValue: false, description: 'Reset media-service → main')
+        booleanParam(name: 'RESET_CART',            defaultValue: false, description: 'Reset cart-service → main')
+        booleanParam(name: 'RESET_ORDER',           defaultValue: false, description: 'Reset order-service → main')
+        booleanParam(name: 'RESET_TAX',             defaultValue: false, description: 'Reset tax-service → main')
+        booleanParam(name: 'RESET_STOREFRONT',      defaultValue: false, description: 'Reset storefront → main')
+        booleanParam(name: 'RESET_STOREFRONT_BFF',  defaultValue: false, description: 'Reset storefront-bff → main')
+        booleanParam(name: 'RESET_BACKOFFICE',      defaultValue: false, description: 'Reset backoffice → main')
+        booleanParam(name: 'RESET_BACKOFFICE_BFF',  defaultValue: false, description: 'Reset backoffice-bff → main')
+        booleanParam(name: 'RESET_CUSTOMER',        defaultValue: false, description: 'Reset customer-service → main')
+        booleanParam(name: 'RESET_SAMPLEDATA',      defaultValue: false, description: 'Reset sampledata → main')
+        booleanParam(name: 'RESET_SWAGGER',         defaultValue: false, description: 'Reset swagger → main')
+
         booleanParam(
             name: 'DRY_RUN',
             defaultValue: true,
-            description: 'Chỉ hiển thị tài nguyên sẽ bị ảnh hưởng, chưa thực hiện xóa'
+            description: 'true = chỉ xem diff, KHÔNG commit. false + CONFIRM = thực sự push.'
         )
         booleanParam(
-            name: 'CONFIRM_CLEANUP',
+            name: 'CONFIRM',
             defaultValue: false,
-            description: 'Bắt buộc bật khi DRY_RUN=false'
+            description: 'Phải bật khi DRY_RUN=false để xác nhận xóa thật.'
         )
     }
 
     stages {
-        stage('Validate request') {
+
+        stage('Validate') {
             steps {
                 script {
-                    echo "Environment: ${params.TARGET_ENV}"
-                    echo "Namespace: yas-${params.TARGET_ENV}"
-                    echo "Cluster: ${params.TARGET_CLUSTER}"
-                    echo "Mode: ${params.CLEANUP_MODE}"
-                    echo "Dry run: ${params.DRY_RUN}"
-
-                    if (!params.DRY_RUN && !params.CONFIRM_CLEANUP) {
-                        error('Phải bật CONFIRM_CLEANUP khi DRY_RUN=false.')
+                    echo "Cleanup mode : ${params.CLEANUP_MODE}"
+                    echo "Dry run      : ${params.DRY_RUN}"
+                    if (!params.DRY_RUN && !params.CONFIRM) {
+                        error('Bạn phải bật CONFIRM=true khi DRY_RUN=false.')
                     }
                 }
             }
         }
 
-        stage('Cleanup') {
+        stage('Reset image tags') {
             steps {
-                withCredentials([
-                    file(credentialsId: 'tdquan-kubeconfig', variable: 'KUBECONFIG_TDQUAN'),
-                    file(credentialsId: 'tbnguyen274-kubeconfig', variable: 'KUBECONFIG_TBNGUYEN274'),
-                    file(credentialsId: 'avocado2-kubeconfig', variable: 'KUBECONFIG_AVOCADO2'),
-                    file(credentialsId: 'nqthang-kubeconfig', variable: 'KUBECONFIG_NQTHANG')
-                ]) {
-                    sh 'bash scripts/cleanup.sh "$TARGET_ENV" "$TARGET_CLUSTER" "$CLEANUP_MODE" "$DRY_RUN"'
+                script {
+                    // Map: [values_file, yaml_key, reset? (bool param name)]
+                    def serviceMap = [
+                        ['helm/yas/values-tbnguyen274.yaml', 'product',         params.RESET_PRODUCT],
+                        ['helm/yas/values-tbnguyen274.yaml', 'inventory',       params.RESET_INVENTORY],
+                        ['helm/yas/values-tbnguyen274.yaml', 'search',          params.RESET_SEARCH],
+                        ['helm/yas/values-tbnguyen274.yaml', 'media',           params.RESET_MEDIA],
+                        ['helm/yas/values-avocado2.yaml',    'cart',            params.RESET_CART],
+                        ['helm/yas/values-avocado2.yaml',    'order',           params.RESET_ORDER],
+                        ['helm/yas/values-avocado2.yaml',    'tax',             params.RESET_TAX],
+                        ['helm/yas/values-nqthang.yaml',     'storefront',      params.RESET_STOREFRONT],
+                        ['helm/yas/values-nqthang.yaml',     'storefront-bff',  params.RESET_STOREFRONT_BFF],
+                        ['helm/yas/values-nqthang.yaml',     'backoffice',      params.RESET_BACKOFFICE],
+                        ['helm/yas/values-nqthang.yaml',     'backoffice-bff',  params.RESET_BACKOFFICE_BFF],
+                        ['helm/yas/values-nqthang.yaml',     'customer',        params.RESET_CUSTOMER],
+                        ['helm/yas/values-nqthang.yaml',     'sampledata',      params.RESET_SAMPLEDATA],
+                        ['helm/yas/values-nqthang.yaml',     'swagger',         params.RESET_SWAGGER],
+                    ]
+
+                    if (params.CLEANUP_MODE == 'RESET_TO_MAIN') {
+                        echo 'Mode RESET_TO_MAIN: resetting all 14 services → main'
+                        serviceMap.each { row ->
+                            def (valFile, svcKey, _) = row
+                            resetTag(valFile, svcKey, 'main')
+                        }
+                    } else {
+                        echo 'Mode SELECTIVE: resetting only checked services → main'
+                        serviceMap.each { row ->
+                            def (valFile, svcKey, doReset) = row
+                            if (doReset) {
+                                resetTag(valFile, svcKey, 'main')
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Show diff') {
+            steps {
+                sh 'git diff -- helm/yas/values-*.yaml || true'
+            }
+        }
+
+        stage('Commit and push') {
+            when {
+                expression { !params.DRY_RUN && params.CONFIRM }
+            }
+            steps {
+                script {
+                    def changed = sh(
+                        script: 'git status --porcelain helm/yas/values-*.yaml',
+                        returnStdout: true
+                    ).trim()
+
+                    if (!changed) {
+                        echo 'Nothing changed – all selected tags are already at "main".'
+                        return
+                    }
+
+                    sh """
+                        git config user.email "jenkins@yas-gitops.local"
+                        git config user.name  "Jenkins cleanup_dev"
+                        git add helm/yas/values-*.yaml
+                        git commit -m "cleanup_dev: reset image tags to main [build #${BUILD_NUMBER}]"
+                        git push
+                    """
+
+                    echo 'GitOps reset pushed. ArgoCD will sync affected apps back to stable images.'
                 }
             }
         }
@@ -68,13 +147,29 @@ pipeline {
 
     post {
         success {
-            echo 'Cleanup job hoàn tất.'
+            script {
+                if (params.DRY_RUN) {
+                    echo '=== DRY RUN – no changes committed. Set DRY_RUN=false + CONFIRM=true to apply. ==='
+                } else {
+                    echo '=== Cleanup complete. ArgoCD will restore stable images within ~60 s. ==='
+                }
+            }
         }
         failure {
-            echo 'Cleanup job thất bại. Kiểm tra console log, kubeconfig và kết nối cluster.'
-        }
-        always {
-            echo 'Lưu ý: ArgoCD auto-sync có thể tạo lại resource nếu desired state vẫn còn trong Git.'
+            echo 'cleanup_dev FAILED. Check stage logs above.'
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Helper: set <yaml_key>.image.tag = <tag> inside <values_file>
+// ---------------------------------------------------------------------------
+def resetTag(String valuesFile, String svcKey, String tag) {
+    echo "  Resetting ${svcKey} in ${valuesFile} → ${tag}"
+    sh """
+        printf '%s\\t%s\\t%s\\tcluster-x\\t%s\\t%s\\tN/A\\tN/A\\tN/A\\n' \
+            '${svcKey}' '${tag}' '${tag}' '${valuesFile}' '${svcKey}' \
+            > /tmp/reset-plan-${svcKey}.tsv
+        bash jenkins/scripts/update-values.sh /tmp/reset-plan-${svcKey}.tsv
+    """
 }

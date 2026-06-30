@@ -8,41 +8,37 @@ pipeline {
 
     environment {
         PLAN_FILE = 'developer-build-plan.tsv'
+        SOURCE_REPO_URL="https://github.com/ducquan19/yas.git"
     }
 
     parameters {
-        string(
-            name: 'SOURCE_REPO_URL',
-            defaultValue: 'https://github.com/ducquan19/yas.git',
-            description: 'Source code repository used to resolve branch to commit id'
-        )
+        string(name: 'PRODUCT_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for product-service')
 
-        string(name: 'POSTGRES_BRANCH', defaultValue: 'main', description: 'Branch/image tag for postgres')
-        string(name: 'ELASTICSEARCH_BRANCH', defaultValue: 'main', description: 'Branch/image tag for elasticsearch')
-        string(name: 'PROMOTION_BRANCH', defaultValue: 'main', description: 'Branch/image tag for promotion')
-        string(name: 'LOCATION_BRANCH', defaultValue: 'main', description: 'Branch/image tag for location')
-        string(name: 'WEBHOOK_BRANCH', defaultValue: 'main', description: 'Branch/image tag for webhook')
+        string(name: 'CART_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for cart-service')
 
-        string(name: 'PRODUCT_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for product-service')
-        string(name: 'INVENTORY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for inventory-service')
-        string(name: 'SEARCH_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for search-service')
-        string(name: 'MEDIA_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for media-service')
-        string(name: 'RECOMMENDATION_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for recommendation-service')
+        string(name: 'ORDER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for order-service')
 
-        string(name: 'CART_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for cart-service')
-        string(name: 'ORDER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for order-service')
-        string(name: 'PAYMENT_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for payment-service')
-        string(name: 'DELIVERY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for delivery-service')
-        string(name: 'TAX_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for tax-service')
+        string(name: 'CUSTOMER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for customer-service')
 
-        string(name: 'STOREFRONT_BRANCH', defaultValue: 'main', description: 'Branch/image tag for storefront')
-        string(name: 'STOREFRONT_BFF_BRANCH', defaultValue: 'main', description: 'Branch/image tag for storefront-bff')
-        string(name: 'BACKOFFICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for backoffice')
-        string(name: 'BACKOFFICE_BFF_BRANCH', defaultValue: 'main', description: 'Branch/image tag for backoffice-bff')
-        string(name: 'CUSTOMER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for customer-service')
-        string(name: 'IDENTITY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for identity-service')
-        string(name: 'KAFKA_BRANCH', defaultValue: 'main', description: 'Branch/image tag for kafka')
-        string(name: 'RATING_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch/image tag for rating-service')
+        string(name: 'INVENTORY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for inventory-service')
+
+        string(name: 'TAX_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for tax-service')
+
+        string(name: 'MEDIA_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for media-service')
+
+        string(name: 'SEARCH_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for search-service')
+
+        string(name: 'STOREFRONT_BFF_BRANCH', defaultValue: 'main', description: 'Branch for storefront-bff')
+
+        string(name: 'STOREFRONT_BRANCH', defaultValue: 'main', description: 'Branch for storefront')
+
+        string(name: 'BACKOFFICE_BFF_BRANCH', defaultValue: 'main', description: 'Branch for backoffice-bff')
+
+        string(name: 'BACKOFFICE_BRANCH', defaultValue: 'main', description: 'Branch for backoffice')
+
+        string(name: 'SAMPLEDATA_BRANCH', defaultValue: 'main', description: 'Branch for sampledata')
+
+        string(name: 'SWAGGER_BRANCH', defaultValue: 'main', description: 'Branch for swagger')
     }
 
     stages {
@@ -77,7 +73,7 @@ pipeline {
                         git config user.email "jenkins@yas-gitops.local"
                         git config user.name "Jenkins developer_build"
                         git add helm/yas/values-*.yaml
-                        git commit -m "developer_build: update service image tags"
+                        git commit -m "developer_build: update service image tags [build #${BUILD_NUMBER}]"
                         git push
                     """
 
@@ -90,6 +86,88 @@ pipeline {
             steps {
                 sh 'bash jenkins/scripts/print-access-urls.sh "$PLAN_FILE"'
             }
+        }
+    }
+
+    post {
+        success {
+            script {
+                // Print clickable hyperlinks using Jenkins Console Notes convention.
+                // Requires the "Console Column" or "AnsiColor" plugin for full rendering.
+                // In Blue Ocean these render natively; in classic UI they show as plain URLs.
+                def nonMainServices = []
+                def branchParams = [
+                    'PRODUCT_SERVICE_BRANCH', 'CART_SERVICE_BRANCH', 'ORDER_SERVICE_BRANCH',
+                    'CUSTOMER_SERVICE_BRANCH', 'INVENTORY_SERVICE_BRANCH', 'TAX_SERVICE_BRANCH',
+                    'MEDIA_SERVICE_BRANCH', 'SEARCH_SERVICE_BRANCH', 'STOREFRONT_BFF_BRANCH',
+                    'STOREFRONT_BRANCH', 'BACKOFFICE_BFF_BRANCH', 'BACKOFFICE_BRANCH',
+                    'SAMPLEDATA_BRANCH', 'SWAGGER_BRANCH'
+                ]
+                branchParams.each { p ->
+                    def val = params[p]
+                    if (val && val != 'main') {
+                        nonMainServices << "${p.replace('_BRANCH', '').toLowerCase().replace('_', '-')} @ ${val}"
+                    }
+                }
+
+                def cleanParams = [
+                    'CLEANUP_MODE': 'SELECTIVE',
+                    'DRY_RUN': 'false',
+                    'CONFIRM': 'true'
+                ]
+                def serviceParamMap = [
+                    'PRODUCT_SERVICE_BRANCH': 'RESET_PRODUCT',
+                    'INVENTORY_SERVICE_BRANCH': 'RESET_INVENTORY',
+                    'SEARCH_SERVICE_BRANCH': 'RESET_SEARCH',
+                    'MEDIA_SERVICE_BRANCH': 'RESET_MEDIA',
+                    'CART_SERVICE_BRANCH': 'RESET_CART',
+                    'ORDER_SERVICE_BRANCH': 'RESET_ORDER',
+                    'TAX_SERVICE_BRANCH': 'RESET_TAX',
+                    'STOREFRONT_BRANCH': 'RESET_STOREFRONT',
+                    'STOREFRONT_BFF_BRANCH': 'RESET_STOREFRONT_BFF',
+                    'BACKOFFICE_BRANCH': 'RESET_BACKOFFICE',
+                    'BACKOFFICE_BFF_BRANCH': 'RESET_BACKOFFICE_BFF',
+                    'CUSTOMER_SERVICE_BRANCH': 'RESET_CUSTOMER',
+                    'SAMPLEDATA_BRANCH': 'RESET_SAMPLEDATA',
+                    'SWAGGER_BRANCH': 'RESET_SWAGGER'
+                ]
+                serviceParamMap.each { devParam, cleanupParam ->
+                    def val = params[devParam]
+                    if (val && val != 'main') {
+                        cleanParams[cleanupParam] = 'true'
+                    }
+                }
+
+                def jenkinsUrl = env.JENKINS_URL ?: 'https://upcountry-founding-unboxed.ngrok-free.dev/'
+                if (!jenkinsUrl.endsWith('/')) {
+                    jenkinsUrl += '/'
+                }
+                def queryParams = cleanParams.collect { k, v -> "${k}=${v}" }.join('&')
+                def cleanupUrl = "${jenkinsUrl}job/cleanup/buildWithParameters?${queryParams}"
+
+                if (!nonMainServices) {
+                    cleanupUrl = "${jenkinsUrl}job/cleanup/buildWithParameters?CLEANUP_MODE=RESET_TO_MAIN&DRY_RUN=false&CONFIRM=true"
+                }
+
+                currentBuild.description = "Cleanup link: <a href=\"${cleanupUrl}\">Clean up this deployment</a>"
+
+                echo '============================================================'
+                echo '  developer_build SUCCESS'
+                echo '  Non-default branches deployed:'
+                if (nonMainServices) {
+                    nonMainServices.each { s -> echo "    • ${s}" }
+                } else {
+                    echo '    (all services use main)'
+                }
+                echo ''
+                echo "  To clean up this deployment, click here: <a href=\"${cleanupUrl}\">cleanup</a>"
+                echo "  Cleanup URL: ${cleanupUrl}"
+                echo '  See \"Print access URLs\" stage above for service endpoints.'
+                echo '============================================================'
+            }
+        }
+        failure {
+            echo 'developer_build FAILED. Check the stage logs above for details.'
         }
     }
 }

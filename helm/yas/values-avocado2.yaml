@@ -8,16 +8,6 @@ order:
   image:
     tag: main
 
-payment:
-  enabled: true
-  image:
-    tag: main
-
-delivery:
-  enabled: true
-  image:
-    tag: main
-
 tax:
   enabled: true
   image:
