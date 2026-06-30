@@ -74,7 +74,7 @@ pipeline {
                         git config user.name "Jenkins developer_build"
                         git add helm/yas/values-*.yaml
                         git commit -m "developer_build: update service image tags [build #${BUILD_NUMBER}]"
-                        git push
+                        git push origin HEAD:main
                     """
 
                     echo 'GitOps changes pushed. ArgoCD will sync the affected applications.'

@@ -136,7 +136,7 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
                         git config user.name  "Jenkins cleanup_dev"
                         git add helm/yas/values-*.yaml
                         git commit -m "cleanup_dev: reset image tags to main [build #${BUILD_NUMBER}]"
-                        git push
+                        git push origin HEAD:main
                     """
 
                     echo 'GitOps reset pushed. ArgoCD will sync affected apps back to stable images.'
