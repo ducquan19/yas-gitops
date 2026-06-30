@@ -138,7 +138,10 @@ pipeline {
                     }
                 }
 
-                def jenkinsUrl = env.JENKINS_URL ?: 'https://upcountry-founding-unboxed.ngrok-free.dev/'
+                def jenkinsUrl = env.JENKINS_URL ?: ''
+                if (!jenkinsUrl || jenkinsUrl.contains("localhost")) {
+                    jenkinsUrl = 'https://upcountry-founding-unboxed.ngrok-free.dev/'
+                }
                 if (!jenkinsUrl.endsWith('/')) {
                     jenkinsUrl += '/'
                 }
