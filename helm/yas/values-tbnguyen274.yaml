@@ -17,8 +17,3 @@ media:
   enabled: true
   image:
     tag: main
-
-recommendation:
-  enabled: true
-  image:
-    tag: main

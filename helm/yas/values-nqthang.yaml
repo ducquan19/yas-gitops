@@ -22,18 +22,3 @@ customer:
   enabled: true
   image:
     tag: main
-
-identity:
-  enabled: true
-  image:
-    tag: main
-
-kafka:
-  enabled: true
-  image:
-    tag: main
-
-rating:
-  enabled: true
-  image:
-    tag: main
