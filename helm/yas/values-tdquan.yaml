@@ -1,24 +1,24 @@
-postgres:
+cart:
   enabled: true
   image:
     tag: main
 
-elasticsearch:
+order:
   enabled: true
   image:
     tag: main
 
-promotion:
+tax:
   enabled: true
   image:
     tag: main
 
-location:
+swagger:
   enabled: true
   image:
     tag: main
 
-webhook:
+sampledata:
   enabled: true
   image:
     tag: main
