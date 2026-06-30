@@ -25,7 +25,7 @@ order:
 tax:
   enabled: true
   image:
-    tag: main
+    tag: 1ef67ffbafe4a0fcfa38ee675c5a63f9793bdfce
 sampledata:
   enabled: true
   image:
