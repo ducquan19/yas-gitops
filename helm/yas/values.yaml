@@ -248,8 +248,8 @@ sampledata:
 swagger:
   enabled: false
   image:
-    repository: ducquan19/yas-swagger
-    tag: main
+    repository: swaggerapi/swagger-ui
+    tag: v5.17.14
   resources:
     requests:
       memory: "256Mi"
