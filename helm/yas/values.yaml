@@ -5,18 +5,17 @@ storefront:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30001
   env: {}
   secrets: {}
-
 storefront-bff:
   enabled: false
   image:
@@ -24,18 +23,18 @@ storefront-bff:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30002
   env: {}
   secrets: {}
-
+  isBackend: true
 backoffice:
   enabled: false
   image:
@@ -43,18 +42,17 @@ backoffice:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30003
   env: {}
   secrets: {}
-
 backoffice-bff:
   enabled: false
   image:
@@ -62,18 +60,18 @@ backoffice-bff:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30004
   env: {}
   secrets: {}
-
+  isBackend: true
 product:
   enabled: false
   image:
@@ -81,18 +79,18 @@ product:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30005
   env: {}
   secrets: {}
-
+  isBackend: true
 media:
   enabled: false
   image:
@@ -100,18 +98,18 @@ media:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30006
   env: {}
   secrets: {}
-
+  isBackend: true
 customer:
   enabled: false
   image:
@@ -119,18 +117,18 @@ customer:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30007
   env: {}
   secrets: {}
-
+  isBackend: true
 cart:
   enabled: false
   image:
@@ -138,18 +136,18 @@ cart:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30008
   env: {}
   secrets: {}
-
+  isBackend: true
 order:
   enabled: false
   image:
@@ -157,18 +155,18 @@ order:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30009
   env: {}
   secrets: {}
-
+  isBackend: true
 inventory:
   enabled: false
   image:
@@ -176,18 +174,18 @@ inventory:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30010
   env: {}
   secrets: {}
-
+  isBackend: true
 tax:
   enabled: false
   image:
@@ -195,18 +193,18 @@ tax:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30011
   env: {}
   secrets: {}
-
+  isBackend: true
 search:
   enabled: false
   image:
@@ -214,18 +212,18 @@ search:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30012
   env: {}
   secrets: {}
-
+  isBackend: true
 sampledata:
   enabled: false
   image:
@@ -233,18 +231,17 @@ sampledata:
     tag: main
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082
     nodePort: 30013
   env: {}
   secrets: {}
-
 swagger:
   enabled: false
   image:
@@ -252,11 +249,11 @@ swagger:
     tag: v5.17.14
   resources:
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: 256Mi
+      cpu: 100m
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: 512Mi
+      cpu: 500m
   service:
     type: NodePort
     port: 8082

@@ -20,6 +20,12 @@ spec:
       labels:
         app: {{ $serviceName }}
     spec:
+      {{- if $serviceConfig.isBackend }}
+      volumes:
+        - name: yas-configuration
+          configMap:
+            name: yas-configuration-configmap
+      {{- end }}
       containers:
         - name: {{ $serviceName }}
           image: "{{ $serviceConfig.image.repository }}:{{ $serviceConfig.image.tag }}"
@@ -28,10 +34,19 @@ spec:
           ports:
             - containerPort: {{ $serviceConfig.service.port }}
           {{- end }}
+          {{- if $serviceConfig.isBackend }}
+          volumeMounts:
+            - mountPath: /opt/yas/config
+              name: yas-configuration
+          {{- end }}
           resources:
             {{- toYaml $serviceConfig.resources | nindent 12 }}
-          {{- if or $serviceConfig.env $serviceConfig.secrets }}
+          {{- if or $serviceConfig.env $serviceConfig.secrets $serviceConfig.isBackend }}
           envFrom:
+            {{- if $serviceConfig.isBackend }}
+            - secretRef:
+                name: yas-postgresql-credentials-secret
+            {{- end }}
             {{- if $serviceConfig.env }}
             - configMapRef:
                 name: {{ $serviceName }}-config
@@ -40,6 +55,15 @@ spec:
             - secretRef:
                 name: {{ $serviceName }}-secret
             {{- end }}
+          {{- end }}
+          {{- if $serviceConfig.isBackend }}
+          env:
+            - name: LOGGING_CONFIG
+              value: /opt/yas/config/logback.xml
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql.postgres:5432/{{ $serviceName }}
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: /opt/yas/config/application.yaml
           {{- end }}
 {{- end }}
 {{- end }}

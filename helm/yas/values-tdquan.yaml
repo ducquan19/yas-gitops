@@ -1,25 +1,44 @@
-
-swagger:
+product:
   enabled: true
   image:
     tag: main
-
-sampledata:
+inventory:
   enabled: true
   image:
     tag: main
-
+search:
+  enabled: true
+  image:
+    tag: main
+media:
+  enabled: true
+  image:
+    tag: main
 cart:
   enabled: true
   image:
     tag: main
-
 order:
   enabled: true
   image:
     tag: main
-
 tax:
+  enabled: true
+  image:
+    tag: main
+sampledata:
+  enabled: true
+  image:
+    tag: main
+storefront-bff:
+  enabled: true
+  image:
+    tag: main
+backoffice-bff:
+  enabled: true
+  image:
+    tag: main
+customer:
   enabled: true
   image:
     tag: main
