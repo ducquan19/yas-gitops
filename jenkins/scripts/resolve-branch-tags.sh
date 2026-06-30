@@ -106,9 +106,6 @@ write_service "search-service"    "SEARCH_SERVICE_BRANCH"    "cluster-2" "helm/y
 write_service "media-service"     "MEDIA_SERVICE_BRANCH"     "cluster-2" "helm/yas/values-tbnguyen274.yaml" "media"     "tbnguyen274" "100.84.105.114" "30006"
 
 # ── cluster-3 : avocado2 ──────────────────────────────────────────────────
-write_service "cart-service"  "CART_SERVICE_BRANCH"  "cluster-3" "helm/yas/values-avocado2.yaml" "cart"  "avocado2" "100.65.39.31" "30008"
-write_service "order-service" "ORDER_SERVICE_BRANCH" "cluster-3" "helm/yas/values-avocado2.yaml" "order" "avocado2" "100.65.39.31" "30009"
-write_service "tax-service"   "TAX_SERVICE_BRANCH"   "cluster-3" "helm/yas/values-avocado2.yaml" "tax"   "avocado2" "100.65.39.31" "30011"
 
 # ── cluster-4 : nqthang ───────────────────────────────────────────────────
 write_service "storefront"     "STOREFRONT_BRANCH"     "cluster-4" "helm/yas/values-nqthang.yaml" "storefront"     "nqthang" "100.122.97.48" "30001"
@@ -116,8 +113,13 @@ write_service "storefront-bff" "STOREFRONT_BFF_BRANCH" "cluster-4" "helm/yas/val
 write_service "backoffice"     "BACKOFFICE_BRANCH"     "cluster-4" "helm/yas/values-nqthang.yaml" "backoffice"     "nqthang" "100.122.97.48" "30003"
 write_service "backoffice-bff" "BACKOFFICE_BFF_BRANCH" "cluster-4" "helm/yas/values-nqthang.yaml" "backoffice-bff" "nqthang" "100.122.97.48" "30004"
 write_service "customer-service" "CUSTOMER_SERVICE_BRANCH" "cluster-4" "helm/yas/values-nqthang.yaml" "customer"  "nqthang" "100.122.97.48" "30007"
-write_service "sampledata"     "SAMPLEDATA_BRANCH"     "cluster-4" "helm/yas/values-nqthang.yaml" "sampledata"     "nqthang" "100.122.97.48" "30013"
-write_service "swagger"        "SWAGGER_BRANCH"        "cluster-4" "helm/yas/values-nqthang.yaml" "swagger"        "nqthang" "100.122.97.48" "30014"
+
+# ── cluster-1 : tdquan ───────────────────────────────────────────────────
+write_service "cart-service"   "CART_SERVICE_BRANCH"   "cluster-1" "helm/yas/values-tdquan.yaml" "cart"       "tdquan" "100.91.182.4" "30008"
+write_service "order-service"  "ORDER_SERVICE_BRANCH"  "cluster-1" "helm/yas/values-tdquan.yaml" "order"      "tdquan" "100.91.182.4" "30009"
+write_service "tax-service"    "TAX_SERVICE_BRANCH"    "cluster-1" "helm/yas/values-tdquan.yaml" "tax"        "tdquan" "100.91.182.4" "30011"
+write_service "sampledata"     "SAMPLEDATA_BRANCH"     "cluster-1" "helm/yas/values-tdquan.yaml" "sampledata" "tdquan" "100.91.182.4" "30013"
+write_service "swagger"        "SWAGGER_BRANCH"        "cluster-1" "helm/yas/values-tdquan.yaml" "swagger"    "tdquan" "100.91.182.4" "30014"
 
 echo "Resolved developer build plan:"
 column -t -s $'\t' "$output_file" || cat "$output_file"

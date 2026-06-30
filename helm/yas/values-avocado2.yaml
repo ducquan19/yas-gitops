@@ -1,14 +1,1 @@
-cart:
-  enabled: true
-  image:
-    tag: main
-
-order:
-  enabled: true
-  image:
-    tag: main
-
-tax:
-  enabled: true
-  image:
-    tag: main
+# cluster avocado2 is temporarily empty

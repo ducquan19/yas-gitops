@@ -1,3 +1,14 @@
+
+swagger:
+  enabled: true
+  image:
+    tag: main
+
+sampledata:
+  enabled: true
+  image:
+    tag: main
+
 cart:
   enabled: true
   image:
@@ -9,16 +20,6 @@ order:
     tag: main
 
 tax:
-  enabled: true
-  image:
-    tag: main
-
-swagger:
-  enabled: true
-  image:
-    tag: main
-
-sampledata:
   enabled: true
   image:
     tag: main
