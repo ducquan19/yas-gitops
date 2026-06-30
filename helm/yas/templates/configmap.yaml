@@ -1,0 +1,22 @@
+{{- range $serviceName, $serviceConfig := .Values }}
+{{- if typeIs "map[string]interface {}" $serviceConfig }}
+{{- if hasKey $serviceConfig "enabled" }}
+{{- if eq $serviceConfig.enabled true }}
+{{- if $serviceConfig.env }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $serviceName }}-config
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $serviceName }}
+data:
+  {{- range $key, $val := $serviceConfig.env }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

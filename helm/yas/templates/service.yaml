@@ -1,0 +1,29 @@
+{{- range $serviceName, $serviceConfig := .Values }}
+{{- if typeIs "map[string]interface {}" $serviceConfig }}
+{{- if hasKey $serviceConfig "enabled" }}
+{{- if eq $serviceConfig.enabled true }}
+{{- if $serviceConfig.service }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $serviceName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $serviceName }}
+spec:
+  type: {{ $serviceConfig.service.type | default "NodePort" }}
+  selector:
+    app: {{ $serviceName }}
+  ports:
+    - protocol: TCP
+      port: {{ $serviceConfig.service.port }}
+      targetPort: {{ $serviceConfig.service.port }}
+      {{- if $serviceConfig.service.nodePort }}
+      nodePort: {{ $serviceConfig.service.nodePort }}
+      {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

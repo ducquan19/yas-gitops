@@ -1,0 +1,265 @@
+storefront:
+  enabled: false
+  image:
+    repository: ducquan19/storefront
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30001
+  env: {}
+  secrets: {}
+
+storefront-bff:
+  enabled: false
+  image:
+    repository: ducquan19/storefront-bff
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30002
+  env: {}
+  secrets: {}
+
+backoffice:
+  enabled: false
+  image:
+    repository: ducquan19/backoffice
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30003
+  env: {}
+  secrets: {}
+
+backoffice-bff:
+  enabled: false
+  image:
+    repository: ducquan19/backoffice-bff
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30004
+  env: {}
+  secrets: {}
+
+product:
+  enabled: false
+  image:
+    repository: ducquan19/product
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30005
+  env: {}
+  secrets: {}
+
+media:
+  enabled: false
+  image:
+    repository: ducquan19/media
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30006
+  env: {}
+  secrets: {}
+
+customer:
+  enabled: false
+  image:
+    repository: ducquan19/customer
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30007
+  env: {}
+  secrets: {}
+
+cart:
+  enabled: false
+  image:
+    repository: ducquan19/cart
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30008
+  env: {}
+  secrets: {}
+
+order:
+  enabled: false
+  image:
+    repository: ducquan19/order
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30009
+  env: {}
+  secrets: {}
+
+inventory:
+  enabled: false
+  image:
+    repository: ducquan19/inventory
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30010
+  env: {}
+  secrets: {}
+
+tax:
+  enabled: false
+  image:
+    repository: ducquan19/tax
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30011
+  env: {}
+  secrets: {}
+
+search:
+  enabled: false
+  image:
+    repository: ducquan19/search
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30012
+  env: {}
+  secrets: {}
+
+sampledata:
+  enabled: false
+  image:
+    repository: ducquan19/sampledata
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30013
+  env: {}
+  secrets: {}
+
+swagger:
+  enabled: false
+  image:
+    repository: ducquan19/swagger
+    tag: main
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30014
+  env: {}
+  secrets: {}

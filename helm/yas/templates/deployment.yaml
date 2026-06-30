@@ -1,0 +1,47 @@
+{{- range $serviceName, $serviceConfig := .Values }}
+{{- if typeIs "map[string]interface {}" $serviceConfig }}
+{{- if hasKey $serviceConfig "enabled" }}
+{{- if eq $serviceConfig.enabled true }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $serviceName }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ $serviceName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $serviceName }}
+  template:
+    metadata:
+      labels:
+        app: {{ $serviceName }}
+    spec:
+      containers:
+        - name: {{ $serviceName }}
+          image: "{{ $serviceConfig.image.repository }}:{{ $serviceConfig.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          {{- if $serviceConfig.service }}
+          ports:
+            - containerPort: {{ $serviceConfig.service.port }}
+          {{- end }}
+          resources:
+            {{- toYaml $serviceConfig.resources | nindent 12 }}
+          {{- if or $serviceConfig.env $serviceConfig.secrets }}
+          envFrom:
+            {{- if $serviceConfig.env }}
+            - configMapRef:
+                name: {{ $serviceName }}-config
+            {{- end }}
+            {{- if $serviceConfig.secrets }}
+            - secretRef:
+                name: {{ $serviceName }}-secret
+            {{- end }}
+          {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
