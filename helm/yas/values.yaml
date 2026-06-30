@@ -1,7 +1,7 @@
 storefront:
   enabled: false
   image:
-    repository: ducquan19/storefront
+    repository: ducquan19/yas-storefront
     tag: main
   resources:
     requests:
@@ -12,7 +12,7 @@ storefront:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30001
   env: {}
   secrets: {}
@@ -20,7 +20,7 @@ storefront:
 storefront-bff:
   enabled: false
   image:
-    repository: ducquan19/storefront-bff
+    repository: ducquan19/yas-storefront-bff
     tag: main
   resources:
     requests:
@@ -31,7 +31,7 @@ storefront-bff:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30002
   env: {}
   secrets: {}
@@ -39,7 +39,7 @@ storefront-bff:
 backoffice:
   enabled: false
   image:
-    repository: ducquan19/backoffice
+    repository: ducquan19/yas-backoffice
     tag: main
   resources:
     requests:
@@ -50,7 +50,7 @@ backoffice:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30003
   env: {}
   secrets: {}
@@ -58,7 +58,7 @@ backoffice:
 backoffice-bff:
   enabled: false
   image:
-    repository: ducquan19/backoffice-bff
+    repository: ducquan19/yas-backoffice-bff
     tag: main
   resources:
     requests:
@@ -69,7 +69,7 @@ backoffice-bff:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30004
   env: {}
   secrets: {}
@@ -77,7 +77,7 @@ backoffice-bff:
 product:
   enabled: false
   image:
-    repository: ducquan19/product
+    repository: ducquan19/yas-product
     tag: main
   resources:
     requests:
@@ -88,7 +88,7 @@ product:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30005
   env: {}
   secrets: {}
@@ -96,7 +96,7 @@ product:
 media:
   enabled: false
   image:
-    repository: ducquan19/media
+    repository: ducquan19/yas-media
     tag: main
   resources:
     requests:
@@ -107,7 +107,7 @@ media:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30006
   env: {}
   secrets: {}
@@ -115,7 +115,7 @@ media:
 customer:
   enabled: false
   image:
-    repository: ducquan19/customer
+    repository: ducquan19/yas-customer
     tag: main
   resources:
     requests:
@@ -126,7 +126,7 @@ customer:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30007
   env: {}
   secrets: {}
@@ -134,7 +134,7 @@ customer:
 cart:
   enabled: false
   image:
-    repository: ducquan19/cart
+    repository: ducquan19/yas-cart
     tag: main
   resources:
     requests:
@@ -145,7 +145,7 @@ cart:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30008
   env: {}
   secrets: {}
@@ -153,7 +153,7 @@ cart:
 order:
   enabled: false
   image:
-    repository: ducquan19/order
+    repository: ducquan19/yas-order
     tag: main
   resources:
     requests:
@@ -164,7 +164,7 @@ order:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30009
   env: {}
   secrets: {}
@@ -172,7 +172,7 @@ order:
 inventory:
   enabled: false
   image:
-    repository: ducquan19/inventory
+    repository: ducquan19/yas-inventory
     tag: main
   resources:
     requests:
@@ -183,7 +183,7 @@ inventory:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30010
   env: {}
   secrets: {}
@@ -191,7 +191,7 @@ inventory:
 tax:
   enabled: false
   image:
-    repository: ducquan19/tax
+    repository: ducquan19/yas-tax
     tag: main
   resources:
     requests:
@@ -202,7 +202,7 @@ tax:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30011
   env: {}
   secrets: {}
@@ -210,7 +210,7 @@ tax:
 search:
   enabled: false
   image:
-    repository: ducquan19/search
+    repository: ducquan19/yas-search
     tag: main
   resources:
     requests:
@@ -221,7 +221,7 @@ search:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30012
   env: {}
   secrets: {}
@@ -229,7 +229,7 @@ search:
 sampledata:
   enabled: false
   image:
-    repository: ducquan19/sampledata
+    repository: ducquan19/yas-sampledata
     tag: main
   resources:
     requests:
@@ -240,7 +240,7 @@ sampledata:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30013
   env: {}
   secrets: {}
@@ -248,7 +248,7 @@ sampledata:
 swagger:
   enabled: false
   image:
-    repository: ducquan19/swagger
+    repository: ducquan19/yas-swagger
     tag: main
   resources:
     requests:
@@ -259,7 +259,7 @@ swagger:
       cpu: "500m"
   service:
     type: NodePort
-    port: 8080
+    port: 8082
     nodePort: 30014
   env: {}
   secrets: {}
