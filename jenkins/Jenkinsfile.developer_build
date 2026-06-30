@@ -138,15 +138,18 @@ pipeline {
                     }
                 }
 
-                def jenkinsUrl = env.JENKINS_URL ?: 'https://upcountry-founding-unboxed.ngrok-free.dev/'
+                def jenkinsUrl = env.JENKINS_URL ?: ''
+                if (!jenkinsUrl || jenkinsUrl.contains("localhost")) {
+                    jenkinsUrl = 'https://upcountry-founding-unboxed.ngrok-free.dev/'
+                }
                 if (!jenkinsUrl.endsWith('/')) {
                     jenkinsUrl += '/'
                 }
                 def queryParams = cleanParams.collect { k, v -> "${k}=${v}" }.join('&')
-                def cleanupUrl = "${jenkinsUrl}job/cleanup/buildWithParameters?${queryParams}"
+                def cleanupUrl = "${jenkinsUrl}job/cleanup/build?${queryParams}"
 
                 if (!nonMainServices) {
-                    cleanupUrl = "${jenkinsUrl}job/cleanup/buildWithParameters?CLEANUP_MODE=RESET_TO_MAIN&DRY_RUN=false&CONFIRM=true"
+                    cleanupUrl = "${jenkinsUrl}job/cleanup/build?CLEANUP_MODE=RESET_TO_MAIN&DRY_RUN=false&CONFIRM=true"
                 }
 
                 currentBuild.description = "Cleanup link: <a href=\"${cleanupUrl}\">Clean up this deployment</a>"
