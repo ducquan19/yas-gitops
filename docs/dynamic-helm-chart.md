@@ -6,16 +6,16 @@ Mình đã hoàn thành việc triển khai kiến trúc Dynamic Helm Chart dự
 
 ### 1. Kiến trúc Template Lặp (Range Loop)
 Thay vì tạo 14 file riêng lẻ, mình đã sử dụng vòng lặp `{{- range $serviceName, $serviceConfig := .Values }}` cho toàn bộ thư mục `templates/`.
-- [deployment.yaml](file:///d:/github/yas-gitops/helm/yas/templates/deployment.yaml)
-- [service.yaml](file:///d:/github/yas-gitops/helm/yas/templates/service.yaml)
-- [configmap.yaml](file:///d:/github/yas-gitops/helm/yas/templates/configmap.yaml)
-- [secret.yaml](file:///d:/github/yas-gitops/helm/yas/templates/secret.yaml)
+- `deployment.yaml`
+- `service.yaml`
+- `configmap.yaml`
+- `secret.yaml`
 
 Các file này tự động nhận diện service nào được đánh dấu `enabled: true` trong values để khởi tạo. Bạn hoàn toàn có thể ghi đè image tag, cấu hình resource, và namespace thông qua Helm CLI hoặc file config riêng của cluster (như `values-tdquan.yaml`).
 
 ### 2. Cấu hình Values mặc định (Base Values)
 Mình đã xây dựng xong cấu trúc chuẩn cho **14 services** trong file gốc:
-- [values.yaml](file:///d:/github/yas-gitops/helm/yas/values.yaml)
+- `values.yaml`
 
 Tại đây:
 - Mỗi service (ví dụ: `storefront`, `tax`, `cart`...) được thiết lập mặc định `enabled: false`.
