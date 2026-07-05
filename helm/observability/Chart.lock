@@ -1,0 +1,18 @@
+dependencies:
+- name: loki
+  repository: https://grafana.github.io/helm-charts
+  version: 5.48.0
+- name: promtail
+  repository: https://grafana.github.io/helm-charts
+  version: 6.17.1
+- name: tempo
+  repository: https://grafana.github.io/helm-charts
+  version: 1.24.4
+- name: kube-prometheus-stack
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 56.21.4
+- name: kiali-server
+  repository: https://kiali.org/helm-charts
+  version: 1.73.2
+digest: sha256:fdd36171d5a6228b883a4f1acf6204964a1a6c1453f8c1e01ab4eaab73f02ece
+generated: "2026-07-05T18:20:56.584089626Z"
