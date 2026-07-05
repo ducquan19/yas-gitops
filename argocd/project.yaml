@@ -11,9 +11,9 @@ spec:
 
   destinations:
     - namespace: yas-dev
-      server: https://100.88.234.42:8443
+      server: https://kubernetes.default.svc
     - namespace: yas-staging
-      server: https://100.88.234.42:8443
+      server: https://kubernetes.default.svc
     - namespace: yas-dev
       server: https://100.84.105.114:8443
     - namespace: yas-staging

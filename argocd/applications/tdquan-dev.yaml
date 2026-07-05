@@ -15,7 +15,7 @@ spec:
         - values-tdquan.yaml
         - values-dev.yaml
   destination:
-    server: https://100.88.234.42:8443
+    server: https://kubernetes.default.svc
     namespace: yas-dev
   syncPolicy:
     automated:
