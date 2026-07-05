@@ -62,3 +62,8 @@ grafana:
 
 opentelemetry:
   enabled: true
+
+kiali-server:
+  enabled: true
+  auth:
+    strategy: anonymous

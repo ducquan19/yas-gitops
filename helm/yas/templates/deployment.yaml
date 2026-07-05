@@ -1,7 +1,7 @@
 {{- range $serviceName, $serviceConfig := .Values }}
 {{- if typeIs "map[string]interface {}" $serviceConfig }}
 {{- if hasKey $serviceConfig "enabled" }}
-{{- if eq $serviceConfig.enabled true }}
+{{- if and (eq $serviceConfig.enabled true) (hasKey $serviceConfig "image") }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -20,6 +20,7 @@ spec:
       labels:
         app: {{ $serviceName }}
     spec:
+      serviceAccountName: {{ $serviceName }}-sa
       {{- if $serviceConfig.isBackend }}
       volumes:
         - name: yas-configuration

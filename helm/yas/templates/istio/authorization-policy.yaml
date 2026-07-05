@@ -1,0 +1,78 @@
+{{- if .Values.istio.enabled }}
+---
+# 1. Mặc định CHẶN tất cả (Default Deny) trong namespace
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: default-deny-all
+  namespace: {{ $.Release.Namespace }}
+spec:
+  {} # Không có allow rule nào -> Chặn tất cả
+
+---
+# 2. Cho phép Ingress Gateway gọi vào các dịch vụ Frontend (BFF, Swagger, UI)
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-frontend
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: ["storefront-bff", "backoffice-bff", "storefront-nextjs", "backoffice-nextjs", "swagger"]
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces: ["istio-system", "ingress", "default"] # Tùy thuộc vào namespace của Ingress
+
+---
+# 3. Cho phép Frontend/BFF gọi vào Core Microservices
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-bff-to-microservices
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: ["product", "cart", "order", "customer", "media", "inventory", "search", "tax", "sampledata", "payment", "rating", "recommendation"]
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/storefront-bff-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/backoffice-bff-sa"
+          # Cho phép các microservices gọi lẫn nhau (Internal Service-to-Service)
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/order-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/cart-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/product-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/customer-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/inventory-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/tax-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/media-sa"
+
+---
+# 4. Cho phép TẤT CẢ truy cập vào Cơ sở dữ liệu và Nền tảng (Postgres, Redis, Kafka, Elasticsearch, Keycloak)
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-all-to-infrastructure
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values: ["postgresql", "redis", "kafka", "elasticsearch", "keycloak"]
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces: ["{{ $.Release.Namespace }}", "istio-system"]
+{{- end }}

@@ -1,0 +1,40 @@
+{{- if .Values.istio.enabled }}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: yas-virtual-service
+  namespace: {{ $.Release.Namespace }}
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - yas-gateway
+  http:
+    # Route for storefront-bff
+    - match:
+        - uri:
+            prefix: /storefront-bff
+      route:
+        - destination:
+            host: storefront-bff
+            port:
+              number: 8082
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: 5xx,connect-failure
+
+    # Route for backoffice-bff
+    - match:
+        - uri:
+            prefix: /backoffice-bff
+      route:
+        - destination:
+            host: backoffice-bff
+            port:
+              number: 8082
+      retries:
+        attempts: 3
+        perTryTimeout: 2s
+        retryOn: 5xx,connect-failure
+{{- end }}

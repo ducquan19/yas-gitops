@@ -32,7 +32,28 @@ helm dependency update
    - Cụm `tdquan` sẽ tự động kéo các Image backend (Java/Spring Boot) và khởi tạo Database, Kafka, Redis.
    - Cụm `nqthang` sẽ kéo các Image Next.js (cổng 3000) và expose ra ngoài.
 
-## 4. Các cấu hình Hệ Thống Quan Trọng Cần Lưu Ý
+## 4. Triển khai Local (Không dùng ArgoCD)
+Nếu bạn muốn test thử trên máy cá nhân (minikube, docker desktop, kind) mà chưa cần cài ArgoCD, bạn có thể dùng trực tiếp lệnh `helm install`. 
+
+Lưu ý: Bạn có thể gộp file `values-tdquan.yaml` (Backend) và `values-nqthang.yaml` (Frontend) lại thành một để chạy chung trên 1 cụm cục bộ!
+
+```bash
+# 1. Cài đặt các dependencies cho YAS chart
+cd helm/yas
+helm dependency update
+
+# 2. Deploy YAS stack (cả frontend và backend chung 1 namespace)
+kubectl create namespace yas-local
+helm install yas-local . -n yas-local -f values-tdquan.yaml -f values-nqthang.yaml
+
+# 3. Deploy Observability stack
+cd ../observability
+helm dependency update
+kubectl create namespace observability
+helm install observability . -n observability
+```
+
+## 5. Các cấu hình Hệ Thống Quan Trọng Cần Lưu Ý
 Sau khi các Pods đã lên trạng thái `Running`, bạn cần lưu ý:
 
 - **Database (PostgreSQL):** Bạn **KHÔNG CẦN LÀM GÌ CẢ**! PostgreSQL đã được nhúng sẵn kịch bản khởi tạo (`init-databases.sql`) trong `values.yaml`. Khi khởi động lần đầu, nó sẽ tự động tạo toàn bộ 14 databases (product, cart, customer, v.v.). Sau đó, **Flyway** bên trong các dịch vụ Spring Boot sẽ tự động chạy để tạo các bảng (Tables) cần thiết.

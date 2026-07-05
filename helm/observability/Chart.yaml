@@ -21,3 +21,7 @@ dependencies:
     version: "56.x.x"
     repository: "https://prometheus-community.github.io/helm-charts"
     condition: kube-prometheus-stack.enabled
+  - name: kiali-server
+    version: "1.73.x"
+    repository: "https://kiali.org/helm-charts"
+    condition: kiali-server.enabled
