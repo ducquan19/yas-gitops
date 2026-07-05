@@ -62,7 +62,7 @@ http://yas-dev.local:<node-port>
 
 | ArgoCD app | Cluster server |
 | --- | --- |
-| `tdquan` | `https://100.91.182.4:53567` |
+| `tdquan` | `https://100.88.234.42:53567` |
 | `tbnguyen274` | `https://100.84.105.114:8443` |
 | `nqthang` | `https://100.122.97.48:32801` |
 | `avocado2` | `https://100.65.39.31:50983` |

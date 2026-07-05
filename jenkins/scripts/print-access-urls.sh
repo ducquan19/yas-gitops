@@ -82,7 +82,7 @@ awk -F '\t' '
 ' "$PLAN_FILE"
 
 echo ""
-echo "  Example:  echo '100.91.182.4  yas.cluster-1.local' >> /etc/hosts"
+echo "  Example:  echo '100.88.234.42  yas.cluster-1.local' >> /etc/hosts"
 echo "  Then open:  http://yas.cluster-1.local:30011  (tax-service)"
 echo ""
 echo "  NOTE: Wait ~60 s for ArgoCD to finish syncing before testing."
@@ -106,7 +106,7 @@ while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
   else
     url="http://${access_host}:&lt;NodePort&gt;"
   fi
-  
+
   echo "<li><b>${svc_name}</b>: <a href=\"${url}\" target=\"_blank\">${url}</a></li>" >> urls.html
 done < "$PLAN_FILE"
 
