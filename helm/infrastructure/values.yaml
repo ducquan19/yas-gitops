@@ -1,0 +1,65 @@
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: admin
+    username: admin
+    password: admin
+    database: yas
+  primary:
+    initdb:
+      scripts:
+        init-databases.sql: |
+          CREATE DATABASE product;
+          CREATE DATABASE inventory;
+          CREATE DATABASE search;
+          CREATE DATABASE media;
+          CREATE DATABASE cart;
+          CREATE DATABASE customer;
+          CREATE DATABASE "order";
+          CREATE DATABASE payment;
+          CREATE DATABASE promotion;
+          CREATE DATABASE rating;
+          CREATE DATABASE tax;
+          CREATE DATABASE recommendation;
+          CREATE DATABASE webhook;
+          CREATE DATABASE sampledata;
+          CREATE DATABASE grafana;
+          CREATE DATABASE keycloak;
+
+keycloak:
+  enabled: true
+  auth:
+    adminUser: admin
+    adminPassword: admin
+  service:
+    type: NodePort
+    port: 80
+  postgresql:
+    enabled: false
+  externalDatabase:
+    host: infrastructure-postgresql
+    port: 5432
+    user: admin
+    password: admin
+    database: keycloak
+
+kafka:
+  enabled: true
+  listeners:
+    client:
+      protocol: PLAINTEXT
+  kraft:
+    enabled: true
+  zookeeper:
+    enabled: false
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
+elasticsearch:
+  enabled: true
+  security:
+    enabled: false

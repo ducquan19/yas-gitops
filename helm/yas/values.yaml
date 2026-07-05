@@ -458,50 +458,6 @@ swagger:
   env: {}
   secrets: {}
 
-postgresql:
-  enabled: false
-  auth:
-    username: admin
-    password: admin
-    database: keycloak
-  architecture: standalone
-  primary:
-    initdb:
-      scripts:
-        init-databases.sql: |
-          CREATE DATABASE cart;
-          CREATE DATABASE customer;
-          CREATE DATABASE inventory;
-          CREATE DATABASE location;
-          CREATE DATABASE media;
-          CREATE DATABASE "order";
-          CREATE DATABASE payment;
-          CREATE DATABASE product;
-          CREATE DATABASE promotion;
-          CREATE DATABASE rating;
-          CREATE DATABASE tax;
-          CREATE DATABASE recommendation;
-          CREATE DATABASE webhook;
-          CREATE DATABASE sampledata;
-          CREATE DATABASE grafana;
-
-keycloak:
-  enabled: false
-  auth:
-    adminUser: admin
-    adminPassword: admin
-  service:
-    type: NodePort
-    port: 80
-  postgresql:
-    enabled: false
-  externalDatabase:
-    host: postgresql
-    port: 5432
-    user: admin
-    password: admin
-    database: keycloak
-
 tailscale:
   backendIp: 100.91.182.4
 

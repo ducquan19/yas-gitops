@@ -18,21 +18,40 @@ cd helm/yas
 helm dependency update
 ```
 
-## 3. Hướng dẫn Triển khai (Deployment Steps)
+## 3. Kiến trúc Cấu Hình GitOps YAS
+Để tối ưu hóa việc quản lý resource qua ArgoCD, chúng tôi sử dụng mô hình **App of Apps** và chia tách thành 3 biểu đồ chính:
 
-1. **Commit & Push toàn bộ các thay đổi** trên nhánh main của `yas-gitops`.
-2. **Apply các ứng dụng ArgoCD:**
-   Nếu bạn chưa tạo ArgoCD Applications trên cụm, hãy chạy lệnh áp dụng các file YAML định nghĩa:
+1. **Infrastructure (`helm/infrastructure`)**: 
+   - Chứa toàn bộ các nền tảng hạ tầng (Kafka, PostgreSQL, Keycloak, Redis, Elasticsearch).
+   - Được triển khai vào namespace `infrastructure`.
+   - Rất ít khi thay đổi, Deploy 1 lần và chạy nền.
+   
+2. **Observability (`helm/observability`)**:
+   - Chứa công cụ giám sát (Kiali, Prometheus, Grafana, Loki, Tempo...).
+   - Được triển khai vào namespace `observability`.
+
+3. **Applications (`helm/yas`)**:
+   - Chỉ chứa các Microservices do team tự phát triển (Product, Cart, Order, Frontend...).
+   - Được ArgoCD tự động Sync liên tục khi code thay đổi.
+   - Các file config sẽ tự động trỏ kết nối sang DB và Kafka ở namespace `infrastructure`.
+
+## 4. Cách Deploy với ArgoCD
+Quy trình triển khai trên ArgoCD (bắt buộc phải theo đúng thứ tự):
+1. Khởi tạo và Apply Application cho **Hạ tầng**:
    ```bash
-   kubectl apply -f argocd/applications/tdquan-staging.yaml --context <tdquan-context>
-   kubectl apply -f argocd/applications/nqthang-staging.yaml --context <nqthang-context>
+   kubectl apply -f argocd/applications/tdquan-infrastructure.yaml
    ```
-3. **Đồng bộ trên giao diện ArgoCD:**
-   Đăng nhập vào ArgoCD Dashboard, chọn các ứng dụng vừa tạo và nhấn **SYNC**.
-   - Cụm `tdquan` sẽ tự động kéo các Image backend (Java/Spring Boot) và khởi tạo Database, Kafka, Redis.
-   - Cụm `nqthang` sẽ kéo các Image Next.js (cổng 3000) và expose ra ngoài.
+   *(Chờ cho Kafka, DB khởi động lên đầy đủ trạng thái Running).*
+2. Apply Application cho **Hệ thống giám sát (Observability)**:
+   ```bash
+   kubectl apply -f argocd/applications/tdquan-observability.yaml
+   ```
+3. Apply Application cho **YAS Backend (Microservices)**:
+   ```bash
+   kubectl apply -f argocd/applications/tdquan-staging.yaml
+   ```
 
-## 4. Triển khai Local (Không dùng ArgoCD)
+## 5. Triển khai Local (Không dùng ArgoCD)
 Nếu bạn muốn test thử trên máy cá nhân (minikube, docker desktop, kind) mà chưa cần cài ArgoCD, bạn có thể dùng trực tiếp lệnh `helm install`. 
 
 Lưu ý: Bạn có thể gộp file `values-tdquan.yaml` (Backend) và `values-nqthang.yaml` (Frontend) lại thành một để chạy chung trên 1 cụm cục bộ!

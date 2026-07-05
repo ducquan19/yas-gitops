@@ -53,14 +53,13 @@ data:
         username: admin
         password: admin
       kafka:
-        bootstrap-servers: kafka:9092
-        consumer:
-          bootstrap-servers: kafka:9092
+        bootstrap-servers: infrastructure-kafka:9092
       data:
         redis:
-          host: redis-master
+          host: infrastructure-redis-master
           port: 6379
-
+      elasticsearch:
+        uris: http://infrastructure-elasticsearch:9200
     springdoc:
       oauthflow:
         authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
