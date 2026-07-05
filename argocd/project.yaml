@@ -15,17 +15,17 @@ spec:
     - namespace: yas-staging
       server: https://kubernetes.default.svc
     - namespace: yas-dev
-      server: https://100.84.105.114:8443
+      name: tbnguyen274
     - namespace: yas-staging
-      server: https://100.84.105.114:8443
+      name: tbnguyen274
     - namespace: yas-dev
-      server: https://100.122.97.48:32801
+      name: nqthang
     - namespace: yas-staging
-      server: https://100.122.97.48:32801
+      name: nqthang
     - namespace: yas-dev
-      server: https://100.65.39.31:50983
+      name: avocado2
     - namespace: yas-staging
-      server: https://100.65.39.31:50983
+      name: avocado2
 
   clusterResourceWhitelist:
     - group: ""

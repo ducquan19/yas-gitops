@@ -15,7 +15,7 @@ spec:
         - values-avocado2.yaml
         - values-dev.yaml
   destination:
-    server: https://100.65.39.31:50983
+    name: avocado2
     namespace: yas-dev
   syncPolicy:
     automated:

@@ -15,7 +15,7 @@ spec:
         - values-tbnguyen274.yaml
         - values-dev.yaml
   destination:
-    server: https://100.84.105.114:8443
+    name: tbnguyen274
     namespace: yas-dev
   syncPolicy:
     automated:

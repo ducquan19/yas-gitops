@@ -15,7 +15,7 @@ spec:
         - values-nqthang.yaml
         - values-staging.yaml
   destination:
-    server: https://100.122.97.48:32801
+    name: nqthang
     namespace: yas-staging
   syncPolicy:
     automated:
