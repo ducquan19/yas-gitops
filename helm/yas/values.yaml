@@ -1,8 +1,9 @@
-storefront:
+storefront-nextjs:
   enabled: false
   image:
     repository: ducquan19/yas-storefront
     tag: main
+    containerPort: 3000
   resources:
     requests:
       memory: 256Mi
@@ -12,7 +13,7 @@ storefront:
       cpu: 500m
   service:
     type: NodePort
-    port: 8082
+    port: 3000
     nodePort: 30001
   env: {}
   secrets: {}
@@ -35,10 +36,29 @@ storefront-bff:
   env: {}
   secrets: {}
   isBackend: true
-backoffice:
+backoffice-nextjs:
   enabled: false
   image:
     repository: ducquan19/yas-backoffice
+    tag: main
+    containerPort: 3000
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 3000
+    nodePort: 30003
+  env: {}
+  secrets: {}
+backoffice-bff:
+  enabled: false
+  image:
+    repository: ducquan19/yas-backoffice-bff
     tag: main
   resources:
     requests:
@@ -50,10 +70,187 @@ backoffice:
   service:
     type: NodePort
     port: 8082
-    nodePort: 30003
+    nodePort: 30004
   env: {}
   secrets: {}
-backoffice-bff:
+  isBackend: true
+product:
+  enabled: false
+  image:
+    repository: ducquan19/yas-product
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30005
+  env: {}
+  secrets: {}
+  isBackend: true
+media:
+  enabled: false
+  image:
+    repository: ducquan19/yas-media
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30006
+  env: {}
+  secrets: {}
+  isBackend: true
+customer:
+  enabled: false
+  image:
+    repository: ducquan19/yas-customer
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30007
+  env: {}
+  secrets: {}
+  isBackend: true
+cart:
+  enabled: false
+  image:
+    repository: ducquan19/yas-cart
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30008
+  env: {}
+  secrets: {}
+  isBackend: true
+order:
+  enabled: false
+  image:
+    repository: ducquan19/yas-order
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30009
+  env: {}
+  secrets: {}
+  isBackend: true
+inventory:
+  enabled: false
+  image:
+    repository: ducquan19/yas-inventory
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30010
+  env: {}
+  secrets: {}
+  isBackend: true
+tax:
+  enabled: false
+  image:
+    repository: ducquan19/yas-tax
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30011
+  env: {}
+  secrets: {}
+  isBackend: true
+search:
+  enabled: false
+  image:
+    repository: ducquan19/yas-search
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30012
+  env: {}
+  secrets: {}
+  isBackend: true
+sampledata:
+  enabled: false
+  image:
+    repository: ducquan19/yas-sampledata
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30013
+  env: {}
+  secrets: {}
+swagger:
+  enabled: false
+  image:
+    repository: swaggerapi/swagger-ui
+    tag: v5.17.14
+  resources:
+    requests:
   enabled: false
   image:
     repository: ducquan19/yas-backoffice-bff
@@ -260,3 +457,41 @@ swagger:
     nodePort: 30014
   env: {}
   secrets: {}
+
+postgresql:
+  enabled: false
+  auth:
+    username: admin
+    password: admin
+    database: keycloak
+  architecture: standalone
+  primary:
+    initdb:
+      scripts:
+        init-databases.sql: |
+          CREATE DATABASE cart;
+          CREATE DATABASE customer;
+          CREATE DATABASE inventory;
+          CREATE DATABASE location;
+          CREATE DATABASE media;
+          CREATE DATABASE "order";
+          CREATE DATABASE payment;
+          CREATE DATABASE product;
+          CREATE DATABASE promotion;
+          CREATE DATABASE rating;
+          CREATE DATABASE tax;
+          CREATE DATABASE recommendation;
+          CREATE DATABASE webhook;
+          CREATE DATABASE sampledata;
+          CREATE DATABASE grafana;
+
+keycloak:
+  enabled: false
+  auth:
+    adminUser: admin
+    adminPassword: admin
+  service:
+    type: NodePort
+    port: 80
+  postgresql:
+    enabled: false

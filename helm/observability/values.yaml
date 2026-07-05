@@ -1,0 +1,64 @@
+# Enable dependencies
+loki:
+  enabled: true
+  write:
+    replicas: 1
+  read:
+    replicas: 1
+  backend:
+    replicas: 1
+  loki:
+    commonConfig:
+      replication_factor: 1
+    auth_enabled: false
+  test:
+    enabled: false
+  storage:
+    type: 'filesystem'
+  minio:
+    enabled: true
+  monitoring:
+    selfMonitoring:
+      enabled: false
+      grafanaAgent:
+        installOperator: false
+
+promtail:
+  enabled: true
+  config:
+    clients:
+      - url: http://observability-opentelemetry:3500/loki/api/v1/push
+    snippets:
+      pipelineStages:
+        - docker: {}
+
+tempo:
+  enabled: true
+  tempo:
+    metricsGenerator:
+      enabled: true
+      remoteWriteUrl: "http://observability-kube-prometheus-prometheus:9090/api/v1/write"
+
+kube-prometheus-stack:
+  enabled: true
+  hostname: &hostname grafana.yas.local.com
+  prometheus:
+    prometheusSpec:
+      enableRemoteWriteReceiver: true
+  grafana:
+    enabled: false # We use the custom grafana chart below instead
+    grafana.ini:
+      database:
+        type: postgres
+        host: postgresql.yas.svc.cluster.local:5432
+        name: grafana
+        user: admin
+        password: admin
+        ssl_mode: require
+
+# Custom subcharts
+grafana:
+  enabled: true
+
+opentelemetry:
+  enabled: true

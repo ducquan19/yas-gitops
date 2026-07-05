@@ -1,77 +1,50 @@
-# YAS GitOps CD
+# YAS GitOps Deployment Guide
 
-Repository nay dung de quan ly phan CD cho project **YAS: Yet Another Shop** bang GitOps/ArgoCD.
+Kho lưu trữ này chứa toàn bộ cấu hình GitOps (thông qua **ArgoCD**) và **Helm Chart** để triển khai hệ thống vi dịch vụ YAS trên môi trường Đa Cụm (Multi-cluster) kết nối qua **Tailscale**.
 
-ArgoCD hien handle hai moi truong:
+## 1. Kiến trúc Hệ Thống
+Hệ thống được chia làm 2 phân hệ và triển khai trên 2 cụm Kubernetes riêng biệt, được nối mạng phẳng thông qua **Tailscale**:
+- **Cụm `nqthang` (Frontend):** Chạy các ứng dụng giao diện Next.js (`storefront-nextjs`, `backoffice-nextjs`) và `swagger`.
+- **Cụm `tdquan` (Backend):** Chạy toàn bộ các vi dịch vụ xử lý logic (`product`, `cart`, `order`, v.v.), các BFF (`storefront-bff`, `backoffice-bff`), và các dịch vụ nền tảng (Database, Keycloak, Kafka, Redis, Elasticsearch).
 
-- `dev`: branch `main`, namespace `yas-dev`
-- `staging`: branch `staging`, namespace `yas-staging`
+> Giao tiếp giữa 2 cụm (ví dụ Next.js gọi BFF) được thực hiện trực tiếp nhờ mạng Tailscale. Spring Cloud Gateway trên các BFF đã được cấu hình qua ConfigMap (`yas-gateway-routes-config`) để định tuyến trực tiếp đến các services backend.
 
-Jenkins khong deploy truc tiep len Kubernetes. Jenkins cap nhat values file trong GitOps repo, commit va push; ArgoCD detect thay doi va sync Application tuong ung.
+## 2. Chuẩn bị trước khi Deploy
+Trước khi ArgoCD tiến hành sync, vì biểu đồ Helm của chúng ta phụ thuộc vào các biểu đồ bên thứ 3 (PostgreSQL, Keycloak, Kafka, Redis, Elasticsearch) của Bitnami, bạn cần chắc chắn rằng ArgoCD có thể tải về các Sub-charts này.
 
-## Deliverables trong repo
-
-| Hang muc | File/thu muc | Ghi chu |
-| --- | --- | --- |
-| ArgoCD project | `argocd/project.yaml` | Cho phep deploy vao `yas-dev` va `yas-staging` tren cac cluster dich. |
-| ArgoCD applications | `argocd/applications/*.yaml` | Moi cluster co Application rieng cho `dev` va `staging`. |
-| Helm values theo cluster | `helm/yas/values-tdquan.yaml`, `values-tbnguyen274.yaml`, `values-avocado2.yaml`, `values-nqthang.yaml` | Chia service subset theo cluster. |
-| Helm values theo environment | `helm/yas/values-dev.yaml`, `helm/yas/values-staging.yaml` | Chua config override rieng cho moi truong. |
-| Developer CD job | `jenkins/Jenkinsfile.developer_build` | Developer chon branch/tag cho tung service; Jenkins update `main` de ArgoCD deploy dev. |
-| ArgoCD bootstrap jobs | `jenkins/Jenkinsfile.argocd_install`, `Jenkinsfile.argocd_cluster_register`, `Jenkinsfile.argocd_apps_apply` | Cai ArgoCD, register clusters, apply AppProject/Application. |
-| Cleanup job | `jenkins/Jenkinsfile.cleanup`, `docs/cleanup.md` | Tai lieu mo ta luong cleanup. |
-| Huong dan truy cap NodePort | `docs/tailscale-nodeport.md` | Dung Tailscale IP hoac worker node IP + NodePort. |
-| Service mesh | `docs/service-mesh.md` | Checklist mTLS, AuthorizationPolicy, retry va bang chung test. |
-
-## Kien truc muc tieu
-
-```text
-Developer chon branch tren Jenkins developer_build
-        |
-        v
-Jenkins resolve branch -> image tag da duoc CI build/push
-        |
-        v
-Jenkins update values-<cluster>.yaml tren branch main
-        |
-        v
-Git commit + push
-        |
-        v
-ArgoCD dev detect thay doi tren main va sync namespace yas-dev
-        |
-        v
-Release ready: merge main/tag config sang branch staging
-        |
-        v
-ArgoCD staging detect thay doi tren staging va sync namespace yas-staging
-        |
-        v
-Kubernetes multi-cluster expose service bang NodePort
+Cách đơn giản nhất là tải chúng cục bộ và commit thư mục `charts/` (tuỳ chọn tuỳ thuộc vào cấu hình ArgoCD của bạn):
+```bash
+cd helm/yas
+helm dependency update
 ```
 
-## ArgoCD model
+## 3. Hướng dẫn Triển khai (Deployment Steps)
 
-Moi Application dung chung chart `helm/yas` va ghep values theo thu tu:
+1. **Commit & Push toàn bộ các thay đổi** trên nhánh main của `yas-gitops`.
+2. **Apply các ứng dụng ArgoCD:**
+   Nếu bạn chưa tạo ArgoCD Applications trên cụm, hãy chạy lệnh áp dụng các file YAML định nghĩa:
+   ```bash
+   kubectl apply -f argocd/applications/tdquan-staging.yaml --context <tdquan-context>
+   kubectl apply -f argocd/applications/nqthang-staging.yaml --context <nqthang-context>
+   ```
+3. **Đồng bộ trên giao diện ArgoCD:**
+   Đăng nhập vào ArgoCD Dashboard, chọn các ứng dụng vừa tạo và nhấn **SYNC**.
+   - Cụm `tdquan` sẽ tự động kéo các Image backend (Java/Spring Boot) và khởi tạo Database, Kafka, Redis.
+   - Cụm `nqthang` sẽ kéo các Image Next.js (cổng 3000) và expose ra ngoài.
 
-```text
-values.yaml
-values-<cluster>.yaml
-values-<environment>.yaml
-```
+## 4. Các cấu hình Hệ Thống Quan Trọng Cần Lưu Ý
+Sau khi các Pods đã lên trạng thái `Running`, bạn cần lưu ý:
 
-Vi du:
+- **Database (PostgreSQL):** Bạn **KHÔNG CẦN LÀM GÌ CẢ**! PostgreSQL đã được nhúng sẵn kịch bản khởi tạo (`init-databases.sql`) trong `values.yaml`. Khi khởi động lần đầu, nó sẽ tự động tạo toàn bộ 14 databases (product, cart, customer, v.v.). Sau đó, **Flyway** bên trong các dịch vụ Spring Boot sẽ tự động chạy để tạo các bảng (Tables) cần thiết.
+- **Keycloak (Import Realm):** Do sử dụng Helm Chart tiêu chuẩn (không có Keycloak Operator), bạn cần Import Realm một lần duy nhất:
+  1. Đăng nhập vào trang quản trị Keycloak (`admin / admin`).
+  2. Mở file có sẵn tại: `yas/k8s/deploy/keycloak/keycloak/templates/keycloak-yas-realm-import.yaml` trong repo mã nguồn gốc.
+  3. Lấy dữ liệu ở phần `spec.realm:` (chuyển đổi YAML sang JSON nếu cần) và dùng tính năng **Create Realm** trên giao diện Keycloak để Import file JSON này vào. Quá trình này sẽ khôi phục lại toàn bộ Client IDs, Users, và cấu hình Realm `Yas`.
+- **Mạng Lưới (Istio & Tailscale):** Vì `storefront-nextjs` (trên cụm nqthang) cần gửi request tới `storefront-bff` (trên cụm tdquan), hãy đảm bảo rằng DNS/ServiceEntry giữa 2 cụm đã được khai báo chính xác qua Istio Multi-cluster, hoặc ứng dụng Frontend được cấu hình biến môi trường gọi thẳng tới IP/Domain Name của Ingress Gateway thuộc cụm `tdquan`.
 
-- `tdquan-dev`: `targetRevision: main`, namespace `yas-dev`
-- `tdquan-staging`: `targetRevision: staging`, namespace `yas-staging`
-
-## Tai lieu
-
-- [Phan bo service theo cluster va environment](docs/service-distribution.md)
-- [Thiet lap ArgoCD](docs/argocd-setup.md)
-- [Luong developer_build](docs/developer-build-flow.md)
-- [Jenkins jobs dung kubeconfig](docs/jenkins-kubeconfig-jobs.md)
-- [Cleanup deployment](docs/cleanup.md)
-- [Truy cap bang Tailscale va NodePort](docs/tailscale-nodeport.md)
-- [Service mesh va test plan](docs/service-mesh.md)
-- [Quy uoc dat ten](docs/naming-conventions.md)
+## 5. Cấu trúc File Chính
+- `helm/yas/Chart.yaml`: Khai báo các Dependencies (Keycloak, Postgres, Redis, Kafka, Elasticsearch).
+- `helm/yas/values.yaml`: Cấu hình toàn cục, cấu hình port 3000 cho Next.js, định nghĩa image tags.
+- `helm/yas/values-tdquan.yaml`: Bật (`enabled: true`) tất cả các backend services và nền tảng hạ tầng.
+- `helm/yas/values-nqthang.yaml`: Chỉ bật các frontend services.
+- `helm/yas/templates/gateway-routes-configmap.yaml`: Nơi cấu hình đường dẫn API Gateway cho BFF thay thế cho việc sử dụng NGINX proxy. Mọi thay đổi về API Paths cần được chỉnh sửa ở đây.

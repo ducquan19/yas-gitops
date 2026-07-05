@@ -25,6 +25,11 @@ spec:
         - name: yas-configuration
           configMap:
             name: yas-configuration-configmap
+        {{- if contains "bff" $serviceName }}
+        - name: yas-gateway-routes-config
+          configMap:
+            name: yas-gateway-routes-config
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ $serviceName }}
@@ -32,12 +37,16 @@ spec:
           imagePullPolicy: IfNotPresent
           {{- if $serviceConfig.service }}
           ports:
-            - containerPort: {{ $serviceConfig.service.port }}
+            - containerPort: {{ default $serviceConfig.service.port $serviceConfig.image.containerPort }}
           {{- end }}
           {{- if $serviceConfig.isBackend }}
           volumeMounts:
             - mountPath: /opt/yas/config
               name: yas-configuration
+            {{- if contains "bff" $serviceName }}
+            - mountPath: /opt/yas/gateway-routes-config
+              name: yas-gateway-routes-config
+            {{- end }}
           {{- end }}
           resources:
             {{- toYaml $serviceConfig.resources | nindent 12 }}
@@ -58,12 +67,24 @@ spec:
           {{- end }}
           {{- if $serviceConfig.isBackend }}
           env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: SERVER_PORT
+              value: {{ $serviceConfig.service.port | quote }}
             - name: LOGGING_CONFIG
               value: /opt/yas/config/logback.xml
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgresql.postgres:5432/{{ $serviceName }}
+              value: jdbc:postgresql://postgresql:5432/{{ $serviceName }}
             - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-              value: /opt/yas/config/application.yaml
+              value: /opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},/opt/yas/gateway-routes-config/gateway-routes.yaml{{- end }}
+            {{- if eq $serviceName "storefront-bff" }}
+            - name: UI_HOST
+              value: "http://storefront-nextjs:3000"
+            {{- end }}
+            {{- if eq $serviceName "backoffice-bff" }}
+            - name: UI_HOST
+              value: "http://backoffice-nextjs:3000"
+            {{- end }}
           {{- end }}
 {{- end }}
 {{- end }}

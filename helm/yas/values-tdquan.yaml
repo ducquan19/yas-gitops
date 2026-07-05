@@ -52,3 +52,31 @@ customer:
   enabled: true
   image:
     tag: main
+
+storefront-nextjs:
+  enabled: true
+  image:
+    tag: main
+
+backoffice-nextjs:
+  enabled: true
+  image:
+    tag: main
+
+swagger:
+  enabled: true
+
+postgresql:
+  enabled: true
+
+keycloak:
+  enabled: true
+
+kafka:
+  enabled: true
+
+redis:
+  enabled: true
+
+elasticsearch:
+  enabled: true

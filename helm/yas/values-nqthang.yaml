@@ -1,9 +1,9 @@
-storefront:
+storefront-nextjs:
   enabled: true
   image:
     tag: main
 
-backoffice:
+backoffice-nextjs:
   enabled: true
   image:
     tag: main

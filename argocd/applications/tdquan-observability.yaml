@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tdquan-observability
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ducquan19/yas-gitops.git'
+    path: helm/observability
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
