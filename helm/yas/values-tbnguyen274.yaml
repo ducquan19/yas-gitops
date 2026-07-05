@@ -1,8 +1,0 @@
-backoffice:
-  enabled: true
-  image:
-    tag: main
-swagger:
-  enabled: true
-  image:
-    tag: main

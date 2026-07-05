@@ -82,8 +82,32 @@ awk -F '\t' '
 ' "$PLAN_FILE"
 
 echo ""
-echo "  Example:  echo '100.65.39.31  yas.cluster-3.local' >> /etc/hosts"
-echo "  Then open:  http://yas.cluster-3.local:30011  (tax-service)"
+echo "  Example:  echo '100.91.182.4  yas.cluster-1.local' >> /etc/hosts"
+echo "  Then open:  http://yas.cluster-1.local:30011  (tax-service)"
 echo ""
 echo "  NOTE: Wait ~60 s for ArgoCD to finish syncing before testing."
 echo "────────────────────────────────────────────────────────────────────"
+
+# ---------------------------------------------------------------------------
+# 4. Generate HTML snippet for Jenkins Build Description
+# ---------------------------------------------------------------------------
+cat << 'EOF' > urls.html
+<br/><br/>
+<b>Service Endpoints:</b><br/>
+<ul>
+EOF
+
+while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
+                         values_key argocd_app access_host node_port; do
+  [[ -z "${svc_name:-}" ]] && continue
+
+  if [[ -n "${node_port:-}" ]]; then
+    url="http://${access_host}:${node_port}"
+  else
+    url="http://${access_host}:&lt;NodePort&gt;"
+  fi
+  
+  echo "<li><b>${svc_name}</b>: <a href=\"${url}\" target=\"_blank\">${url}</a></li>" >> urls.html
+done < "$PLAN_FILE"
+
+echo "</ul>" >> urls.html

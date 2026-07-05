@@ -2,3 +2,13 @@ storefront:
   enabled: true
   image:
     tag: main
+
+backoffice:
+  enabled: true
+  image:
+    tag: main
+
+swagger:
+  enabled: true
+  image:
+    tag: main

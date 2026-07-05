@@ -13,31 +13,18 @@ pipeline {
 
     parameters {
         string(name: 'PRODUCT_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for product-service')
-
         string(name: 'CART_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for cart-service')
-
         string(name: 'ORDER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for order-service')
-
         string(name: 'CUSTOMER_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for customer-service')
-
         string(name: 'INVENTORY_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for inventory-service')
-
         string(name: 'TAX_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for tax-service')
-
         string(name: 'MEDIA_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for media-service')
-
         string(name: 'SEARCH_SERVICE_BRANCH', defaultValue: 'main', description: 'Branch for search-service')
-
         string(name: 'STOREFRONT_BFF_BRANCH', defaultValue: 'main', description: 'Branch for storefront-bff')
-
         string(name: 'STOREFRONT_BRANCH', defaultValue: 'main', description: 'Branch for storefront')
-
         string(name: 'BACKOFFICE_BFF_BRANCH', defaultValue: 'main', description: 'Branch for backoffice-bff')
-
         string(name: 'BACKOFFICE_BRANCH', defaultValue: 'main', description: 'Branch for backoffice')
-
         string(name: 'SAMPLEDATA_BRANCH', defaultValue: 'main', description: 'Branch for sampledata')
-
         string(name: 'SWAGGER_BRANCH', defaultValue: 'main', description: 'Branch for swagger')
     }
 
@@ -155,7 +142,12 @@ pipeline {
                     cleanupUrl = "${jenkinsUrl}job/cleanup/build?CLEANUP_MODE=RESET_TO_MAIN&DRY_RUN=false&CONFIRM=true"
                 }
 
-                currentBuild.description = "Cleanup link: <a href=\"${cleanupUrl}\">Clean up this deployment</a>"
+                def urlsHtml = ''
+                if (fileExists('urls.html')) {
+                    urlsHtml = readFile('urls.html')
+                }
+
+                currentBuild.description = "Cleanup link: <a href=\"${cleanupUrl}\">Clean up this deployment</a>" + urlsHtml
 
                 echo '============================================================'
                 echo '  developer_build SUCCESS'

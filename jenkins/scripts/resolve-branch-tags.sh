@@ -89,25 +89,25 @@ write_service() {
 # Build the plan – 14 services across 4 clusters
 #
 # Cluster layout:
-#   cluster-2  tbnguyen274  100.84.105.114  → product, inventory, search, media
-#   cluster-3  avocado2     100.65.39.31    → cart, order, tax
-#   cluster-4  nqthang      100.122.97.48   → storefront, storefront-bff,
-#                                             backoffice, backoffice-bff,
-#                                             customer, sampledata, swagger
+#   cluster-1  tdquan       100.91.182.4    → product, cart, order, inventory, tax, customer, media, search, sampledata, storefront-bff, backoffice-bff
+#   cluster-2  tbnguyen274  100.84.105.114  → (standby)
+#   cluster-3  avocado2     100.65.39.31    → (standby)
+#   cluster-4  nqthang      100.122.97.48   → storefront, backoffice, swagger
 #
 # NodePort values must match helm/yas/values.yaml
 # ---------------------------------------------------------------------------
 printf '' > "$output_file"
 
 # ── cluster-2 : tbnguyen274 ────────────────────────────────────────────────
-write_service "backoffice"     "BACKOFFICE_BRANCH"     "cluster-2" "helm/yas/values-tbnguyen274.yaml" "backoffice"     "tbnguyen274" "100.84.105.114" "30003"
-write_service "swagger"        "SWAGGER_BRANCH"        "cluster-2" "helm/yas/values-tbnguyen274.yaml" "swagger"        "tbnguyen274" "100.84.105.114" "30014"
+# (Temporarily empty)
 
 # ── cluster-3 : avocado2 ──────────────────────────────────────────────────
 # (Temporarily empty)
 
 # ── cluster-4 : nqthang ───────────────────────────────────────────────────
 write_service "storefront"     "STOREFRONT_BRANCH"     "cluster-4" "helm/yas/values-nqthang.yaml" "storefront"     "nqthang" "100.122.97.48" "30001"
+write_service "backoffice"     "BACKOFFICE_BRANCH"     "cluster-4" "helm/yas/values-nqthang.yaml" "backoffice"     "nqthang" "100.122.97.48" "30003"
+write_service "swagger"        "SWAGGER_BRANCH"        "cluster-4" "helm/yas/values-nqthang.yaml" "swagger"        "nqthang" "100.122.97.48" "30014"
 
 # ── cluster-1 : tdquan (Infrastructure Core) ──────────────────────────────
 write_service "storefront-bff" "STOREFRONT_BFF_BRANCH" "cluster-1" "helm/yas/values-tdquan.yaml" "storefront-bff" "tdquan" "100.91.182.4" "30002"
