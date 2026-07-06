@@ -8,6 +8,8 @@ kind: Deployment
 metadata:
   name: {{ $serviceName }}
   namespace: {{ $.Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: {{ $serviceConfig.syncWave | default "1" | quote }}
   labels:
     app: {{ $serviceName }}
 spec:
