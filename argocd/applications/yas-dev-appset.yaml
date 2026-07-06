@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: yas-dev
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - member: tdquan
+            server: https://kubernetes.default.svc
+          - member: nqthang
+            server: https://100.122.97.48:32801
+          - member: tbnguyen274
+            server: https://100.84.105.114:8443
+          - member: avocado2
+            server: https://100.65.39.31:50983
+  template:
+    metadata:
+      name: "{{member}}-dev"
+    spec:
+      project: yas
+      source:
+        repoURL: https://github.com/ducquan19/yas-gitops.git
+        targetRevision: main
+        path: helm/yas
+        helm:
+          valueFiles:
+            - values.yaml
+            - "values-{{member}}.yaml"
+            - values-dev.yaml
+      destination:
+        server: "{{server}}"
+        namespace: yas-dev
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

@@ -1,22 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: avocado2-dev
+  name: yas-root
   namespace: argocd
 spec:
   project: yas
   source:
     repoURL: https://github.com/ducquan19/yas-gitops.git
     targetRevision: main
-    path: helm/yas
-    helm:
-      valueFiles:
-        - values.yaml
-        - values-avocado2.yaml
-        - values-dev.yaml
+    path: argocd/applications
   destination:
-    name: avocado2
-    namespace: yas-dev
+    server: https://kubernetes.default.svc
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true

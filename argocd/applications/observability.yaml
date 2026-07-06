@@ -1,22 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tbnguyen274-staging
+  name: observability
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: yas
   source:
     repoURL: https://github.com/ducquan19/yas-gitops.git
-    targetRevision: staging
-    path: helm/yas
-    helm:
-      valueFiles:
-        - values.yaml
-        - values-tbnguyen274.yaml
-        - values-staging.yaml
+    targetRevision: main
+    path: helm/observability
   destination:
-    name: tbnguyen274
-    namespace: yas-staging
+    server: https://kubernetes.default.svc
+    namespace: observability
   syncPolicy:
     automated:
       prune: true
