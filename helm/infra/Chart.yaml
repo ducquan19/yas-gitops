@@ -1,5 +1,5 @@
 apiVersion: v2
-name: infrastructure
+name: infra
 description: A Helm chart for YAS Infrastructure Dependencies
 type: application
 version: 0.1.0

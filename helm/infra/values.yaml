@@ -37,7 +37,7 @@ keycloak:
   postgresql:
     enabled: false
   externalDatabase:
-    host: infrastructure-postgresql
+    host: infra-postgresql
     port: 5432
     user: admin
     password: admin

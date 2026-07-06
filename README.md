@@ -21,11 +21,11 @@ helm dependency update
 ## 3. Kiến trúc Cấu Hình GitOps YAS
 Để tối ưu hóa việc quản lý resource qua ArgoCD, chúng tôi sử dụng mô hình **App of Apps** và chia tách thành 3 biểu đồ chính:
 
-1. **Infrastructure (`helm/infrastructure`)**: 
+1. **Infrastructure (`helm/infra`)**:
    - Chứa toàn bộ các nền tảng hạ tầng (Kafka, PostgreSQL, Keycloak, Redis, Elasticsearch).
-   - Được triển khai vào namespace `infrastructure`.
+   - Được triển khai vào namespace `infra`.
    - Rất ít khi thay đổi, Deploy 1 lần và chạy nền.
-   
+
 2. **Observability (`helm/observability`)**:
    - Chứa công cụ giám sát (Kiali, Prometheus, Grafana, Loki, Tempo...).
    - Được triển khai vào namespace `observability`.
@@ -33,13 +33,13 @@ helm dependency update
 3. **Applications (`helm/yas`)**:
    - Chỉ chứa các Microservices do team tự phát triển (Product, Cart, Order, Frontend...).
    - Được ArgoCD tự động Sync liên tục khi code thay đổi.
-   - Các file config sẽ tự động trỏ kết nối sang DB và Kafka ở namespace `infrastructure`.
+   - Các file config sẽ tự động trỏ kết nối sang DB và Kafka ở namespace `infra`.
 
 ## 4. Cách Deploy với ArgoCD
 Quy trình triển khai trên ArgoCD (bắt buộc phải theo đúng thứ tự):
 1. Khởi tạo và Apply Application cho **Hạ tầng**:
    ```bash
-   kubectl apply -f argocd/applications/tdquan-infrastructure.yaml
+   kubectl apply -f argocd/applications/tdquan-infra.yaml
    ```
    *(Chờ cho Kafka, DB khởi động lên đầy đủ trạng thái Running).*
 2. Apply Application cho **Hệ thống giám sát (Observability)**:
@@ -52,7 +52,7 @@ Quy trình triển khai trên ArgoCD (bắt buộc phải theo đúng thứ tự
    ```
 
 ## 5. Triển khai Local (Không dùng ArgoCD)
-Nếu bạn muốn test thử trên máy cá nhân (minikube, docker desktop, kind) mà chưa cần cài ArgoCD, bạn có thể dùng trực tiếp lệnh `helm install`. 
+Nếu bạn muốn test thử trên máy cá nhân (minikube, docker desktop, kind) mà chưa cần cài ArgoCD, bạn có thể dùng trực tiếp lệnh `helm install`.
 
 Lưu ý: Bạn có thể gộp file `values-tdquan.yaml` (Backend) và `values-nqthang.yaml` (Frontend) lại thành một để chạy chung trên 1 cụm cục bộ!
 

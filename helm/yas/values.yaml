@@ -1,16 +1,16 @@
 global:
   keycloak:
-    issuerUri: http://infrastructure-keycloak/realms/Yas
+    issuerUri: http://infra-keycloak/realms/Yas
   postgresql:
     username: admin
     password: admin
   kafka:
-    bootstrapServers: infrastructure-kafka:9092
+    bootstrapServers: infra-kafka:9092
   redis:
-    host: infrastructure-redis-master
+    host: infra-redis-master
     port: 6379
   elasticsearch:
-    uris: http://infrastructure-elasticsearch:9200
+    uris: http://infra-elasticsearch:9200
 
 storefront-nextjs:
   enabled: false

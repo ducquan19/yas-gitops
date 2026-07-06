@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infrastructure
+  name: infra
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -13,7 +13,7 @@ spec:
     path: helm/infra
   destination:
     server: https://kubernetes.default.svc
-    namespace: infrastructure
+    namespace: infra
   syncPolicy:
     automated:
       prune: true

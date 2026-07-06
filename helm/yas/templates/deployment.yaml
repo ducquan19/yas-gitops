@@ -75,7 +75,7 @@ spec:
             - name: LOGGING_CONFIG
               value: /opt/yas/config/logback.xml
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://infrastructure-postgresql:5432/{{ $serviceName }}
+              value: jdbc:postgresql://infra-postgresql:5432/{{ $serviceName }}
             - name: SPRING_CONFIG_ADDITIONAL_LOCATION
               value: /opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},/opt/yas/gateway-routes-config/gateway-routes.yaml{{- end }}
             {{- if $serviceConfig.uiHost }}
