@@ -2,11 +2,16 @@ storefront-nextjs:
   enabled: true
   image:
     tag: main
+  env:
+    # BFF chạy ở cluster tdquan, truy cập qua Tailscale IP + NodePort
+    NEXT_PUBLIC_API_BASE_PATH: http://100.91.182.4:30002
 
 backoffice-nextjs:
   enabled: true
   image:
     tag: main
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: http://100.91.182.4:30004
 
 swagger:
   enabled: true

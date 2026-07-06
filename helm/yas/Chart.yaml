@@ -1,7 +1,6 @@
 apiVersion: v2
 name: yas
-description: Helm chart for the YAS multi-cluster deployment
+description: YAS — Yet Another Shopfront — Umbrella Helm Chart
 type: application
 version: 0.1.0
-appVersion: "1.0.0"
-dependencies: []
+appVersion: "latest"

@@ -31,7 +31,7 @@ order:
 tax:
   enabled: true
   image:
-    tag: 1ef67ffbafe4a0fcfa38ee675c5a63f9793bdfce
+    tag: main
 
 sampledata:
   enabled: true
@@ -52,18 +52,3 @@ customer:
   enabled: true
   image:
     tag: main
-
-storefront-nextjs:
-  enabled: true
-  image:
-    tag: main
-
-backoffice-nextjs:
-  enabled: true
-  image:
-    tag: main
-
-swagger:
-  enabled: true
-
-

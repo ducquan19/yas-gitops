@@ -1,3 +1,17 @@
+global:
+  keycloak:
+    issuerUri: http://infrastructure-keycloak/realms/Yas
+  postgresql:
+    username: admin
+    password: admin
+  kafka:
+    bootstrapServers: infrastructure-kafka:9092
+  redis:
+    host: infrastructure-redis-master
+    port: 6379
+  elasticsearch:
+    uris: http://infrastructure-elasticsearch:9200
+
 storefront-nextjs:
   enabled: false
   image:
@@ -17,6 +31,7 @@ storefront-nextjs:
     nodePort: 30001
   env: {}
   secrets: {}
+
 storefront-bff:
   enabled: false
   image:
@@ -36,6 +51,8 @@ storefront-bff:
   env: {}
   secrets: {}
   isBackend: true
+  uiHost: "http://storefront-nextjs:3000"
+
 backoffice-nextjs:
   enabled: false
   image:
@@ -55,6 +72,7 @@ backoffice-nextjs:
     nodePort: 30003
   env: {}
   secrets: {}
+
 backoffice-bff:
   enabled: false
   image:
@@ -74,6 +92,8 @@ backoffice-bff:
   env: {}
   secrets: {}
   isBackend: true
+  uiHost: "http://backoffice-nextjs:3000"
+
 product:
   enabled: false
   image:
@@ -93,6 +113,7 @@ product:
   env: {}
   secrets: {}
   isBackend: true
+
 media:
   enabled: false
   image:
@@ -112,6 +133,7 @@ media:
   env: {}
   secrets: {}
   isBackend: true
+
 customer:
   enabled: false
   image:
@@ -131,6 +153,7 @@ customer:
   env: {}
   secrets: {}
   isBackend: true
+
 cart:
   enabled: false
   image:
@@ -150,6 +173,7 @@ cart:
   env: {}
   secrets: {}
   isBackend: true
+
 order:
   enabled: false
   image:
@@ -169,6 +193,7 @@ order:
   env: {}
   secrets: {}
   isBackend: true
+
 inventory:
   enabled: false
   image:
@@ -188,6 +213,7 @@ inventory:
   env: {}
   secrets: {}
   isBackend: true
+
 tax:
   enabled: false
   image:
@@ -207,6 +233,7 @@ tax:
   env: {}
   secrets: {}
   isBackend: true
+
 search:
   enabled: false
   image:
@@ -226,6 +253,7 @@ search:
   env: {}
   secrets: {}
   isBackend: true
+
 sampledata:
   enabled: false
   image:
@@ -244,201 +272,7 @@ sampledata:
     nodePort: 30013
   env: {}
   secrets: {}
-swagger:
-  enabled: false
-  image:
-    repository: swaggerapi/swagger-ui
-    tag: v5.17.14
-  resources:
-    requests:
-  enabled: false
-  image:
-    repository: ducquan19/yas-backoffice-bff
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30004
-  env: {}
-  secrets: {}
-  isBackend: true
-product:
-  enabled: false
-  image:
-    repository: ducquan19/yas-product
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30005
-  env: {}
-  secrets: {}
-  isBackend: true
-media:
-  enabled: false
-  image:
-    repository: ducquan19/yas-media
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30006
-  env: {}
-  secrets: {}
-  isBackend: true
-customer:
-  enabled: false
-  image:
-    repository: ducquan19/yas-customer
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30007
-  env: {}
-  secrets: {}
-  isBackend: true
-cart:
-  enabled: false
-  image:
-    repository: ducquan19/yas-cart
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30008
-  env: {}
-  secrets: {}
-  isBackend: true
-order:
-  enabled: false
-  image:
-    repository: ducquan19/yas-order
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30009
-  env: {}
-  secrets: {}
-  isBackend: true
-inventory:
-  enabled: false
-  image:
-    repository: ducquan19/yas-inventory
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30010
-  env: {}
-  secrets: {}
-  isBackend: true
-tax:
-  enabled: false
-  image:
-    repository: ducquan19/yas-tax
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30011
-  env: {}
-  secrets: {}
-  isBackend: true
-search:
-  enabled: false
-  image:
-    repository: ducquan19/yas-search
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30012
-  env: {}
-  secrets: {}
-  isBackend: true
-sampledata:
-  enabled: false
-  image:
-    repository: ducquan19/yas-sampledata
-    tag: main
-  resources:
-    requests:
-      memory: 256Mi
-      cpu: 100m
-    limits:
-      memory: 512Mi
-      cpu: 500m
-  service:
-    type: NodePort
-    port: 8082
-    nodePort: 30013
-  env: {}
-  secrets: {}
+
 swagger:
   enabled: false
   image:

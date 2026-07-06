@@ -47,23 +47,24 @@ data:
         oauth2:
           resourceserver:
             jwt:
-              issuer-uri: http://identity.yas.local.com/realms/Yas
+              issuer-uri: {{ .Values.global.keycloak.issuerUri }}
 
       datasource:
-        username: admin
-        password: admin
+        username: {{ .Values.global.postgresql.username }}
+        password: {{ .Values.global.postgresql.password }}
       kafka:
-        bootstrap-servers: infrastructure-kafka:9092
+        bootstrap-servers: {{ .Values.global.kafka.bootstrapServers }}
       data:
         redis:
-          host: infrastructure-redis-master
-          port: 6379
+          host: {{ .Values.global.redis.host }}
+          port: {{ .Values.global.redis.port }}
       elasticsearch:
-        uris: http://infrastructure-elasticsearch:9200
+        uris: {{ .Values.global.elasticsearch.uris }}
+
     springdoc:
       oauthflow:
-        authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-        token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+        authorization-url: {{ .Values.global.keycloak.issuerUri }}/protocol/openid-connect/auth
+        token-url: {{ .Values.global.keycloak.issuerUri }}/protocol/openid-connect/token
 
     yas:
       services:
