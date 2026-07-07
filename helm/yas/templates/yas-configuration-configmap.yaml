@@ -53,7 +53,8 @@ data:
         username: {{ .Values.global.postgresql.username }}
         password: {{ .Values.global.postgresql.password }}
       kafka:
-        bootstrap-servers: {{ .Values.global.kafka.bootstrapServers }}
+        # bootstrap-servers disabled — kafka not deployed to save RAM
+        # Only search service needs kafka (and it's disabled)
       data:
         redis:
           host: {{ .Values.global.redis.host }}

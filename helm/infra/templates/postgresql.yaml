@@ -49,7 +49,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "admin"
         volumeMounts:
-        - name: data
+        - name: pg-data
           mountPath: /var/lib/postgresql/data
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d/init-databases.sql
@@ -60,7 +60,7 @@ spec:
           name: infra-postgresql-init
   volumeClaimTemplates:
   - metadata:
-      name: data
+      name: pg-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
