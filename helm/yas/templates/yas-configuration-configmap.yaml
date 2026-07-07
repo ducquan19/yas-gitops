@@ -53,14 +53,16 @@ data:
         username: {{ .Values.global.postgresql.username }}
         password: {{ .Values.global.postgresql.password }}
       kafka:
-        # bootstrap-servers disabled — kafka not deployed to save RAM
-        # Only search service needs kafka (and it's disabled)
+        bootstrap-servers: {{ .Values.global.kafka.bootstrapServers }}
       data:
         redis:
           host: {{ .Values.global.redis.host }}
           port: {{ .Values.global.redis.port }}
       elasticsearch:
         uris: {{ .Values.global.elasticsearch.uris }}
+
+    elasticsearch:
+      url: {{ .Values.global.elasticsearch.uris }}
 
     springdoc:
       oauthflow:
