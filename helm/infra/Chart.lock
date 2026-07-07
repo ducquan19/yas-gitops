@@ -7,12 +7,12 @@ dependencies:
   version: 21.8.0
 - name: kafka
   repository: https://charts.bitnami.com/bitnami
-  version: 29.3.14
+  version: 26.11.4
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 19.6.4
+  version: 18.19.4
 - name: elasticsearch
   repository: https://charts.bitnami.com/bitnami
-  version: 21.6.3
-digest: sha256:aaeb43db491832909b763fda7c6195b5d6c3b9f93dae01ee4df7fe1f21d4e812
-generated: "2026-07-07T07:13:36.497757246Z"
+  version: 19.21.2
+digest: sha256:40c4e3c00aad1e21fc2217609dfaa902ed3bfb8204124c6e66d3a5f432a9aef1
+generated: "2026-07-07T07:32:08.964641175Z"
