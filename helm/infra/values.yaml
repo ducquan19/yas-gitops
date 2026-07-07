@@ -1,3 +1,8 @@
+# Bitnami đã xóa nhiều tag khỏi Docker Hub → dùng GitHub Container Registry
+# ghcr.io/bitnami/* có đầy đủ tất cả tags giống docker.io/bitnami/*
+global:
+  imageRegistry: ghcr.io
+
 postgresql:
   enabled: true
   auth:
