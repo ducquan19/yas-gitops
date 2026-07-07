@@ -4,7 +4,7 @@ metadata:
   name: yas-gateway-routes-config
   namespace: {{ .Release.Namespace }}
 data:
-  gateway-routes.yaml: |
+  gateway-routes-prod.yaml: |
     spring:
       cloud:
         gateway:

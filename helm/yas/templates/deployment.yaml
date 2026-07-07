@@ -79,7 +79,7 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/{{ $serviceName }}
             - name: SPRING_CONFIG_ADDITIONAL_LOCATION
-              value: /opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},/opt/yas/gateway-routes-config/gateway-routes.yaml{{- end }}
+              value: /opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},/opt/yas/gateway-routes-config/gateway-routes-prod.yaml{{- end }}
             {{- if $serviceConfig.uiHost }}
             - name: UI_HOST
               value: {{ $serviceConfig.uiHost | quote }}
