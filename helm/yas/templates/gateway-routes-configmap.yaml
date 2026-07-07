@@ -9,6 +9,10 @@ data:
       cloud:
         gateway:
           routes:
+            - id: api
+              uri: http://localhost:8082
+              predicates:
+                - Path=/disabled-api-route/**
             - id: product_api
               uri: http://product:8082
               predicates:
