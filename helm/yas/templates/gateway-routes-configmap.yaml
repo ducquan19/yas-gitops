@@ -8,6 +8,8 @@ data:
     spring:
       cloud:
         gateway:
+          default-filters:
+            - SaveSession
           routes:
             - id: api
               uri: http://localhost:8082
