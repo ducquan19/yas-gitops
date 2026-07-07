@@ -310,5 +310,5 @@ tailscale:
   backendIp: 100.91.182.4
 
 istio:
-  enabled: true
+  enabled: false
   domain: api.yas.local
