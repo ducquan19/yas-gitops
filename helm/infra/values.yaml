@@ -1,75 +1,15 @@
-postgresql:
-  enabled: true
-  image:
-    tag: "latest"
-  auth:
-    postgresPassword: admin
+# Custom Infrastructure values
+# We are using custom manifests in templates/ instead of Bitnami dependencies
+# to ensure exact match with yas original docker-compose images.
+
+global:
+  # Dummy values since we hardcoded in templates to avoid complexity
+  # In a production environment, these should be templated.
+  postgresql:
     username: admin
     password: admin
-    database: yas
-  primary:
-    initdb:
-      scripts:
-        init-databases.sql: |
-          CREATE DATABASE product;
-          CREATE DATABASE inventory;
-          CREATE DATABASE search;
-          CREATE DATABASE media;
-          CREATE DATABASE cart;
-          CREATE DATABASE customer;
-          CREATE DATABASE "order";
-          CREATE DATABASE payment;
-          CREATE DATABASE promotion;
-          CREATE DATABASE rating;
-          CREATE DATABASE tax;
-          CREATE DATABASE recommendation;
-          CREATE DATABASE webhook;
-          CREATE DATABASE sampledata;
-          CREATE DATABASE grafana;
-          CREATE DATABASE keycloak;
-
-keycloak:
-  enabled: true
-  image:
-    tag: "latest"
-  auth:
-    adminUser: admin
-    adminPassword: admin
-  service:
-    type: NodePort
-    port: 80
-  postgresql:
-    enabled: false
-  externalDatabase:
-    host: infra-postgresql
-    port: 5432
-    user: admin
-    password: admin
-    database: keycloak
-
-kafka:
-  enabled: true
-  image:
-    tag: "latest"
-  listeners:
-    client:
-      protocol: PLAINTEXT
-  kraft:
-    enabled: true
-  zookeeper:
-    enabled: false
-
-redis:
-  enabled: true
-  image:
-    tag: "latest"
-  architecture: standalone
-  auth:
-    enabled: false
-
-elasticsearch:
-  enabled: true
-  image:
-    tag: "latest"
-  security:
-    enabled: false
+  redis:
+    host: infra-redis
+    port: 6379
+  kafka:
+    bootstrapServers: "infra-kafka:9092"

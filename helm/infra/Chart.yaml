@@ -4,24 +4,3 @@ description: A Helm chart for YAS Infrastructure Dependencies
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
-dependencies:
-  - name: postgresql
-    version: "15.5.38"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: postgresql.enabled
-  - name: keycloak
-    version: "21.8.0"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: keycloak.enabled
-  - name: kafka
-    version: "26.11.4"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: kafka.enabled
-  - name: redis
-    version: "18.19.4"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: redis.enabled
-  - name: elasticsearch
-    version: "19.21.2"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: elasticsearch.enabled
