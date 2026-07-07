@@ -13,7 +13,7 @@ spec:
     path: helm/infra
   destination:
     server: https://kubernetes.default.svc
-    namespace: infra
+    namespace: infrastructure
   syncPolicy:
     automated:
       prune: true

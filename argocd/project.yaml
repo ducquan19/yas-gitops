@@ -10,18 +10,28 @@ spec:
     - https://github.com/ducquan19/yas-gitops.git
 
   destinations:
+    # Cluster tdquan (local) — backend + infra namespaces
     - namespace: yas-dev
       server: https://kubernetes.default.svc
     - namespace: yas-staging
       server: https://kubernetes.default.svc
+    - namespace: infrastructure
+      server: https://kubernetes.default.svc
+    - namespace: observability
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    # Cluster tbnguyen274 — frontend namespaces
     - namespace: yas-dev
       server: https://100.84.105.114:8443
     - namespace: yas-staging
       server: https://100.84.105.114:8443
+    # Cluster nqthang — frontend namespaces
     - namespace: yas-dev
       server: https://100.122.97.48:32801
     - namespace: yas-staging
       server: https://100.122.97.48:32801
+    # Cluster avocado2 — frontend namespaces
     - namespace: yas-dev
       server: https://100.65.39.31:50983
     - namespace: yas-staging
