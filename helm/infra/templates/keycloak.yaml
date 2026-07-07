@@ -16,7 +16,7 @@ spec:
       containers:
       - name: keycloak
         image: "quay.io/keycloak/keycloak:26.0.2"
-        command: ["/opt/keycloak/bin/kc.sh", "start-dev"]
+        command: ["/opt/keycloak/bin/kc.sh", "start-dev", "--import-realm"]
         ports:
         - containerPort: 8080
         env:
@@ -34,6 +34,14 @@ spec:
           value: "admin"
         - name: KC_HTTP_ENABLED
           value: "true"
+        volumeMounts:
+        - name: realm-import
+          mountPath: /opt/keycloak/data/import/realm-export.json
+          subPath: realm-export.json
+      volumes:
+      - name: realm-import
+        configMap:
+          name: infra-keycloak-realm
 ---
 apiVersion: v1
 kind: Service
