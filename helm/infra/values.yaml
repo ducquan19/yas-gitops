@@ -1,10 +1,7 @@
-# Bitnami đã xóa nhiều tag khỏi Docker Hub → dùng GitHub Container Registry
-# ghcr.io/bitnami/* có đầy đủ tất cả tags giống docker.io/bitnami/*
-global:
-  imageRegistry: ghcr.io
-
 postgresql:
   enabled: true
+  image:
+    tag: "latest"
   auth:
     postgresPassword: admin
     username: admin
@@ -33,6 +30,8 @@ postgresql:
 
 keycloak:
   enabled: true
+  image:
+    tag: "latest"
   auth:
     adminUser: admin
     adminPassword: admin
@@ -50,6 +49,8 @@ keycloak:
 
 kafka:
   enabled: true
+  image:
+    tag: "latest"
   listeners:
     client:
       protocol: PLAINTEXT
@@ -60,11 +61,15 @@ kafka:
 
 redis:
   enabled: true
+  image:
+    tag: "latest"
   architecture: standalone
   auth:
     enabled: false
 
 elasticsearch:
   enabled: true
+  image:
+    tag: "latest"
   security:
     enabled: false
