@@ -11,10 +11,12 @@ data:
           routes:
             - id: api
               uri: http://localhost:8082
+              order: -1
               predicates:
                 - Path=/disabled-api-route/**
             - id: product_api
               uri: http://product:8082
+              order: -1
               predicates:
                 - Path=/api/product/**
               filters:
@@ -22,6 +24,7 @@ data:
                 - TokenRelay=
             - id: location_api
               uri: http://location:8082
+              order: -1
               predicates:
                 - Path=/api/location/**
               filters:
@@ -29,6 +32,7 @@ data:
                 - TokenRelay=
             - id: inventory_api
               uri: http://inventory:8082
+              order: -1
               predicates:
                 - Path=/api/inventory/**
               filters:
@@ -36,6 +40,7 @@ data:
                 - TokenRelay=
             - id: cart_api
               uri: http://cart:8082
+              order: -1
               predicates:
                 - Path=/api/cart/**
               filters:
@@ -43,6 +48,7 @@ data:
                 - TokenRelay=
             - id: customer_api
               uri: http://customer:8082
+              order: -1
               predicates:
                 - Path=/api/customer/**
               filters:
@@ -50,6 +56,7 @@ data:
                 - TokenRelay=
             - id: media_api
               uri: http://media:8082
+              order: -1
               predicates:
                 - Path=/api/media/**
               filters:
@@ -57,6 +64,7 @@ data:
                 - TokenRelay=
             - id: rating_api
               uri: http://rating:8082
+              order: -1
               predicates:
                 - Path=/api/rating/**
               filters:
@@ -64,6 +72,7 @@ data:
                 - TokenRelay=
             - id: tax_api
               uri: http://tax:8082
+              order: -1
               predicates:
                 - Path=/api/tax/**
               filters:
@@ -71,6 +80,7 @@ data:
                 - TokenRelay=
             - id: promotion_api
               uri: http://promotion:8082
+              order: -1
               predicates:
                 - Path=/api/promotion/**
               filters:
@@ -78,6 +88,7 @@ data:
                 - TokenRelay=
             - id: search_api
               uri: http://search:8082
+              order: -1
               predicates:
                 - Path=/api/search/**
               filters:
@@ -85,6 +96,7 @@ data:
                 - TokenRelay=
             - id: order_api
               uri: http://order:8082
+              order: -1
               predicates:
                 - Path=/api/order/**
               filters:
@@ -92,6 +104,7 @@ data:
                 - TokenRelay=
             - id: recommendation_api
               uri: http://recommendation:8082
+              order: -1
               predicates:
                 - Path=/api/recommendation/**
               filters:
@@ -99,6 +112,7 @@ data:
                 - TokenRelay=
             - id: webhook_api
               uri: http://webhook:8082
+              order: -1
               predicates:
                 - Path=/api/webhook/**
               filters:
@@ -106,6 +120,7 @@ data:
                 - TokenRelay=
             - id: sampledata_api
               uri: http://sampledata:8082
+              order: -1
               predicates:
                 - Path=/api/sampledata/**
               filters:
