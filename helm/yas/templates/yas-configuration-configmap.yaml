@@ -66,7 +66,7 @@ data:
         uris: {{ .Values.global.elasticsearch.uris }}
 
     elasticsearch:
-      url: {{ .Values.global.elasticsearch.uris }}
+      url: infra-elasticsearch.infrastructure.svc.cluster.local:9200
 
     springdoc:
       oauthflow:
