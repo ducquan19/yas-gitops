@@ -58,6 +58,10 @@ data:
         password: {{ .Values.global.postgresql.password }}
       kafka:
         bootstrap-servers: {{ .Values.global.kafka.bootstrapServers }}
+        consumer:
+          bootstrap-servers: {{ .Values.global.kafka.bootstrapServers }}
+        producer:
+          bootstrap-servers: {{ .Values.global.kafka.bootstrapServers }}
       data:
         redis:
           host: {{ .Values.global.redis.host }}
