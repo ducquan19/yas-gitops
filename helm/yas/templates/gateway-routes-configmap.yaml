@@ -62,7 +62,7 @@ data:
               predicates:
                 - Path=/api/media/**
               filters:
-                - RewritePath=/api/(?<segment>.*), /${segment}
+                - RewritePath=/api/media/(?<segment>.*), /${segment}
                 - TokenRelay=
             - id: rating_api
               uri: http://rating:8082

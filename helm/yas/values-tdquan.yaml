@@ -30,6 +30,7 @@ storefront-nextjs:
     containerPort: 3000
   env:
     NEXT_PUBLIC_API_BASE_PATH: "http://storefront.yas.local"
+    API_BASE_PATH: "http://storefront-bff:8082/api"
 
 backoffice-nextjs:
   enabled: true
@@ -38,6 +39,7 @@ backoffice-nextjs:
     containerPort: 3000
   env:
     NEXT_PUBLIC_API_BASE_PATH: "http://backoffice.yas.local"
+    API_BASE_PATH: "http://backoffice-bff:8082/api"
 
 # --- Swagger UI ---
 swagger:
