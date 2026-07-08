@@ -62,7 +62,7 @@ data:
               predicates:
                 - Path=/api/media/**
               filters:
-                - RewritePath=/api/media/(?<segment>.*), /${segment}
+                - StripPrefix=2
             - id: rating_api
               uri: http://rating:8082
               order: -1
