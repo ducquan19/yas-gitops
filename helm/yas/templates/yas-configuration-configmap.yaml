@@ -101,6 +101,9 @@ data:
         recommendation: http://recommendation:8082/recommendation
         token-identity: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/token
 
+    file:
+      directory: /tmp
+
   logback.xml: |
     <?xml version="1.0" encoding="UTF-8" ?>
     <Configuration>
