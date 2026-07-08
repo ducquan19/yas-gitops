@@ -78,7 +78,7 @@ cart:
 order:
   enabled: true
   image:
-    tag: main
+    tag: local-dev
 
 tax:
   enabled: true
