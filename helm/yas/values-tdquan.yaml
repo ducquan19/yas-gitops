@@ -101,5 +101,5 @@ sampledata:
     SPRING_DATASOURCE_USERNAME: "admin"
     SPRING_DATASOURCE_PASSWORD: "admin"
     SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas"
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://identity:31080/realms/Yas"
     CORS_ALLOWED_ORIGINS: "*"
