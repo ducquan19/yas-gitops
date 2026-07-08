@@ -87,7 +87,7 @@ data:
         customer: http://customer:8082/customer
         inventory: http://inventory:8082/inventory
         location: http://location:8082/location
-        media: http://media:8082/media
+        media: http://media:8082
         order: http://order:8082/order
         payment: http://payment:8082/payment
         payment-paypal: http://payment-paypal:8082/payment-paypal
