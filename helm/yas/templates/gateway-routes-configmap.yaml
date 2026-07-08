@@ -68,9 +68,9 @@ data:
               uri: http://media:8082
               order: -10
               predicates:
-                - Path=/api/media/**
+                - Path=/api/media/{*segment}
               filters:
-                - RewritePath=/api/media/(?<segment>.*), /$\{segment}
+                - SetPath=/{segment}
             - id: rating_api
               uri: http://rating:8082
               order: -1
