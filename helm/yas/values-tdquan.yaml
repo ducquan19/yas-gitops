@@ -69,6 +69,23 @@ media:
   enabled: true
   image:
     tag: main
+  initContainers:
+    - name: copy-sample-images
+      image: ducquan19/yas-sample-images:main
+      command:
+        - sh
+        - -c
+        - cp -R /sample-images/. /images/
+      volumeMounts:
+        - name: sample-images
+          mountPath: /images
+  extraVolumes:
+    - name: sample-images
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: sample-images
+      mountPath: /images
+      readOnly: true
 
 cart:
   enabled: true

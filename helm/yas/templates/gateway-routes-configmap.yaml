@@ -72,7 +72,7 @@ data:
               filters:
                 - StripPrefix=2
             - id: rating_api
-              uri: http://rating:8082cvx
+              uri: http://rating:8082
               order: -1
               predicates:
                 - Path=/api/rating/**

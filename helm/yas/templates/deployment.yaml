@@ -23,8 +23,9 @@ spec:
         app: {{ $serviceName }}
     spec:
       serviceAccountName: {{ $serviceName }}-sa
-      {{- if $serviceConfig.isBackend }}
+      {{- if or $serviceConfig.isBackend $serviceConfig.extraVolumes }}
       volumes:
+        {{- if $serviceConfig.isBackend }}
         - name: yas-configuration
           configMap:
             name: yas-configuration-configmap
@@ -33,6 +34,14 @@ spec:
           configMap:
             name: yas-gateway-routes-config
         {{- end }}
+        {{- end }}
+        {{- with $serviceConfig.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with $serviceConfig.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ $serviceName }}
@@ -42,13 +51,18 @@ spec:
           ports:
             - containerPort: {{ default $serviceConfig.service.port $serviceConfig.image.containerPort }}
           {{- end }}
-          {{- if $serviceConfig.isBackend }}
+          {{- if or $serviceConfig.isBackend $serviceConfig.extraVolumeMounts }}
           volumeMounts:
+            {{- if $serviceConfig.isBackend }}
             - mountPath: /opt/yas/config
               name: yas-configuration
             {{- if contains "bff" $serviceName }}
             - mountPath: /opt/yas/gateway-routes-config
               name: yas-gateway-routes-config
+            {{- end }}
+            {{- end }}
+            {{- with $serviceConfig.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
           resources:

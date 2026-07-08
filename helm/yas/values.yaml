@@ -139,6 +139,9 @@ media:
   env: {}
   secrets: {}
   isBackend: true
+  initContainers: []
+  extraVolumes: []
+  extraVolumeMounts: []
 
 customer:
   syncWave: 1
