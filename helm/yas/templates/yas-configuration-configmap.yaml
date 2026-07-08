@@ -48,7 +48,7 @@ data:
           resourceserver:
             jwt:
               # Dùng internal URL cho JWT validation (pod-to-pod) — nhanh hơn và không cần ra ngoài
-              issuer-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas
+              issuer-uri: http://identity:31080/realms/Yas
           client:
             provider:
               keycloak:
