@@ -23,6 +23,12 @@ spec:
         app: {{ $serviceName }}
     spec:
       serviceAccountName: {{ $serviceName }}-sa
+      {{- if $.Values.tailscale }}
+      hostAliases:
+        - ip: {{ $.Values.tailscale.backendIp | quote }}
+          hostnames:
+            - "identity"
+      {{- end }}
       {{- if $serviceConfig.isBackend }}
       volumes:
         - name: yas-configuration
