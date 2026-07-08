@@ -9,9 +9,13 @@ data:
         listen 80;
         resolver kube-dns.kube-system.svc.cluster.local valid=5s;
 
+        location ~ ^/sampledata/(.*)$ {
+            proxy_pass http://sampledata.{{ .Release.Namespace }}.svc.cluster.local:8094/sampledata/$1;
+        }
+
         location ~ ^/([^/]+)/(.*)$ {
             set $backend $1;
-            proxy_pass http://$backend:8082/$backend/$2;
+            proxy_pass http://$backend.{{ .Release.Namespace }}.svc.cluster.local:8082/$backend/$2;
         }
 
         # Catch-all just in case
