@@ -64,8 +64,12 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - port: 80
+  - name: http
+    port: 80
     targetPort: 8080
     nodePort: 31080
+  - name: internal-31080
+    port: 31080
+    targetPort: 8080
   selector:
     app: keycloak
