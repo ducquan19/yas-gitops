@@ -66,11 +66,11 @@ data:
                 - TokenRelay=
             - id: media_api
               uri: http://media:8082
-              order: -1
+              order: -10
               predicates:
                 - Path=/api/media/**
               filters:
-                - StripPrefix=2
+                - RewritePath=/api/media/(?<segment>.*), /${segment}
             - id: rating_api
               uri: http://rating:8082
               order: -1
