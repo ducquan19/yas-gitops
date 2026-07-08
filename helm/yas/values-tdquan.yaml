@@ -1,3 +1,53 @@
+# ============================================================
+# values-tdquan.yaml
+# Triển khai TOÀN BỘ services (frontend + backend + infra)
+# trên 1 cluster duy nhất: tdquan (100.91.182.4)
+# /etc/hosts: 100.91.182.4  storefront.yas.local backoffice.yas.local api.yas.local identity
+# ============================================================
+
+# --- BFF (Spring Cloud Gateway) ---
+# uiHost trỏ về NodePort của Next.js TRÊN CÙNG cluster (không cross-cluster nữa)
+storefront-bff:
+  enabled: true
+  image:
+    tag: main
+  uiHost: "http://storefront-nextjs:3000"
+
+backoffice-bff:
+  enabled: true
+  image:
+    tag: main
+  uiHost: "http://backoffice-nextjs:3000"
+
+# --- Frontend (Next.js) ---
+# NEXT_PUBLIC_API_BASE_PATH: URL mà BROWSER gọi đến BFF.
+# Vì /etc/hosts map storefront.yas.local → 100.91.182.4,
+# và Nginx Ingress route port 80 → storefront-bff, nên dùng domain.
+storefront-nextjs:
+  enabled: true
+  image:
+    tag: main
+    containerPort: 3000
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: "http://storefront.yas.local"
+
+backoffice-nextjs:
+  enabled: true
+  image:
+    tag: main
+    containerPort: 3000
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: "http://backoffice.yas.local"
+
+# --- Swagger UI ---
+swagger:
+  enabled: true
+  image:
+    tag: v5.17.14
+  env:
+    API_URL: "http://api.yas.local/v3/api-docs"
+
+# --- Core Backend Services ---
 product:
   enabled: true
   image:
@@ -33,32 +83,23 @@ tax:
   image:
     tag: main
 
-sampledata:
-  enabled: true
-  image:
-    tag: main
-
-storefront-bff:
-  enabled: true
-  image:
-    tag: main
-
-backoffice-bff:
-  enabled: true
-  image:
-    tag: main
-
 customer:
   enabled: true
   image:
     tag: main
 
-storefront-nextjs:
+# --- Sampledata: cần env riêng vì dùng 2 datasource (product + media) ---
+# Không có isBackend:true nên không mount yas-configuration-configmap.
+# Cần truyền các biến env trực tiếp qua configmap.
+sampledata:
   enabled: true
   image:
     tag: main
-
-backoffice-nextjs:
-  enabled: true
-  image:
-    tag: main
+  env:
+    SPRING_DATASOURCE_PRODUCT_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/product"
+    SPRING_DATASOURCE_MEDIA_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/media"
+    SPRING_DATASOURCE_USERNAME: "admin"
+    SPRING_DATASOURCE_PASSWORD: "admin"
+    SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas"
+    CORS_ALLOWED_ORIGINS: "*"

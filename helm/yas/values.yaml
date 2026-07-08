@@ -272,6 +272,9 @@ sampledata:
   image:
     repository: ducquan19/yas-sampledata
     tag: main
+    # sampledata listens on port 8094 (per application.properties server.port=8094)
+    # but the context-path /sampledata is already included in the app
+    containerPort: 8094
   resources:
     requests:
       memory: 256Mi
@@ -281,7 +284,7 @@ sampledata:
       cpu: 500m
   service:
     type: NodePort
-    port: 8082
+    port: 8094
     nodePort: 30013
   env: {}
   secrets: {}
@@ -292,6 +295,8 @@ swagger:
   image:
     repository: swaggerapi/swagger-ui
     tag: v5.17.14
+    # swaggerapi/swagger-ui container listens on port 8080
+    containerPort: 8080
   resources:
     requests:
       memory: 256Mi
@@ -301,7 +306,7 @@ swagger:
       cpu: 500m
   service:
     type: NodePort
-    port: 8082
+    port: 8080
     nodePort: 30014
   env: {}
   secrets: {}

@@ -648,9 +648,14 @@
       "redirectUris": [
         "http://backoffice/*",
         "http://localhost:3000/*",
-        "http://localhost:8087/*"
+        "http://localhost:8087/*",
+        "http://backoffice.yas.local/*",
+        "http://backoffice.yas.local/redirect"
       ],
-      "webOrigins": [],
+      "webOrigins": [
+        "http://backoffice.yas.local",
+        "http://100.91.182.4:30004"
+      ],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -989,9 +994,14 @@
       "secret": "ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn",
       "redirectUris": [
         "http://storefront/*",
-        "http://localhost:8087/*"
+        "http://localhost:8087/*",
+        "http://storefront.yas.local/*",
+        "http://storefront.yas.local/redirect"
       ],
-      "webOrigins": [],
+      "webOrigins": [
+        "http://storefront.yas.local",
+        "http://100.91.182.4:30002"
+      ],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,

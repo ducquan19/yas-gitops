@@ -47,11 +47,14 @@ data:
         oauth2:
           resourceserver:
             jwt:
+              # Dùng internal URL cho JWT validation (pod-to-pod) — nhanh hơn và không cần ra ngoài
               issuer-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas
           client:
             provider:
               keycloak:
-                issuer-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas
+                # BFF dùng URL này để redirect browser đến Keycloak login page.
+                # Phải là URL mà BROWSER có thể truy cập (identity:31080 qua /etc/hosts + NodePort).
+                issuer-uri: http://identity:31080/realms/Yas
 
       datasource:
         username: {{ .Values.global.postgresql.username }}
@@ -74,8 +77,9 @@ data:
 
     springdoc:
       oauthflow:
-        authorization-url: {{ .Values.global.keycloak.issuerUri }}/protocol/openid-connect/auth
-        token-url: {{ .Values.global.keycloak.issuerUri }}/protocol/openid-connect/token
+        # Dùng public URL cho Swagger UI (browser cần resolve được)
+        authorization-url: http://identity:31080/realms/Yas/protocol/openid-connect/auth
+        token-url: http://identity:31080/realms/Yas/protocol/openid-connect/token
 
     yas:
       services:
@@ -92,7 +96,7 @@ data:
         rating: http://rating:8082/rating
         search: http://search:8082/search
         tax: http://tax:8082/tax
-        sampledata: http://sampledata:8082/sampledata
+        sampledata: http://sampledata:8094/sampledata
         recommendation: http://recommendation:8082/recommendation
         token-identity: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/token
 
