@@ -38,7 +38,7 @@ data:
 
     logging:
       pattern:
-        level: application=${spring.application.name} traceId=%X{traceId:-} spanId=%X{spanId:-} level=%level
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
     spring:
       lifecycle:
