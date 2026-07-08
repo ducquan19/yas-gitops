@@ -317,3 +317,45 @@ tailscale:
 istio:
   enabled: false
   domain: api.yas.local
+
+location:
+  syncWave: 2
+  enabled: false
+  image:
+    repository: ducquan19/yas-location
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30015
+  env: {}
+  secrets: {}
+  isBackend: true
+
+payment:
+  syncWave: 2
+  enabled: false
+  image:
+    repository: ducquan19/yas-payment
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: NodePort
+    port: 8082
+    nodePort: 30016
+  env: {}
+  secrets: {}
+  isBackend: true

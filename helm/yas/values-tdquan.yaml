@@ -105,3 +105,13 @@ sampledata:
     SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://identity:31080/realms/Yas"
     CORS_ALLOWED_ORIGINS: "*"
+
+location:
+  enabled: true
+  image:
+    tag: main
+
+payment:
+  enabled: true
+  image:
+    tag: main
