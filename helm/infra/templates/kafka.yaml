@@ -14,7 +14,15 @@ spec:
       labels:
         app: kafka
     spec:
+      initContainers:
+      - name: remove-meta-properties
+        image: busybox:1.36
+        command: ['sh', '-c', 'rm -f /var/lib/kafka/data/meta.properties']
+        volumeMounts:
+        - name: kafka-data
+          mountPath: /var/lib/kafka/data
       containers:
+
       - name: kafka
         image: "confluentinc/cp-kafka:7.7.1"
         ports:
