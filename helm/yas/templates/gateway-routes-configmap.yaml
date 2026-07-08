@@ -22,7 +22,7 @@ data:
               predicates:
                 - Path=/api/product/**
               filters:
-                - RewritePath=/api/(?<segment>.*), /${segment}
+                - StripPrefix=1
                 - TokenRelay=
             - id: location_api
               uri: http://location:8082
@@ -63,7 +63,6 @@ data:
                 - Path=/api/media/**
               filters:
                 - RewritePath=/api/media/(?<segment>.*), /${segment}
-                - TokenRelay=
             - id: rating_api
               uri: http://rating:8082
               order: -1
