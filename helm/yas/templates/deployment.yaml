@@ -80,6 +80,12 @@ spec:
               value: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/{{ $serviceName }}
             - name: SPRING_CONFIG_IMPORT
               value: optional:file:/opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},optional:file:/opt/yas/gateway-routes-config/application-prod.yaml{{- end }}
+            {{- if contains "bff" $serviceName }}
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
+              value: http://localhost:8082
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0
+              value: Path=/disabled-api-route/**
+            {{- end }}
             {{- if $serviceConfig.uiHost }}
             - name: UI_HOST
               value: {{ $serviceConfig.uiHost | quote }}
