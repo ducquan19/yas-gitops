@@ -40,16 +40,16 @@ spec:
         app: postgresql
     spec:
       containers:
-        - name: postgresql
-          image: "debezium/postgres:16-alpine"
-          args: ["-c", "max_connections=500"]
-          ports:
-          - containerPort: 5432
-          env:
-          - name: POSTGRES_USER
-            value: "admin"
-          - name: POSTGRES_PASSWORD
-            value: "admin"
+      - name: postgresql
+        image: "debezium/postgres:16-alpine"
+        args: ["-c", "max_connections=500"]
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "admin"
+        - name: POSTGRES_PASSWORD
+          value: "admin"
         volumeMounts:
         - name: pg-data
           mountPath: /var/lib/postgresql/data
