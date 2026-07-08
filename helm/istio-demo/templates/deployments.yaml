@@ -1,0 +1,119 @@
+{{/*
+  Deployments cho 3 services:
+  - product-svc: httpbin (nhận request từ sleep-client, gọi tiếp order-svc)
+  - order-svc:   httpbin (nhận request từ product-svc)
+  - sleep-client: curl client (gửi test requests)
+
+  Lưu ý: Sidecar Envoy được inject tự động nhờ label istio-injection=enabled trên namespace.
+  KHÔNG cần annotation thủ công.
+*/}}
+
+---
+# product-svc — httpbin server
+# SPIFFE identity: cluster.local/ns/test/sa/product-svc-sa
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: product-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-svc
+  template:
+    metadata:
+      labels:
+        app: product-svc
+        version: v1
+    spec:
+      serviceAccountName: product-svc-sa
+      containers:
+        - name: httpbin
+          image: "{{ index .Values "product-svc" "image" "repository" }}:{{ index .Values "product-svc" "image" "tag" }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ index .Values "product-svc" "port" }}
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: 100m
+
+---
+# order-svc — httpbin server
+# SPIFFE identity: cluster.local/ns/test/sa/order-svc-sa
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: order-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-svc
+  template:
+    metadata:
+      labels:
+        app: order-svc
+        version: v1
+    spec:
+      serviceAccountName: order-svc-sa
+      containers:
+        - name: httpbin
+          image: "{{ index .Values "order-svc" "image" "repository" }}:{{ index .Values "order-svc" "image" "tag" }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: {{ index .Values "order-svc" "port" }}
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: 100m
+
+---
+# sleep-client — curl client để gửi test requests
+# SPIFFE identity: cluster.local/ns/test/sa/sleep-client-sa
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-client
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: sleep-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep-client
+  template:
+    metadata:
+      labels:
+        app: sleep-client
+    spec:
+      serviceAccountName: sleep-client-sa
+      containers:
+        - name: sleep
+          image: "{{ index .Values "sleep-client" "image" "repository" }}:{{ index .Values "sleep-client" "image" "tag" }}"
+          imagePullPolicy: IfNotPresent
+          command: ["sleep", "infinity"]
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 64Mi
+              cpu: 50m
