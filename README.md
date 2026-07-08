@@ -88,3 +88,165 @@ Sau khi các Pods đã lên trạng thái `Running`, bạn cần lưu ý:
 - `helm/yas/values-tdquan.yaml`: Bật (`enabled: true`) tất cả các backend services và nền tảng hạ tầng.
 - `helm/yas/values-nqthang.yaml`: Chỉ bật các frontend services.
 - `helm/yas/templates/gateway-routes-configmap.yaml`: Nơi cấu hình đường dẫn API Gateway cho BFF thay thế cho việc sử dụng NGINX proxy. Mọi thay đổi về API Paths cần được chỉnh sửa ở đây.
+
+---
+
+## 6. Istio Service Mesh Demo (namespace `test`)
+
+Helm chart demo các tính năng cốt lõi của **Istio Service Mesh** trong namespace `test`, bao gồm: Sidecar Injection, mTLS, Authorization Policy, VirtualService Retry và quan sát qua **Kiali**.
+
+### 6.1. Chi tiết các File Cấu Hình (Cấu trúc thư mục)
+
+```
+helm/istio-demo/
+├── Chart.yaml
+├── values.yaml
+└── templates/
+    ├── namespace.yaml            ← label: istio-injection=enabled
+    ├── service-accounts.yaml     ← SPIFFE identity cho từng service
+    ├── deployments.yaml          ← httpbin × 2, sleep-client × 1
+    ├── services.yaml             ← ClusterIP cho product-svc, order-svc
+    └── istio/
+        ├── peer-authentication.yaml   ← mTLS STRICT toàn namespace
+        ├── authorization-policy.yaml  ← 1 deny-all + 2 allow policies
+        ├── virtual-service.yaml       ← retry 3x / 2s cho product-svc
+        └── destination-rule.yaml      ← connection pool + outlier detection
+```
+
+### 6.2. Kiến trúc & Phân quyền
+
+```text
+┌─────────────────────────────── namespace: test ─────────────────────────────────┐
+│                                                                                   │
+│   ┌─────────────────┐   🔒 mTLS ALLOW   ┌───────────────────────────────────┐   │
+│   │                 │ ────────────────▶ │          product-svc              │   │
+│   │   sleep-client  │                   │   (httpbin · port 80)             │   │
+│   │  (curl client)  │                   │   VirtualService: retry 3x on 5xx │   │
+│   │                 │   ⛔ DENY (403)   └──────────────┬────────────────────┘   │
+│   │                 │ ──────────────────────────┐      │                        │
+│   └─────────────────┘                           │      │ 🔒 mTLS ALLOW          │
+│                                                 ▼      ▼                        │
+│                                      ┌─────────────────────────┐                │
+│                                      │        order-svc        │                │
+│                                      │   (httpbin · port 80)   │                │
+│                                      │   Không có retry        │                │
+│                                      └─────────────────────────┘                │
+│                                                                                   │
+│  🔐 PeerAuthentication: STRICT mTLS — mọi traffic đều được mã hóa + xác thực      │
+└───────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Luồng traffic và policy:**
+| Caller | Callee | Policy | Kết quả |
+|---|---|---|---|
+| `sleep-client` | `product-svc` | `allow-sleep-to-product` | ✅ HTTP 200 |
+| `sleep-client` | `order-svc` | Không có (default-deny) | ⛔ HTTP 403 |
+| `product-svc` | `order-svc` | `allow-product-to-order` | ✅ HTTP 200 |
+| `sleep-client` | `product-svc/status/500` | allow + **retry 3 lần** | 🔄 Retry → 500 |
+
+### 6.3. Triển khai (Deploy)
+
+**Yêu cầu:** 
+- Kubernetes cluster đang chạy (minikube, kind, k3s, hoặc cloud).
+- Istio đã được cài (`istiod`, `istio-ingressgateway` đang Running).
+
+**Cách 1 — Dùng Helm CLI (Local)**
+```bash
+# 1. Tạo namespace và gán label Helm + Istio
+kubectl create namespace test --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl label namespace test \
+  istio-injection=enabled \
+  app.kubernetes.io/managed-by=Helm \
+  --overwrite
+
+kubectl annotate namespace test \
+  meta.helm.sh/release-name=istio-demo \
+  meta.helm.sh/release-namespace=test \
+  --overwrite
+
+# 2. Cài đặt Chart
+helm install istio-demo ./helm/istio-demo -n test
+
+# 3. Chờ tất cả pod khởi chạy (READY 2/2)
+kubectl get pods -n test -w
+```
+*(Nếu bỏ qua bước 1, `helm install` có thể báo lỗi `invalid ownership metadata`)*
+
+**Cách 2 — Dùng ArgoCD**
+```bash
+kubectl apply -f argocd/applications/istio-demo.yaml
+```
+
+**Gỡ cài đặt**
+```bash
+helm uninstall istio-demo -n test
+kubectl delete namespace test
+```
+
+### 6.4. Hướng dẫn Test & Khắc phục Lỗi (Troubleshoot)
+
+> ⚠️ **Quan trọng về Circuit Breaker**: 
+> Trong file `DestinationRule`, chúng ta cấu hình `outlierDetection.maxEjectionPercent: 100`. Nếu một service liên tục trả về lỗi 5xx, Envoy sẽ eject (đá) instance đó ra khỏi pool. Nếu test `/status/500` quá nhiều lần, bạn sẽ bị chặn hoàn toàn và nhận lỗi `503 Service Unavailable` thay vì `500`.
+
+**Xử lý khi gặp lỗi 503 (Restart Envoy Ejection State):**
+```bash
+# Restart deployment để Envoy làm mới trạng thái connection/ejection
+kubectl rollout restart deployment/product-svc -n test
+kubectl rollout status deployment/product-svc -n test
+```
+
+**Thực hiện Test Thủ Công:**
+
+**Bước 0: Lấy tên pod sleep-client làm một biến môi trường**
+```bash
+SLEEP=$(kubectl get pod -n test -l app=sleep-client -o jsonpath='{.items[0].metadata.name}')
+```
+
+**Bước 1: Kiểm tra mTLS & Sidecar Injection**
+```bash
+# Trạng thái READY phải là 2/2 (nghĩa là có container application và container istio-proxy)
+kubectl get pods -n test 
+# Phân tích toàn bộ config Istio xem có báo lỗi không
+istioctl analyze -n test 
+```
+
+**Bước 2: Test AuthorizationPolicy (Áp dụng ALLOW)**
+```bash
+# Gọi từ sleep sang product (rule đã cấp quyền)
+kubectl exec -n test $SLEEP -- curl -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://product-svc/status/200
+# Kết quả mong đợi: HTTP Status: 200
+```
+
+**Bước 3: Test AuthorizationPolicy (Áp dụng DENY)**
+```bash
+# Gọi từ sleep sang order (bị chặn bởi Default Deny All, không có quyền)
+kubectl exec -n test $SLEEP -- curl -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://order-svc/status/200
+# Kết quả mong đợi: HTTP Status: 403
+```
+
+**Bước 4: Test VirtualService (Retry & Response Flag "URX")**
+Theo cấu hình `VirtualService`, Envoy Proxy tại client sẽ tự động thử lại 3 lần khi điểm đến trả về lỗi 5xx.
+
+```bash
+# 1. Bắn request bị lỗi (server sẽ luôn trả lời lỗi HTTP 500)
+kubectl exec -n test $SLEEP -- curl -s http://product-svc/status/500
+
+# 2. Xem log tại phía SERVER (product-svc) để quan sát số lần thử (attempts)
+PRODUCT=$(kubectl get pod -n test -l app=product-svc -o jsonpath='{.items[0].metadata.name}')
+kubectl logs -n test $PRODUCT -c istio-proxy | grep "GET /status/500"
+# -> Bạn sẽ thấy 3 dòng log lưu vết của 1 request duy nhất nhưng được gọi 3 lần, thông qua: x-envoy-attempt-count: 1/2/3
+
+# 3. Xem log tại phía CLIENT (sleep-client) để xem kết quả cuối cùng phản hồi về có flag "URX" không
+kubectl logs -n test $SLEEP -c istio-proxy | grep "GET /status/500"
+# -> Ghi chú: Bạn sẽ thấy cờ \`response_flags="URX"\` ở gần cuối dòng log. 
+# "URX" (Upstream Retry Limit Exceeded) xác nhận rằng Istio đã cố thử lại nhưng hết số lần cho phép (Attempts Limit = 3).
+```
+*(Hoặc chạy lệnh kiểm thử tự động toàn bộ: `bash docs/istio-demo-test.sh`)*
+
+### 6.5. Quan sát trên Kiali
+Dùng lệnh:
+```bash
+istioctl dashboard kiali
+```
+Vào `Graph`, chọn `Namespace: test`. Bạn sẽ dễ dàng quan sát thấy Topology (đường xanh lá là mTLS hoạt động và ALLOW, đường đỏ là DENY (403)), cũng như thấy được sự gia tăng Retry thông qua metrics của từng Node.

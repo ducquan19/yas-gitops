@@ -1,0 +1,11 @@
+apiVersion: v2
+name: istio-demo
+description: |
+  Helm chart demo Istio Service Mesh features:
+  - Sidecar injection (namespace label)
+  - mTLS STRICT (PeerAuthentication)
+  - AuthorizationPolicy (allow/deny)
+  - VirtualService retry on 5xx
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

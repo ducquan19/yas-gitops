@@ -1,0 +1,14 @@
+{{/*
+  Namespace với label istio-injection=enabled
+  Sidecar Envoy proxy sẽ được tự động inject vào mọi Pod trong namespace này.
+*/}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+  labels:
+    istio-injection: enabled
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}

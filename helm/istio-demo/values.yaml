@@ -1,0 +1,43 @@
+# ==============================================================
+# Namespace
+# ==============================================================
+namespace: test
+
+# ==============================================================
+# Istio settings
+# ==============================================================
+istio:
+  enabled: true
+
+# ==============================================================
+# Services
+# ==============================================================
+# product-svc: httpbin — receives calls from sleep-client (ALLOWED)
+#              also calls order-svc (ALLOWED, service-to-service)
+product-svc:
+  enabled: true
+  image:
+    repository: kennethreitz/httpbin
+    tag: latest
+  port: 80
+  # VirtualService retry config
+  retry:
+    attempts: 3
+    perTryTimeout: 2s
+    retryOn: "5xx,connect-failure,retriable-4xx"
+
+# order-svc: httpbin — receives calls from product-svc (ALLOWED)
+#            sleep-client -> order-svc is BLOCKED (no AuthorizationPolicy)
+order-svc:
+  enabled: true
+  image:
+    repository: kennethreitz/httpbin
+    tag: latest
+  port: 80
+
+# sleep-client: curl client used to send test requests
+sleep-client:
+  enabled: true
+  image:
+    repository: curlimages/curl
+    tag: latest
