@@ -21,6 +21,7 @@ data:
     CREATE DATABASE sampledata;
     CREATE DATABASE grafana;
     CREATE DATABASE keycloak;
+    CREATE DATABASE location;
 ---
 apiVersion: apps/v1
 kind: StatefulSet
