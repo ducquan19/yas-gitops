@@ -1,0 +1,24 @@
+{{- if .Values.istio.enabled }}
+{{/*
+  PeerAuthentication — Bật mTLS STRICT cho toàn namespace `test`.
+
+  STRICT mode nghĩa là:
+  - Tất cả traffic vào service PHẢI dùng mTLS.
+  - Plain text (không mã hóa) sẽ bị từ chối.
+  - Istio sidecar tự thương lượng và thiết lập TLS tunnel giữa các pod.
+
+  Kết quả: Mọi giao tiếp giữa product-svc, order-svc, sleep-client
+  đều được mã hóa và xác thực danh tính qua certificate.
+*/}}
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default-mtls
+  namespace: {{ .Values.namespace }}
+  annotations:
+    # Demo: mTLS STRICT — chặn toàn bộ plain-text traffic trong namespace
+    description: "Enforce mTLS STRICT for all workloads in namespace test"
+spec:
+  mtls:
+    mode: STRICT
+{{- end }}

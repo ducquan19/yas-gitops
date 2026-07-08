@@ -1,0 +1,42 @@
+{{/*
+  Services (ClusterIP) cho product-svc và order-svc.
+  sleep-client không cần Service vì nó chỉ là client.
+*/}}
+
+---
+# Service cho product-svc
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: product-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: product-svc
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ index .Values "product-svc" "port" }}
+      targetPort: {{ index .Values "product-svc" "port" }}
+
+---
+# Service cho order-svc
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-svc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: order-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: order-svc
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ index .Values "order-svc" "port" }}
+      targetPort: {{ index .Values "order-svc" "port" }}

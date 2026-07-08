@@ -1,0 +1,52 @@
+{{- if .Values.istio.enabled }}
+{{/*
+  DestinationRule — Cấu hình connection pool và circuit breaker.
+
+  Tuy không bắt buộc cho retry demo, nhưng đây là best practice:
+  - Giới hạn pending requests để tránh hàng chờ quá lớn
+  - Tự động eject instance lỗi (outlier detection) nếu scale nhiều replica
+*/}}
+
+---
+# DestinationRule cho product-svc
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: product-svc-dr
+  namespace: {{ .Values.namespace }}
+  annotations:
+    description: "Connection pool + outlier detection for product-svc"
+spec:
+  host: product-svc
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 10
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+    # Outlier detection: nếu service trả >= 50% 5xx trong 30s, eject khỏi pool
+    outlierDetection:
+      consecutive5xxErrors: 0
+      consecutiveGatewayErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+
+---
+# DestinationRule cho order-svc
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: order-svc-dr
+  namespace: {{ .Values.namespace }}
+  annotations:
+    description: "Connection pool for order-svc"
+spec:
+  host: order-svc
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 10
+        http2MaxRequests: 100
+
+{{- end }}
