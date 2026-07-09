@@ -81,6 +81,17 @@ data:
     server {
       listen 80;
       server_name storefront.yas.local;
+      location /api/media/ {
+        proxy_pass         http://media:8082/;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_read_timeout    300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout    300;
+      }
       location / {
         proxy_pass         http://storefront-bff:8082;
         proxy_set_header   Host              $host;
@@ -121,6 +132,17 @@ data:
     server {
       listen 80;
       server_name api.yas.local;
+      location /api/media/ {
+        proxy_pass         http://media:8082/;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_read_timeout    300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout    300;
+      }
       location / {
         proxy_pass         http://storefront-bff:8082;
         proxy_set_header   Host              $host;
