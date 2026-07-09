@@ -17,7 +17,7 @@ storefront-nextjs:
   enabled: false
   image:
     repository: ducquan19/yas-storefront
-    tag: main
+    tag: latest
     containerPort: 3000
   resources:
     requests:
@@ -148,7 +148,7 @@ customer:
   enabled: false
   image:
     repository: ducquan19/yas-customer
-    tag: main
+    tag: latest
   resources:
     requests:
       memory: 256Mi
@@ -169,7 +169,7 @@ cart:
   enabled: false
   image:
     repository: ducquan19/yas-cart
-    tag: main
+    tag: latest
   resources:
     requests:
       memory: 256Mi

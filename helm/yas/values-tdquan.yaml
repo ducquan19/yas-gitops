@@ -90,7 +90,7 @@ media:
 cart:
   enabled: true
   image:
-    tag: main
+    tag: latest
 
 order:
   enabled: true
@@ -105,7 +105,7 @@ tax:
 customer:
   enabled: true
   image:
-    tag: main
+    tag: latest
 
 # --- Sampledata: cần env riêng vì dùng 2 datasource (product + media) ---
 # Không có isBackend:true nên không mount yas-configuration-configmap.
