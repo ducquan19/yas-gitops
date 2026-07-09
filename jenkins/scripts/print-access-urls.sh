@@ -50,10 +50,18 @@ while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
                          values_key argocd_app access_host node_port; do
   [[ -z "${svc_name:-}" ]] && continue
 
+  # Determine domain name based on service
+  domain="api.yas.local"
+  if [[ "$svc_name" == "storefront" || "$svc_name" == "storefront-nextjs" ]]; then
+    domain="storefront.yas.local"
+  elif [[ "$svc_name" == "backoffice" || "$svc_name" == "backoffice-nextjs" ]]; then
+    domain="backoffice.yas.local"
+  fi
+
   if [[ -n "${node_port:-}" ]]; then
-    url="http://${access_host}:${node_port}"
+    url="http://${domain}:${node_port}"
   else
-    url="http://${access_host}:<NodePort>"
+    url="http://${domain}:<NodePort>"
   fi
 
   # Truncate long SHA tags for readability
@@ -74,16 +82,16 @@ echo "│   Linux   : /etc/hosts                                           │"
 echo "└──────────────────────────────────────────────────────────────────┘"
 awk -F '\t' '
   {
-    key = $4 "\t" $8
-    if (!seen[key]++) {
-      printf "  %-18s  yas.%s.local\n", $8, $4
+    ip = $8
+    if (!seen[ip]++) {
+      printf "  %-18s  storefront.yas.local backoffice.yas.local api.yas.local\n", ip
     }
   }
 ' "$PLAN_FILE"
 
 echo ""
-echo "  Example:  echo '100.91.182.4  yas.cluster-1.local' >> /etc/hosts"
-echo "  Then open:  http://yas.cluster-1.local:30011  (tax-service)"
+echo "  Example:  echo '100.91.182.4  storefront.yas.local backoffice.yas.local api.yas.local' >> /etc/hosts"
+echo "  Then open:  http://api.yas.local:30011  (tax-service)"
 echo ""
 echo "  NOTE: Wait ~60 s for ArgoCD to finish syncing before testing."
 echo "────────────────────────────────────────────────────────────────────"
@@ -101,10 +109,18 @@ while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
                          values_key argocd_app access_host node_port; do
   [[ -z "${svc_name:-}" ]] && continue
 
+  # Determine domain name based on service
+  domain="api.yas.local"
+  if [[ "$svc_name" == "storefront" || "$svc_name" == "storefront-nextjs" ]]; then
+    domain="storefront.yas.local"
+  elif [[ "$svc_name" == "backoffice" || "$svc_name" == "backoffice-nextjs" ]]; then
+    domain="backoffice.yas.local"
+  fi
+
   if [[ -n "${node_port:-}" ]]; then
-    url="http://${access_host}:${node_port}"
+    url="http://${domain}:${node_port}"
   else
-    url="http://${access_host}:&lt;NodePort&gt;"
+    url="http://${domain}:&lt;NodePort&gt;"
   fi
 
   echo "<li><b>${svc_name}</b>: <a href=\"${url}\" target=\"_blank\">${url}</a></li>" >> urls.html
