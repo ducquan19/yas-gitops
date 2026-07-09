@@ -81,6 +81,7 @@ data:
     server {
       listen 80;
       server_name storefront.yas.local;
+      add_header X-Debug-Block "storefront" always;
       location /api/media/ {
         limit_except GET HEAD {
           deny all;
@@ -115,6 +116,7 @@ data:
     server {
       listen 80;
       server_name backoffice.yas.local;
+      add_header X-Debug-Block "backoffice" always;
       location / {
         proxy_pass         http://backoffice-bff:8082;
         proxy_set_header   Host              $host;
@@ -135,6 +137,7 @@ data:
     server {
       listen 80;
       server_name api.yas.local;
+      add_header X-Debug-Block "api" always;
       location /api/media/ {
         limit_except GET HEAD {
           deny all;
