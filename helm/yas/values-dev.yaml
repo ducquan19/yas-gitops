@@ -1,2 +1,77 @@
 global:
   environment: dev
+
+# nginx-ingress NodePort override (staging uses 30090)
+nginx:
+  nodePort: 31090
+
+# ============================================================
+# NodePort overrides for yas-dev namespace.
+# NodePorts are cluster-global — they must not collide with
+# the yas-staging services which already own 30001-30016, 30090.
+# Dev uses the 310xx range instead.
+# ============================================================
+
+storefront-nextjs:
+  service:
+    nodePort: 31001
+
+storefront-bff:
+  service:
+    nodePort: 31002
+
+backoffice-nextjs:
+  service:
+    nodePort: 31003
+
+backoffice-bff:
+  service:
+    nodePort: 31004
+
+product:
+  service:
+    nodePort: 31005
+
+media:
+  service:
+    nodePort: 31006
+
+customer:
+  service:
+    nodePort: 31007
+
+cart:
+  service:
+    nodePort: 31008
+
+order:
+  service:
+    nodePort: 31009
+
+inventory:
+  service:
+    nodePort: 31010
+
+tax:
+  service:
+    nodePort: 31011
+
+search:
+  service:
+    nodePort: 31012
+
+sampledata:
+  service:
+    nodePort: 31013
+
+swagger:
+  service:
+    nodePort: 31014
+
+location:
+  service:
+    nodePort: 31015
+
+payment:
+  service:
+    nodePort: 31016
