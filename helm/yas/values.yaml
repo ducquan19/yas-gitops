@@ -103,7 +103,7 @@ product:
   enabled: false
   image:
     repository: ducquan19/yas-product
-    tag: main
+    tag: latest
   resources:
     requests:
       memory: 256Mi

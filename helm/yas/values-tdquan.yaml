@@ -53,7 +53,7 @@ swagger:
 product:
   enabled: true
   image:
-    tag: main
+    tag: latest
 
 inventory:
   enabled: true
