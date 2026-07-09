@@ -82,6 +82,9 @@ data:
       listen 80;
       server_name storefront.yas.local;
       location /api/media/ {
+        limit_except GET HEAD {
+          deny all;
+        }
         proxy_pass         http://media:8082/;
         proxy_set_header   Host              $host;
         proxy_set_header   X-Real-IP         $remote_addr;
@@ -133,6 +136,9 @@ data:
       listen 80;
       server_name api.yas.local;
       location /api/media/ {
+        limit_except GET HEAD {
+          deny all;
+        }
         proxy_pass         http://media:8082/;
         proxy_set_header   Host              $host;
         proxy_set_header   X-Real-IP         $remote_addr;
