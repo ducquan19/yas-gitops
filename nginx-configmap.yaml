@@ -1,0 +1,123 @@
+apiVersion: v1
+data:
+  default.conf: |
+    # ================================================================
+    # Nginx Ingress — YAS single-cluster (tdquan) deployment
+    #
+    # /etc/hosts trên máy người dùng:
+    #   100.91.182.4  storefront.yas.local backoffice.yas.local api.yas.local identity
+    #
+    # Sau khi chạy portproxy (Windows) hoặc socat (Linux/Mac):
+    #   Port 80  → NodePort 30090 (Nginx Ingress này)
+    #   Port 30080 → Keycloak (trực tiếp, không qua Nginx)
+    # ================================================================
+
+    # storefront.yas.local → storefront-bff (Spring Cloud Gateway + OAuth2 Client)
+    # BFF xử lý session, OAuth2, rồi route ngược về storefront-nextjs (UI_HOST)
+    server {
+      listen 80;
+      server_name storefront.yas.local;
+      location /api/media/ {
+        limit_except GET HEAD {
+          deny all;
+        }
+        proxy_pass         http://media:8082/;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_read_timeout    300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout    300;
+      }
+      location / {
+        proxy_pass         http://storefront-bff:8082;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        "upgrade";
+        proxy_read_timeout    300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout    300;
+      }
+    }
+
+    # backoffice.yas.local → backoffice-bff
+    server {
+      listen 80;
+      server_name backoffice.yas.local;
+      location / {
+        proxy_pass         http://backoffice-bff:8082;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        "upgrade";
+        proxy_read_timeout    300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout    300;
+      }
+    }
+
+    # api.yas.local → storefront-bff (dùng cho Swagger UI và API call trực tiếp)
+    server {
+      listen 80;
+      server_name api.yas.local;
+      location /api/media/ {
+        limit_except GET HEAD {
+          deny all;
+        }
+        proxy_pass         http://media:8082/;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+        proxy_read_timeout    300;
+        proxy_connect_timeout 300;
+        proxy_send_timeout    300;
+      }
+      location /api/ {
+        proxy_pass         http://storefront-bff:8082/api/;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+      }
+      location /v3/api-docs {
+        proxy_pass         http://storefront-bff:8082/v3/api-docs;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+      }
+      location / {
+        proxy_pass         http://swagger:8080/;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Host  $host;
+      }
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: tdquan-dev:/ConfigMap:yas-dev/nginx-ingress-config
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"default.conf":"# ================================================================\n# Nginx Ingress — YAS single-cluster (tdquan) deployment\n#\n# /etc/hosts trên máy người dùng:\n#   100.91.182.4  storefront.yas.local backoffice.yas.local api.yas.local identity\n#\n# Sau khi chạy portproxy (Windows) hoặc socat (Linux/Mac):\n#   Port 80  → NodePort 30090 (Nginx Ingress này)\n#   Port 30080 → Keycloak (trực tiếp, không qua Nginx)\n# ================================================================\n\n# storefront.yas.local → storefront-bff (Spring Cloud Gateway + OAuth2 Client)\n# BFF xử lý session, OAuth2, rồi route ngược về storefront-nextjs (UI_HOST)\nserver {\n  listen 80;\n  server_name storefront.yas.local;\n  location /api/media/ {\n    limit_except GET HEAD {\n      deny all;\n    }\n    proxy_pass         http://media:8082/;\n    proxy_set_header   Host              $host;\n    proxy_set_header   X-Real-IP         $remote_addr;\n    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;\n    proxy_set_header   X-Forwarded-Proto $scheme;\n    proxy_set_header   X-Forwarded-Host  $host;\n    proxy_read_timeout    300;\n    proxy_connect_timeout 300;\n    proxy_send_timeout    300;\n  }\n  location / {\n    proxy_pass         http://storefront-bff:8082;\n    proxy_set_header   Host              $host;\n    proxy_set_header   X-Real-IP         $remote_addr;\n    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;\n    proxy_set_header   X-Forwarded-Proto $scheme;\n    proxy_set_header   X-Forwarded-Host  $host;\n    proxy_http_version 1.1;\n    proxy_set_header   Upgrade           $http_upgrade;\n    proxy_set_header   Connection        \"upgrade\";\n    proxy_read_timeout    300;\n    proxy_connect_timeout 300;\n    proxy_send_timeout    300;\n  }\n}\n\n# backoffice.yas.local → backoffice-bff\nserver {\n  listen 80;\n  server_name backoffice.yas.local;\n  location / {\n    proxy_pass         http://backoffice-bff:8082;\n    proxy_set_header   Host              $host;\n    proxy_set_header   X-Real-IP         $remote_addr;\n    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;\n    proxy_set_header   X-Forwarded-Proto $scheme;\n    proxy_set_header   X-Forwarded-Host  $host;\n    proxy_http_version 1.1;\n    proxy_set_header   Upgrade           $http_upgrade;\n    proxy_set_header   Connection        \"upgrade\";\n    proxy_read_timeout    300;\n    proxy_connect_timeout 300;\n    proxy_send_timeout    300;\n  }\n}\n\n# api.yas.local → storefront-bff (dùng cho Swagger UI và API call trực tiếp)\nserver {\n  listen 80;\n  server_name api.yas.local;\n  location /api/media/ {\n    limit_except GET HEAD {\n      deny all;\n    }\n    proxy_pass         http://media:8082/;\n    proxy_set_header   Host              $host;\n    proxy_set_header   X-Real-IP         $remote_addr;\n    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;\n    proxy_set_header   X-Forwarded-Proto $scheme;\n    proxy_set_header   X-Forwarded-Host  $host;\n    proxy_read_timeout    300;\n    proxy_connect_timeout 300;\n    proxy_send_timeout    300;\n  }\n  location / {\n    proxy_pass         http://storefront-bff:8082;\n    proxy_set_header   Host              $host;\n    proxy_set_header   X-Real-IP         $remote_addr;\n    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;\n    proxy_set_header   X-Forwarded-Proto $scheme;\n    proxy_set_header   X-Forwarded-Host  $host;\n    proxy_read_timeout    300;\n    proxy_connect_timeout 300;\n    proxy_send_timeout    300;\n  }\n}\n"},"kind":"ConfigMap","metadata":{"annotations":{"argocd.argoproj.io/tracking-id":"tdquan-dev:/ConfigMap:yas-dev/nginx-ingress-config"},"name":"nginx-ingress-config","namespace":"yas-dev"}}
+  creationTimestamp: "2026-07-08T01:22:32Z"
+  name: nginx-ingress-config
+  namespace: yas-dev
+  resourceVersion: "139947"
+  uid: c09af092-1bb3-48f2-a477-c9359d3b5f64
