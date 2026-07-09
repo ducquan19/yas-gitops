@@ -1,52 +1,24 @@
 {{- if .Values.istio.enabled }}
-{{/*
-  DestinationRule — Cấu hình connection pool và circuit breaker.
-
-  Tuy không bắt buộc cho retry demo, nhưng đây là best practice:
-  - Giới hạn pending requests để tránh hàng chờ quá lớn
-  - Tự động eject instance lỗi (outlier detection) nếu scale nhiều replica
-*/}}
-
+{{- range $name, $config := .Values.services }}
+{{- if not $config.command }}
 ---
-# DestinationRule cho product-svc
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: product-svc-dr
-  namespace: {{ .Values.namespace }}
-  annotations:
-    description: "Connection pool + outlier detection for product-svc"
+  name: {{ $name }}-dr
+  namespace: {{ $.Values.namespace }}
 spec:
-  host: product-svc
+  host: {{ $name }}
   trafficPolicy:
     connectionPool:
       http:
-        http1MaxPendingRequests: 10
-        http2MaxRequests: 100
-        maxRequestsPerConnection: 10
-    # Outlier detection: nếu service trả >= 50% 5xx trong 30s, eject khỏi pool
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
     outlierDetection:
-      consecutive5xxErrors: 0
-      consecutiveGatewayErrors: 5
-      interval: 30s
-      baseEjectionTime: 30s
-      maxEjectionPercent: 50
-
----
-# DestinationRule cho order-svc
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: order-svc-dr
-  namespace: {{ .Values.namespace }}
-  annotations:
-    description: "Connection pool for order-svc"
-spec:
-  host: order-svc
-  trafficPolicy:
-    connectionPool:
-      http:
-        http1MaxPendingRequests: 10
-        http2MaxRequests: 100
-
+      consecutive5xxErrors: 1
+      interval: 1s
+      baseEjectionTime: 1m
+      maxEjectionPercent: 100
+{{- end }}
+{{- end }}
 {{- end }}

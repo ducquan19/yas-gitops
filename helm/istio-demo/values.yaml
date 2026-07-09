@@ -10,34 +10,84 @@ istio:
   enabled: true
 
 # ==============================================================
-# Services
+# Services list to deploy and manage via Mesh
 # ==============================================================
-# product-svc: httpbin — receives calls from sleep-client (ALLOWED)
-#              also calls order-svc (ALLOWED, service-to-service)
-product-svc:
-  enabled: true
-  image:
-    repository: kennethreitz/httpbin
-    tag: latest
-  port: 80
-  # VirtualService retry config
-  retry:
-    attempts: 3
-    perTryTimeout: 2s
-    retryOn: "5xx,connect-failure,retriable-4xx"
+services:
+  # --- UI / Edge ---
+  storefront-ui:
+    image: kennethreitz/httpbin
+    port: 80
+  backoffice-ui:
+    image: kennethreitz/httpbin
+    port: 80
+  swagger-ui:
+    image: kennethreitz/httpbin
+    port: 80
+  
+  # --- BFF ---
+  storefront-bff:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["storefront-ui", "swagger-ui"]
+  backoffice-bff:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["backoffice-ui", "swagger-ui"]
 
-# order-svc: httpbin — receives calls from product-svc (ALLOWED)
-#            sleep-client -> order-svc is BLOCKED (no AuthorizationPolicy)
-order-svc:
-  enabled: true
-  image:
-    repository: kennethreitz/httpbin
-    tag: latest
-  port: 80
+  # --- Microservices ---
+  product:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["storefront-bff", "backoffice-bff", "search", "sleep-client"]
+    retry:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: "5xx,connect-failure,retriable-4xx"
+  
+  cart:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["storefront-bff", "order"]
+    
+  order:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["storefront-bff", "cart", "sleep-client"]
+    
+  customer:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["storefront-bff", "backoffice-bff", "order"]
+    
+  inventory:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["order", "backoffice-bff"]
+    
+  tax:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["order", "sleep-client"]
+    retry:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: "5xx,connect-failure,retriable-4xx"
+      
+  media:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["product", "backoffice-bff"]
+    
+  search:
+    image: kennethreitz/httpbin
+    port: 80
+    allowedCallers: ["storefront-bff", "product"]
 
-# sleep-client: curl client used to send test requests
-sleep-client:
-  enabled: true
-  image:
-    repository: curlimages/curl
-    tag: latest
+  # --- Others ---
+  sampledata:
+    image: kennethreitz/httpbin
+    port: 80
+    
+  sleep-client:
+    image: curlimages/curl
+    command: ["sleep", "infinity"]

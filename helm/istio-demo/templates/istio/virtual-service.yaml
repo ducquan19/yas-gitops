@@ -1,69 +1,23 @@
 {{- if .Values.istio.enabled }}
-{{/*
-  VirtualService cho product-svc — Demo Retry khi service trả lỗi 5xx.
-
-  Cách test:
-    curl http://product-svc/status/500
-    → Istio sẽ retry tối đa 3 lần trước khi trả lỗi về client.
-    → Quan sát log: kubectl logs -n test -l app=product-svc -c istio-proxy
-
-  retryOn options:
-    - 5xx: retry khi upstream trả HTTP 5xx
-    - connect-failure: retry khi không kết nối được upstream
-    - retriable-4xx: retry khi upstream trả một số HTTP 4xx cụ thể (vd: 409)
-*/}}
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: product-svc-vs
-  namespace: {{ .Values.namespace }}
-  annotations:
-    description: "VirtualService with retry policy for product-svc"
-spec:
-  hosts:
-    - product-svc    # Tên Kubernetes Service trong cùng namespace
-  http:
-    - name: "product-svc-retry-route"
-      route:
-        - destination:
-            host: product-svc
-            port:
-              number: {{ index .Values "product-svc" "port" }}
-      # -------------------------------------------------------
-      # RETRY POLICY
-      # Khi product-svc trả về 5xx, Envoy sẽ tự động retry.
-      # Client sẽ chỉ thấy kết quả cuối cùng (sau tất cả retry).
-      # -------------------------------------------------------
-      retries:
-        attempts: {{ index .Values "product-svc" "retry" "attempts" }}
-        perTryTimeout: {{ index .Values "product-svc" "retry" "perTryTimeout" }}
-        retryOn: {{ index .Values "product-svc" "retry" "retryOn" | quote }}
-      # Timeout tổng thể cho toàn bộ request (bao gồm retry)
-      timeout: 10s
-
+{{- range $name, $config := .Values.services }}
+{{- if $config.retry }}
 ---
-{{/*
-  VirtualService cho order-svc — KHÔNG có retry.
-  Để so sánh: một call trực tiếp vào order-svc sẽ fail ngay (không retry).
-*/}}
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: order-svc-vs
-  namespace: {{ .Values.namespace }}
-  annotations:
-    description: "VirtualService for order-svc — no retry (for comparison)"
+  name: {{ $name }}-vs
+  namespace: {{ $.Values.namespace }}
 spec:
   hosts:
-    - order-svc
+    - {{ $name }}
   http:
-    - name: "order-svc-direct-route"
-      route:
+    - route:
         - destination:
-            host: order-svc
-            port:
-              number: {{ index .Values "order-svc" "port" }}
-      timeout: 5s
-      # Không có retries → bị AuthorizationPolicy chặn sẽ trả ngay 403
-
+            host: {{ $name }}
+      retries:
+        attempts: {{ $config.retry.attempts }}
+        perTryTimeout: {{ $config.retry.perTryTimeout }}
+        retryOn: {{ $config.retry.retryOn | quote }}
+{{- end }}
+{{- end }}
 {{- end }}

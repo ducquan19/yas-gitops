@@ -67,3 +67,12 @@ kiali-server:
   enabled: true
   auth:
     strategy: anonymous
+  external_services:
+    prometheus:
+      url: "http://observability-kube-prometh-prometheus.observability:9090"
+    istio:
+      root_namespace: istio-system
+    grafana:
+      enabled: true
+      url: "http://observability-grafana.observability:80"
+  istio_namespace: istio-system
