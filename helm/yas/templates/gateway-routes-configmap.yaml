@@ -137,7 +137,7 @@ data:
                 - RewritePath=/api/(?<segment>.*), /$\{segment}
                 - TokenRelay=
             - id: openapi
-              uri: forward:/v3/api-docs
+              uri: forward:///v3/api-docs
               order: -1
               predicates:
                 - Path=/v3/api-docs/**
