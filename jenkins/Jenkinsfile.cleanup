@@ -73,22 +73,22 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
             steps {
                 script {
                     // Map: [values_file, yaml_key, reset? (bool param name)]
-                    def serviceMap = [
-                        ['helm/yas/values-tdquan.yaml',  'product',         params.RESET_PRODUCT],
-                        ['helm/yas/values-tdquan.yaml',  'inventory',       params.RESET_INVENTORY],
-                        ['helm/yas/values-tdquan.yaml',  'search',          params.RESET_SEARCH],
-                        ['helm/yas/values-tdquan.yaml',  'media',           params.RESET_MEDIA],
-                        ['helm/yas/values-tdquan.yaml',  'cart',            params.RESET_CART],
-                        ['helm/yas/values-tdquan.yaml',  'order',           params.RESET_ORDER],
-                        ['helm/yas/values-tdquan.yaml',  'tax',             params.RESET_TAX],
-                        ['helm/yas/values-nqthang.yaml', 'storefront',      params.RESET_STOREFRONT],
-                        ['helm/yas/values-tdquan.yaml',  'storefront-bff',  params.RESET_STOREFRONT_BFF],
-                        ['helm/yas/values-nqthang.yaml', 'backoffice',      params.RESET_BACKOFFICE],
-                        ['helm/yas/values-tdquan.yaml',  'backoffice-bff',  params.RESET_BACKOFFICE_BFF],
-                        ['helm/yas/values-tdquan.yaml',  'customer',        params.RESET_CUSTOMER],
-                        ['helm/yas/values-tdquan.yaml',  'sampledata',      params.RESET_SAMPLEDATA],
-                        ['helm/yas/values-nqthang.yaml', 'swagger',         params.RESET_SWAGGER],
-                    ]
+                        def serviceMap = [
+                            ['helm/yas/values.yaml', 'product',           params.RESET_PRODUCT],
+                            ['helm/yas/values.yaml', 'inventory',         params.RESET_INVENTORY],
+                            ['helm/yas/values.yaml', 'search',            params.RESET_SEARCH],
+                            ['helm/yas/values.yaml', 'media',             params.RESET_MEDIA],
+                            ['helm/yas/values.yaml', 'cart',              params.RESET_CART],
+                            ['helm/yas/values.yaml', 'order',             params.RESET_ORDER],
+                            ['helm/yas/values.yaml', 'tax',               params.RESET_TAX],
+                            ['helm/yas/values.yaml', 'storefront-nextjs', params.RESET_STOREFRONT],
+                            ['helm/yas/values.yaml', 'storefront-bff',    params.RESET_STOREFRONT_BFF],
+                            ['helm/yas/values.yaml', 'backoffice-nextjs', params.RESET_BACKOFFICE],
+                            ['helm/yas/values.yaml', 'backoffice-bff',    params.RESET_BACKOFFICE_BFF],
+                            ['helm/yas/values.yaml', 'customer',          params.RESET_CUSTOMER],
+                            ['helm/yas/values.yaml', 'sampledata',        params.RESET_SAMPLEDATA],
+                            ['helm/yas/values.yaml', 'swagger',           params.RESET_SWAGGER],
+                        ]
 
                     if (params.CLEANUP_MODE == 'RESET_TO_MAIN') {
                         echo 'Mode RESET_TO_MAIN: resetting all 14 services → main'
