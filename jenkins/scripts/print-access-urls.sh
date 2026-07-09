@@ -118,9 +118,9 @@ while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
   fi
 
   if [[ -n "${node_port:-}" ]]; then
-    url="http://${domain}:${node_port}"
+    url="http://${domain}"
   else
-    url="http://${domain}:&lt;NodePort&gt;"
+    url="http://${domain}"
   fi
 
   echo "<li><b>${svc_name}</b>: <a href=\"${url}\" target=\"_blank\">${url}</a></li>" >> urls.html
