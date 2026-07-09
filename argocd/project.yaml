@@ -19,6 +19,8 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: observability
       server: https://kubernetes.default.svc
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
     - namespace: argocd
       server: https://kubernetes.default.svc
     # Cluster tbnguyen274 — frontend namespaces
@@ -40,6 +42,8 @@ spec:
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace
+    - group: "*"
+      kind: "*"
 
   namespaceResourceWhitelist:
     - group: "*"

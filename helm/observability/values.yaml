@@ -27,7 +27,7 @@ promtail:
   enabled: true
   config:
     clients:
-      - url: http://observability-opentelemetry:3500/loki/api/v1/push
+      - url: http://loki-gateway/loki/api/v1/push
     snippets:
       pipelineStages:
         - docker: {}
@@ -37,7 +37,7 @@ tempo:
   tempo:
     metricsGenerator:
       enabled: true
-      remoteWriteUrl: "http://observability-kube-prometheus-prometheus:9090/api/v1/write"
+      remoteWriteUrl: "http://observability-kube-prometh-prometheus:9090/api/v1/write"
 
 kube-prometheus-stack:
   enabled: true
@@ -46,19 +46,40 @@ kube-prometheus-stack:
     prometheusSpec:
       enableRemoteWriteReceiver: true
   grafana:
-    enabled: false # We use the custom grafana chart below instead
-    grafana.ini:
-      database:
-        type: postgres
-        host: postgresql.yas.svc.cluster.local:5432
-        name: grafana
-        user: admin
-        password: admin
-        ssl_mode: require
+    enabled: true
+    adminUser: admin
+    adminPassword: admin
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        uid: loki
+        url: http://loki-gateway
+        access: proxy
+        jsonData:
+          httpMethod: GET
+          maxLines: 1000
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: traceId=(\w*)
+              name: traceId
+              url: ${__value.raw}
+      - name: Tempo
+        type: tempo
+        uid: tempo
+        url: http://observability-tempo:3200
+        access: proxy
+        jsonData:
+          httpMethod: GET
+          tracesToLogsV2:
+            datasourceUid: loki
+          serviceMap:
+            datasourceUid: prometheus
+          nodeGraph:
+            enabled: true
 
 # Custom subcharts
 grafana:
-  enabled: true
+  enabled: false
 
 opentelemetry:
   enabled: true
