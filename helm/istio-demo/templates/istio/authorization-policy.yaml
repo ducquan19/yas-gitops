@@ -1,22 +1,6 @@
 {{- if .Values.istio.enabled }}
-{{/*
-  AuthorizationPolicy — Kiểm soát truy cập dựa trên SPIFFE identity (mTLS).
-
-  Luồng được phép:
-    sleep-client → product-svc   ✅ (policy: allow-sleep-to-product)
-    product-svc  → order-svc     ✅ (policy: allow-product-to-order)
-
-  Luồng bị chặn (không có policy):
-    sleep-client → order-svc     ⛔ (default-deny-all)
-
-  SPIFFE identity: cluster.local/ns/<namespace>/sa/<serviceaccount>
-*/}}
-
 ---
-# ============================================================
-# 1. DEFAULT DENY — Chặn tất cả traffic trong namespace test
-# Không có allow rule nào → tất cả bị từ chối (HTTP 403)
-# ============================================================
+# 1. DEFAULT DENY
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -26,60 +10,30 @@ metadata:
     description: "Default deny all — no rules means block everything"
 spec: {}
 
+{{- range $name, $config := .Values.services }}
+{{- if $config.allowedCallers }}
 ---
-# ============================================================
-# 2. ALLOW: sleep-client → product-svc
-# sleep-client-sa được phép gọi product-svc
-# ============================================================
+# ALLOW TO {{ $name }}
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-sleep-to-product
-  namespace: {{ .Values.namespace }}
-  annotations:
-    description: "Allow sleep-client to call product-svc (GET /status/* for retry demo)"
+  name: allow-to-{{ $name }}
+  namespace: {{ $.Values.namespace }}
 spec:
   selector:
     matchLabels:
-      app: product-svc          # Policy áp dụng cho workload product-svc
+      app: {{ $name }}
   action: ALLOW
   rules:
     - from:
         - source:
-            # Chỉ sleep-client-sa mới được gọi vào product-svc
             principals:
-              - "cluster.local/ns/{{ .Values.namespace }}/sa/sleep-client-sa"
+            {{- range $caller := $config.allowedCallers }}
+              - "cluster.local/ns/{{ $.Values.namespace }}/sa/{{ $caller }}-sa"
+            {{- end }}
       to:
         - operation:
             methods: ["GET", "POST"]
-            paths: ["/status/*", "/get", "/headers", "/ip"]
-
----
-# ============================================================
-# 3. ALLOW: product-svc → order-svc
-# product-svc-sa được phép gọi order-svc (service-to-service)
-# sleep-client KHÔNG có trong list → bị chặn khi gọi order-svc
-# ============================================================
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-product-to-order
-  namespace: {{ .Values.namespace }}
-  annotations:
-    description: "Allow product-svc to call order-svc (internal service-to-service)"
-spec:
-  selector:
-    matchLabels:
-      app: order-svc            # Policy áp dụng cho workload order-svc
-  action: ALLOW
-  rules:
-    - from:
-        - source:
-            # Chỉ product-svc-sa (không có sleep-client-sa) được gọi vào order-svc
-            principals:
-              - "cluster.local/ns/{{ .Values.namespace }}/sa/product-svc-sa"
-      to:
-        - operation:
-            methods: ["GET", "POST"]
-
+{{- end }}
+{{- end }}
 {{- end }}
