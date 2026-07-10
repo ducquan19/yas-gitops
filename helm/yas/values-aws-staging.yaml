@@ -17,13 +17,13 @@ storefront-bff:
   enabled: true
   image:
     repository: ducquan19/yas-storefront-bff
-    tag: latest
+    tag: main
   uiHost: https://storefront.yas.io
 backoffice-bff:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice-bff
-    tag: latest
+    tag: main
   uiHost: https://backoffice.yas.io
 storefront-nextjs:
   enabled: true
