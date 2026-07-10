@@ -46,7 +46,7 @@ spec:
       containers:
         - name: {{ $serviceName }}
           image: "{{ $serviceConfig.image.repository }}:{{ $serviceConfig.image.tag }}"
-          imagePullPolicy: {{ if eq $serviceConfig.image.tag "latest" }}Always{{ else }}IfNotPresent{{ end }}
+          imagePullPolicy: Always
           {{- if $serviceConfig.service }}
           ports:
             - containerPort: {{ default $serviceConfig.service.port $serviceConfig.image.containerPort }}
