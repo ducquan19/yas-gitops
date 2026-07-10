@@ -18,13 +18,13 @@ storefront-bff:
   image:
     repository: ducquan19/yas-storefront-bff
     tag: main
-  uiHost: https://storefront.yas.io
+  uiHost: http://storefront-nextjs:3000
 backoffice-bff:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice-bff
     tag: main
-  uiHost: https://backoffice.yas.io
+  uiHost: http://backoffice-nextjs:3000
 storefront-nextjs:
   enabled: true
   image:
