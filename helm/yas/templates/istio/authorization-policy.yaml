@@ -132,6 +132,21 @@ spec:
   - {} # Allow all — media images phải public accessible
 
 ---
+# 2i. Cho phép nginx ingress trực tiếp vào swagger (yas-swagger-ingress bypass BFF)
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-swagger
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: swagger
+  action: ALLOW
+  rules:
+  - {} # Allow all — swagger UI cần public accessible
+
+---
 # 3. Cho phép BFF gọi vào Core Microservices — một policy per service
 {{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "search" "tax" "sampledata" "payment" "rating" "recommendation" "location" }}
 ---
