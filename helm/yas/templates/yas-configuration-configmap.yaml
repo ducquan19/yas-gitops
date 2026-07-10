@@ -81,7 +81,7 @@ data:
         token-url: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas/protocol/openid-connect/token
 
     yas:
-      publicUrl: https://api.{{ .Values.global.domain | default "yas.io" }}/api/media
+      publicUrl: /api/media
       services:
         cart: http://cart:8082/cart
         customer: http://customer:8082/customer
