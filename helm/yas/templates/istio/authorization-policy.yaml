@@ -116,6 +116,22 @@ spec:
   - {} # Allow all — sampledata cần accessible từ BFF qua nginx workaround
 
 ---
+# 2h. Cho phép nginx ingress trực tiếp vào media (yas-media-ingress bypass BFF)
+#     Browser load ảnh trực tiếp qua /api/media/** → media:8082
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-media
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: media
+  action: ALLOW
+  rules:
+  - {} # Allow all — media images phải public accessible
+
+---
 # 3. Cho phép BFF gọi vào Core Microservices — một policy per service
 {{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "search" "tax" "sampledata" "payment" "rating" "recommendation" "location" }}
 ---
