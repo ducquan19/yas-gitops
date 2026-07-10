@@ -1,0 +1,11 @@
+letsencrypt:
+  production:
+    enabled: true
+    name: letsencrypt-prod
+    server: https://acme-v02.api.letsencrypt.org/directory
+  staging:
+    enabled: true
+    name: letsencrypt-staging
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+  email: ""
+  ingressClassName: nginx
