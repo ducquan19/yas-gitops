@@ -42,6 +42,13 @@ spec:
                 name: storefront-bff
                 port:
                   number: 8082
+          - path: /authentication
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 8082
           - path: /
             pathType: Prefix
             backend:
