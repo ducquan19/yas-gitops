@@ -111,6 +111,10 @@ spec:
               value: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/{{ $serviceName }}
             - name: SPRING_CONFIG_IMPORT
               value: optional:file:/opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},optional:file:/opt/yas/gateway-routes-config/gateway-routes.yaml{{- end }}
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: https://identity.{{ $.Values.global.domain | default "yas.io" }}/realms/Yas
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
+              value: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
             - name: JAVA_TOOL_OPTIONS
               value: "--add-opens=java.base/java.lang=ALL-UNNAMED -javaagent:/otel/opentelemetry-javaagent.jar"
             - name: OTEL_SERVICE_NAME
