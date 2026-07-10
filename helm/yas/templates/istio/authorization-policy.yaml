@@ -10,7 +10,7 @@ spec:
   {} # Không có allow rule nào -> Chặn tất cả
 
 ---
-# 2. Cho phép Ingress Gateway gọi vào các dịch vụ Frontend (BFF, Swagger, UI)
+# 2a. Cho phép Nginx Ingress Controller (kube-system) gọi vào storefront-bff
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -24,9 +24,10 @@ spec:
   rules:
   - from:
     - source:
-        namespaces: ["istio-system"]
+        namespaces: ["istio-system", "kube-system"]
 
 ---
+# 2b. Cho phép Nginx Ingress Controller (kube-system) gọi vào backoffice-bff
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -40,11 +41,45 @@ spec:
   rules:
   - from:
     - source:
-        namespaces: ["istio-system"]
+        namespaces: ["istio-system", "kube-system"]
+
+---
+# 2c. Cho phép Nginx Ingress Controller gọi vào storefront-nextjs (UI)
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-storefront-nextjs
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: storefront-nextjs
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces: ["istio-system", "kube-system"]
+
+---
+# 2d. Cho phép Nginx Ingress Controller gọi vào backoffice-nextjs (UI)
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-backoffice-nextjs
+  namespace: {{ $.Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: backoffice-nextjs
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces: ["istio-system", "kube-system"]
 
 ---
 # 3. Cho phép BFF gọi vào Core Microservices — một policy per service
-{{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "search" "tax" "sampledata" "payment" "rating" "recommendation" }}
+{{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "search" "tax" "sampledata" "payment" "rating" "recommendation" "location" }}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -70,5 +105,6 @@ spec:
           - "cluster.local/ns/{{ $.Release.Namespace }}/sa/inventory-sa"
           - "cluster.local/ns/{{ $.Release.Namespace }}/sa/tax-sa"
           - "cluster.local/ns/{{ $.Release.Namespace }}/sa/media-sa"
+          - "cluster.local/ns/{{ $.Release.Namespace }}/sa/location-sa"
 {{- end }}
 {{- end }}
