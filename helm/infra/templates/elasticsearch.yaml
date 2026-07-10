@@ -14,6 +14,9 @@ spec:
       labels:
         app: elasticsearch
     spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
       containers:
       - name: elasticsearch
         image: "elasticsearch:9.2.3"
@@ -34,7 +37,7 @@ spec:
   - metadata:
       name: es-data
     spec:
-      storageClassName: ebs-sc 
+      storageClassName: ebs-sc
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
