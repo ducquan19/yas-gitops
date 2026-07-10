@@ -94,13 +94,7 @@ spec:
                 name: backoffice-bff
                 port:
                   number: 8082
-          - path: /logout
-            pathType: Prefix
-            backend:
-              service:
-                name: backoffice-bff
-                port:
-                  number: 8082
+
           - path: /
             pathType: Prefix
             backend:

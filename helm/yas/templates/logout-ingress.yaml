@@ -42,7 +42,7 @@ spec:
     - host: backoffice.{{ .Values.global.domain | default "yas.io" }}
       http:
         paths:
-          - path: /login
+          - path: /logout
             pathType: Exact
             backend:
               service:
