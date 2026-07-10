@@ -50,9 +50,11 @@ spec:
           value: "admin"
         - name: POSTGRES_PASSWORD
           value: "admin"
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - name: pg-data
-          mountPath: /var/lib/postgresql/data/pgdata
+          mountPath: /var/lib/postgresql/data
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d/init-databases.sql
           subPath: init-databases.sql
