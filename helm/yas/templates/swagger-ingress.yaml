@@ -18,6 +18,13 @@ spec:
     - host: api.{{ .Values.global.domain | default "yas.io" }}
       http:
         paths:
+          - path: /()(swagger-ui.css|index.css|swagger-ui-bundle.js|swagger-ui-standalone-preset.js|swagger-initializer.js|oauth2-redirect.html|favicon-16x16.png|favicon-32x32.png)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: swagger
+                port:
+                  number: 8080
           - path: /swagger-ui(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
