@@ -139,3 +139,6 @@ sampledata:
 istio:
   enabled: true
   domain: api.54.179.218.151.nip.io
+
+tailscale:
+  backendIp: "54.179.218.151"

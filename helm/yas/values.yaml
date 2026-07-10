@@ -277,6 +277,8 @@ swagger:
 istio:
   enabled: true
   domain: api.yas.io
+tailscale:
+  backendIp: "127.0.0.1"
 location:
   syncWave: 2
   enabled: true
