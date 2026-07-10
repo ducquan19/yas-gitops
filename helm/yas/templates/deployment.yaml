@@ -29,6 +29,8 @@ spec:
         - name: yas-configuration
           configMap:
             name: yas-configuration-configmap
+        - name: otel-agent
+          emptyDir: {}
         {{- if contains "bff" $serviceName }}
         - name: yas-gateway-routes-config
           configMap:
@@ -39,9 +41,22 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- with $serviceConfig.initContainers }}
+      {{- if or $serviceConfig.isBackend $serviceConfig.initContainers }}
       initContainers:
+        {{- if $serviceConfig.isBackend }}
+        - name: otel-javaagent
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - curl -fsSL -o /otel/opentelemetry-javaagent.jar https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.6.0/opentelemetry-javaagent.jar
+          volumeMounts:
+            - name: otel-agent
+              mountPath: /otel
+        {{- end }}
+        {{- with $serviceConfig.initContainers }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ $serviceName }}
@@ -56,6 +71,8 @@ spec:
             {{- if $serviceConfig.isBackend }}
             - mountPath: /opt/yas/config
               name: yas-configuration
+            - mountPath: /otel
+              name: otel-agent
             {{- if contains "bff" $serviceName }}
             - mountPath: /opt/yas/gateway-routes-config
               name: yas-gateway-routes-config
@@ -94,6 +111,22 @@ spec:
               value: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/{{ $serviceName }}
             - name: SPRING_CONFIG_IMPORT
               value: optional:file:/opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},optional:file:/opt/yas/gateway-routes-config/gateway-routes.yaml{{- end }}
+            - name: JAVA_TOOL_OPTIONS
+              value: "-javaagent:/otel/opentelemetry-javaagent.jar"
+            - name: OTEL_SERVICE_NAME
+              value: {{ $serviceName | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://opentelemetry-collector.observability:4318"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "http/protobuf"
+            - name: OTEL_TRACES_EXPORTER
+              value: "otlp"
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
+            - name: OTEL_LOGS_EXPORTER
+              value: "none"
+            - name: OTEL_PROPAGATORS
+              value: "tracecontext,baggage"
             {{- if contains "bff" $serviceName }}
             - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
               value: http://localhost:8082
