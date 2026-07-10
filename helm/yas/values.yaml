@@ -14,11 +14,10 @@ global:
 
 storefront-nextjs:
   syncWave: 7
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-storefront
     tag: latest
-    containerPort: 3000
   resources:
     requests:
       memory: 256Mi
@@ -27,15 +26,14 @@ storefront-nextjs:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 3000
-    nodePort: 30001
-  env: {}
-  secrets: {}
+    type: ClusterIP
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: "https://storefront.yas.io"
+    API_BASE_PATH: "http://storefront-bff:8082/api"
 
 storefront-bff:
   syncWave: 6
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-storefront-bff
     tag: main
@@ -47,21 +45,15 @@ storefront-bff:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30002
-  env: {}
-  secrets: {}
-  isBackend: true
-  uiHost: "http://storefront-nextjs:3000"
+    type: ClusterIP
+  uiHost: "https://storefront.yas.io"
 
 backoffice-nextjs:
   syncWave: 7
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-backoffice
     tag: main
-    containerPort: 3000
   resources:
     requests:
       memory: 256Mi
@@ -70,15 +62,14 @@ backoffice-nextjs:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 3000
-    nodePort: 30003
-  env: {}
-  secrets: {}
+    type: ClusterIP
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: "https://backoffice.yas.io"
+    API_BASE_PATH: "http://backoffice-bff:8082/api"
 
 backoffice-bff:
   syncWave: 6
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-backoffice-bff
     tag: main
@@ -90,17 +81,12 @@ backoffice-bff:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30004
-  env: {}
-  secrets: {}
-  isBackend: true
-  uiHost: "http://backoffice-nextjs:3000"
+    type: ClusterIP
+  uiHost: "https://backoffice.yas.io"
 
 product:
   syncWave: 2
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-product
     tag: latest
@@ -112,16 +98,11 @@ product:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30005
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 media:
   syncWave: 1
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-media
     tag: main
@@ -133,19 +114,11 @@ media:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30006
-  env: {}
-  secrets: {}
-  isBackend: true
-  initContainers: []
-  extraVolumes: []
-  extraVolumeMounts: []
+    type: ClusterIP
 
 customer:
   syncWave: 1
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-customer
     tag: latest
@@ -157,12 +130,7 @@ customer:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30007
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 cart:
   syncWave: 3
@@ -178,16 +146,11 @@ cart:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30008
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 order:
   syncWave: 4
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-order
     tag: main
@@ -199,16 +162,11 @@ order:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30009
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 inventory:
   syncWave: 3
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-inventory
     tag: main
@@ -220,16 +178,11 @@ inventory:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30010
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 tax:
   syncWave: 1
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-tax
     tag: main
@@ -241,16 +194,11 @@ tax:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30011
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 search:
   syncWave: 1
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-search
     tag: main
@@ -262,21 +210,14 @@ search:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30012
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 sampledata:
   syncWave: 5
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-sampledata
     tag: main
-    # sampledata listens on port 8094 (per application.properties server.port=8094)
-    # but the context-path /sampledata is already included in the app
     containerPort: 8094
   resources:
     requests:
@@ -286,19 +227,22 @@ sampledata:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8094
-    nodePort: 30013
-  env: {}
-  secrets: {}
+    type: ClusterIP
+  env:
+    SPRING_DATASOURCE_PRODUCT_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/product"
+    SPRING_DATASOURCE_MEDIA_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/media"
+    SPRING_DATASOURCE_USERNAME: "admin"
+    SPRING_DATASOURCE_PASSWORD: "admin"
+    SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://identity.yas.io/realms/Yas"
+    CORS_ALLOWED_ORIGINS: "https://storefront.yas.io,https://backoffice.yas.io"
 
 swagger:
   syncWave: 7
-  enabled: false
+  enabled: true
   image:
     repository: swaggerapi/swagger-ui
     tag: v5.17.14
-    # swaggerapi/swagger-ui container listens on port 8080
     containerPort: 8080
   resources:
     requests:
@@ -308,22 +252,20 @@ swagger:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8080
-    nodePort: 30014
-  env: {}
-  secrets: {}
+    type: ClusterIP
+  env:
+    URLS: "[{ url: 'https://api.yas.io/product/v3/api-docs', name: 'Product' },{ url: 'https://api.yas.io/media/v3/api-docs', name: 'Media' },{ url: 'https://api.yas.io/customer/v3/api-docs', name: 'Customer' },{ url: 'https://api.yas.io/cart/v3/api-docs', name: 'Cart' },{ url: 'https://api.yas.io/order/v3/api-docs', name: 'Order' },{ url: 'https://api.yas.io/inventory/v3/api-docs', name: 'Inventory' },{ url: 'https://api.yas.io/location/v3/api-docs', name: 'Location' },{ url: 'https://api.yas.io/tax/v3/api-docs', name: 'Tax' },{ url: 'https://api.yas.io/search/v3/api-docs', name: 'Search' },{ url: 'https://api.yas.io/payment/v3/api-docs', name: 'Payment' }]"
+    OAUTH_CLIENT_ID: "swagger-ui"
+    OAUTH_USE_PKCE: "true"
 
-tailscale:
-  backendIp: 100.91.182.4
 
 istio:
   enabled: false
-  domain: api.yas.local
+  domain: api.yas.io
 
 location:
   syncWave: 2
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-location
     tag: main
@@ -335,16 +277,11 @@ location:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30015
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP
 
 payment:
   syncWave: 2
-  enabled: false
+  enabled: true
   image:
     repository: ducquan19/yas-payment
     tag: main
@@ -356,9 +293,4 @@ payment:
       memory: 512Mi
       cpu: 500m
   service:
-    type: NodePort
-    port: 8082
-    nodePort: 30016
-  env: {}
-  secrets: {}
-  isBackend: true
+    type: ClusterIP

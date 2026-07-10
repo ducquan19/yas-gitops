@@ -1,12 +1,20 @@
-# Enable dependencies
 loki:
   enabled: true
   write:
     replicas: 1
+    podSecurityContext:
+      fsGroup: 10001
+      runAsUser: 10001
   read:
     replicas: 1
+    podSecurityContext:
+      fsGroup: 10001
+      runAsUser: 10001
   backend:
     replicas: 1
+    podSecurityContext:
+      fsGroup: 10001
+      runAsUser: 10001
   loki:
     commonConfig:
       replication_factor: 1
@@ -17,6 +25,11 @@ loki:
     type: 'filesystem'
   minio:
     enabled: true
+    podSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+  persistence:
+    storageClass: ebs-sc
   monitoring:
     selfMonitoring:
       enabled: false
@@ -27,13 +40,12 @@ promtail:
   enabled: true
   config:
     clients:
-      - url: http://loki-gateway/loki/api/v1/push
-    snippets:
-      pipelineStages:
-        - docker: {}
+      - url: http://observability-loki-gateway/loki/api/v1/push
 
 tempo:
   enabled: true
+  persistence:
+    storageClass: ebs-sc
   tempo:
     metricsGenerator:
       enabled: true
@@ -43,8 +55,14 @@ kube-prometheus-stack:
   enabled: true
   hostname: &hostname grafana.yas.local.com
   prometheus:
-    prometheusSpec:
-      enableRemoteWriteReceiver: true
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ebs-sc
+          resources:
+            requests:
+              storage: 20Gi
   grafana:
     enabled: true
     adminUser: admin
@@ -77,9 +95,6 @@ kube-prometheus-stack:
           nodeGraph:
             enabled: true
 
-# Custom subcharts
-grafana:
-  enabled: false
 
 opentelemetry:
   enabled: true

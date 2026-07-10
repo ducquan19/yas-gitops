@@ -1,0 +1,38 @@
+loki:
+  enabled: true
+  persistence:
+    storageClass: ebs-sc  # ← Dùng EBS
+
+promtail:
+  enabled: true
+
+tempo:
+  enabled: true
+  persistence:
+    storageClass: ebs-sc
+
+kube-prometheus-stack:
+  enabled: true
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: ebs-sc
+            resources:
+              requests:
+                storage: 20Gi
+  grafana:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: nginx
+      hosts:
+        - grafana.yas.io
+      tls:
+        - secretName: grafana-tls
+          hosts:
+            - grafana.yas.io
+
+kiali-server:
+  enabled: true

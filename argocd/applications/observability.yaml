@@ -11,6 +11,10 @@ spec:
     repoURL: https://github.com/ducquan19/yas-gitops.git
     targetRevision: main
     path: helm/observability
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-aws.yaml 
   destination:
     server: https://kubernetes.default.svc
     namespace: observability
