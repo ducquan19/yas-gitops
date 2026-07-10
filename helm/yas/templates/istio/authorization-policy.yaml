@@ -62,7 +62,7 @@ spec:
 
 ---
 # 2e. Cho phép nginx ingress trực tiếp vào các microservices (openapi-ingress bypass BFF)
-{{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "search" "tax" "sampledata" "payment" "rating" "recommendation" "location" }}
+{{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "tax" "sampledata" "payment" "rating" "recommendation" "location" }}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy

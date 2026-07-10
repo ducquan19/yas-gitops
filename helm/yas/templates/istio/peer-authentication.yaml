@@ -6,5 +6,5 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   mtls:
-    mode: PERMISSIVE
+    mode: STRICT
 {{- end }}
