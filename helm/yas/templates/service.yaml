@@ -18,8 +18,8 @@ spec:
   ports:
     - protocol: TCP
       name: http
-      port: {{ $serviceConfig.service.port }}
-      targetPort: {{ $serviceConfig.service.port }}
+      port: {{ $serviceConfig.service.port | default (default 8082 $serviceConfig.image.containerPort) }}
+      targetPort: {{ $serviceConfig.service.port | default (default 8082 $serviceConfig.image.containerPort) }}
       {{- if $serviceConfig.service.nodePort }}
       nodePort: {{ $serviceConfig.service.nodePort }}
       {{- end }}
