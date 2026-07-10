@@ -32,7 +32,14 @@ normalize_branch() {
 
 resolve_tag() {
   local branch="$1"
-  if [[ "$branch" == "main" || "$branch" == "latest" ]]; then
+  local values_file="$2"
+  local values_key="$3"
+
+  if [[ "$branch" == "main" ]]; then
+    # Read the existing stable tag from the file
+    bash jenkins/scripts/get-stable-tag.sh "$values_file" "$values_key"
+    return
+  elif [[ "$branch" == "latest" ]]; then
     printf '%s' "$branch"
     return
   fi
@@ -71,7 +78,7 @@ write_service() {
   local image_tag
 
   branch="$(normalize_branch "$(branch_value "$branch_env")")"
-  image_tag="$(resolve_tag "$branch")"
+  image_tag="$(resolve_tag "$branch" "$values_file" "$values_key")"
 
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
     "$service_name" \

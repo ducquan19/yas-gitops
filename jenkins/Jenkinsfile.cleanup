@@ -91,17 +91,19 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
                         ]
 
                     if (params.CLEANUP_MODE == 'RESET_TO_MAIN') {
-                        echo 'Mode RESET_TO_MAIN: resetting all 14 services → main'
+                        echo 'Mode RESET_TO_MAIN: resetting all 14 services to their stable tags'
                         serviceMap.each { row ->
                             def (valFile, svcKey, _) = row
-                            resetTag(valFile, svcKey, 'main')
+                            def stableTag = getStableTag(valFile, svcKey)
+                            resetTag(valFile, svcKey, stableTag)
                         }
                     } else {
-                        echo 'Mode SELECTIVE: resetting only checked services → main'
+                        echo 'Mode SELECTIVE: resetting only checked services to their stable tags'
                         serviceMap.each { row ->
                             def (valFile, svcKey, doReset) = row
                             if (doReset) {
-                                resetTag(valFile, svcKey, 'main')
+                                def stableTag = getStableTag(valFile, svcKey)
+                                resetTag(valFile, svcKey, stableTag)
                             }
                         }
                     }
@@ -175,4 +177,19 @@ def resetTag(String valuesFile, String svcKey, String tag) {
             > /tmp/reset-plan-${svcKey}.tsv
         bash jenkins/scripts/update-values.sh /tmp/reset-plan-${svcKey}.tsv
     """
+}
+
+def getStableTag(String valuesFile, String svcKey) {
+    return sh(
+        script: """
+            STABLE_COMMIT=\$(git log -E --grep="^(developer_build|cleanup_dev):" --invert-grep -n 1 --format="%H")
+            if [ -z "\$STABLE_COMMIT" ]; then
+                echo "main"
+                exit 0
+            fi
+            git show \$STABLE_COMMIT:\${valuesFile} > /tmp/stable_values_\${svcKey}.yaml || true
+            bash jenkins/scripts/get-stable-tag.sh /tmp/stable_values_\${svcKey}.yaml "${svcKey}"
+        """,
+        returnStdout: true
+    ).trim()
 }
