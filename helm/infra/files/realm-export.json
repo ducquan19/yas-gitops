@@ -650,11 +650,13 @@
         "http://localhost:3000/*",
         "http://localhost:8087/*",
         "http://backoffice.yas.local/*",
-        "http://backoffice.yas.local/redirect"
+        "http://backoffice.yas.local/redirect",
+        "https://backoffice.54.179.218.151.nip.io/*"
       ],
       "webOrigins": [
         "http://backoffice.yas.local",
-        "http://100.91.182.4:30004"
+        "http://100.91.182.4:30004",
+        "https://backoffice.54.179.218.151.nip.io"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -996,11 +998,13 @@
         "http://storefront/*",
         "http://localhost:8087/*",
         "http://storefront.yas.local/*",
-        "http://storefront.yas.local/redirect"
+        "http://storefront.yas.local/redirect",
+        "https://storefront.54.179.218.151.nip.io/*"
       ],
       "webOrigins": [
         "http://storefront.yas.local",
-        "http://100.91.182.4:30002"
+        "http://100.91.182.4:30002",
+        "https://storefront.54.179.218.151.nip.io"
       ],
       "notBefore": 0,
       "bearerOnly": false,
