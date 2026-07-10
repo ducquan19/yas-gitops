@@ -8,6 +8,12 @@ data:
     spring:
       cloud:
         gateway:
+          globalcors:
+            corsConfigurations:
+              '[/**]':
+                allowedOrigins: "*"
+                allowedMethods: "*"
+                allowedHeaders: "*"
           default-filters:
             - SaveSession
           routes:
