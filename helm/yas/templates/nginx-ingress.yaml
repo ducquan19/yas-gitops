@@ -8,6 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - storefront.{{ .Values.global.domain | default "yas.io" }}
