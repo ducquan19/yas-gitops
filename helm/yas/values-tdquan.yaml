@@ -97,7 +97,7 @@ cart:
 order:
   enabled: true
   image:
-    tag: main
+    tag: latest
 
 tax:
   enabled: true
