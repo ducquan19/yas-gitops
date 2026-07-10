@@ -57,6 +57,7 @@ data:
                 jwk-set-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
                 user-info-uri: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas/protocol/openid-connect/userinfo
                 user-name-attribute: preferred_username
+                issuer-uri: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas
 
       datasource:
         username: {{ .Values.global.postgresql.username }}
