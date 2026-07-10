@@ -131,6 +131,8 @@ spec:
               value: "none"
             - name: OTEL_PROPAGATORS
               value: "tracecontext,baggage"
+            - name: OTEL_JAVAAGENT_DEBUG
+              value: "true"
             {{- if contains "bff" $serviceName }}
             - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
               value: http://localhost:8082
