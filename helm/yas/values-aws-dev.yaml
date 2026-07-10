@@ -122,6 +122,16 @@ payment:
   image:
     repository: ducquan19/yas-payment
     tag: main
+rating:
+  enabled: true
+  image:
+    repository: ducquan19/yas-rating
+    tag: main
+recommendation:
+  enabled: true
+  image:
+    repository: ducquan19/yas-recommendation
+    tag: main
 sampledata:
   enabled: true
   image:

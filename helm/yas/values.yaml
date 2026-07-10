@@ -313,3 +313,37 @@ payment:
     type: ClusterIP
     port: 8082
   isBackend: true
+rating:
+  syncWave: 3
+  enabled: true
+  image:
+    repository: ducquan19/yas-rating
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: ClusterIP
+    port: 8082
+  isBackend: true
+recommendation:
+  syncWave: 3
+  enabled: true
+  image:
+    repository: ducquan19/yas-recommendation
+    tag: main
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  service:
+    type: ClusterIP
+    port: 8082
+  isBackend: true
