@@ -38,15 +38,13 @@ spec:
         # trong OIDC discovery endpoint (.well-known/openid-configuration).
         # Điều này rất quan trọng: browser cần URL này để redirect đến trang login.
         - name: KC_HOSTNAME
-          value: "identity"
-        - name: KC_HOSTNAME_PORT
-          value: "31080"
+          value: "identity.{{ .Values.global.domain | default "yas.io" }}"
         - name: KC_HOSTNAME_STRICT
           value: "false"
         - name: KC_HOSTNAME_STRICT_HTTPS
           value: "false"
-        - name: KC_PROXY
-          value: "edge"
+        - name: KC_PROXY_HEADERS
+          value: "xforwarded"
         volumeMounts:
         - name: realm-import
           mountPath: /opt/keycloak/data/import/realm-export.json
