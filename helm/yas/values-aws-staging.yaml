@@ -17,13 +17,13 @@ storefront-bff:
   enabled: true
   image:
     repository: ducquan19/yas-storefront-bff
-    tag: latest
+    tag: main
   uiHost: https://storefront.yas.io
 backoffice-bff:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice-bff
-    tag: latest
+    tag: main
   uiHost: https://backoffice.yas.io
 storefront-nextjs:
   enabled: true
@@ -37,7 +37,7 @@ backoffice-nextjs:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice
-    tag: latest
+    tag: main
   env:
     NEXT_PUBLIC_API_BASE_PATH: https://backoffice.yas.io
     API_BASE_PATH: http://backoffice-bff:8082/api
@@ -68,7 +68,7 @@ order:
   enabled: true
   image:
     repository: ducquan19/yas-order
-    tag: latest
+    tag: main
 customer:
   enabled: true
   image:
@@ -78,37 +78,37 @@ inventory:
   enabled: true
   image:
     repository: ducquan19/yas-inventory
-    tag: latest
+    tag: main
 media:
   enabled: true
   image:
     repository: ducquan19/yas-media
-    tag: latest
+    tag: main
 search:
   enabled: true
   image:
     repository: ducquan19/yas-search
-    tag: latest
+    tag: main
 tax:
   enabled: true
   image:
     repository: ducquan19/yas-tax
-    tag: latest
+    tag: main
 location:
   enabled: true
   image:
     repository: ducquan19/yas-location
-    tag: latest
+    tag: main
 payment:
   enabled: true
   image:
     repository: ducquan19/yas-payment
-    tag: latest
+    tag: main
 sampledata:
   enabled: true
   image:
     repository: ducquan19/yas-sampledata
-    tag: latest
+    tag: main
   env:
     SPRING_DATASOURCE_PRODUCT_URL: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/product
     SPRING_DATASOURCE_MEDIA_URL: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/media
@@ -117,8 +117,7 @@ sampledata:
     SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://identity.yas.io/realms/Yas
     CORS_ALLOWED_ORIGINS: https://storefront.yas.io,https://backoffice.yas.io
-tailscale:
-  backendIp: ''
+
 istio:
   enabled: false
   domain: api.yas.io
