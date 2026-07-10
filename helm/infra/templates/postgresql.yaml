@@ -52,7 +52,7 @@ spec:
           value: "admin"
         volumeMounts:
         - name: pg-data
-          mountPath: /var/lib/postgresql/data
+          mountPath: /var/lib/postgresql/data/pgdata
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d/init-databases.sql
           subPath: init-databases.sql

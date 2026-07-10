@@ -1,10 +1,4 @@
-# Custom Infrastructure values
-# We are using custom manifests in templates/ instead of Bitnami dependencies
-# to ensure exact match with yas original docker-compose images.
-
 global:
-  # Dummy values since we hardcoded in templates to avoid complexity
-  # In a production environment, these should be templated.
   postgresql:
     username: admin
     password: admin
