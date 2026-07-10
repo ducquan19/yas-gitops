@@ -1,5 +1,5 @@
 global:
-  domain: 54.179.218.151.nip.io
+  domain: staging.54.179.218.151.nip.io
   keycloak:
     issuerUri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas
   postgresql:
@@ -31,28 +31,28 @@ storefront-nextjs:
     repository: ducquan19/yas-storefront
     tag: latest
   env:
-    NEXT_PUBLIC_API_BASE_PATH: https://storefront.54.179.218.151.nip.io
-    API_BASE_PATH: https://storefront.54.179.218.151.nip.io/api
+    NEXT_PUBLIC_API_BASE_PATH: https://storefront.staging.54.179.218.151.nip.io
+    API_BASE_PATH: https://storefront.staging.54.179.218.151.nip.io/api
 backoffice-nextjs:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice
     tag: main
   env:
-    NEXT_PUBLIC_API_BASE_PATH: https://backoffice.54.179.218.151.nip.io
-    API_BASE_PATH: https://backoffice.54.179.218.151.nip.io/api
+    NEXT_PUBLIC_API_BASE_PATH: https://backoffice.staging.54.179.218.151.nip.io
+    API_BASE_PATH: https://backoffice.staging.54.179.218.151.nip.io/api
 swagger:
   enabled: true
   env:
-    URLS: '[{ url: ''https://api.54.179.218.151.nip.io/api/product/v3/api-docs'', name: ''Product''
-      },{ url: ''https://api.54.179.218.151.nip.io/api/media/v3/api-docs'', name: ''Media'' },{ url:
-      ''https://api.54.179.218.151.nip.io/api/customer/v3/api-docs'', name: ''Customer'' },{ url:
-      ''https://api.54.179.218.151.nip.io/api/cart/v3/api-docs'', name: ''Cart'' },{ url: ''https://api.54.179.218.151.nip.io/api/order/v3/api-docs'',
-      name: ''Order'' },{ url: ''https://api.54.179.218.151.nip.io/api/inventory/v3/api-docs'', name:
-      ''Inventory'' },{ url: ''https://api.54.179.218.151.nip.io/api/location/v3/api-docs'', name:
-      ''Location'' },{ url: ''https://api.54.179.218.151.nip.io/api/tax/v3/api-docs'', name: ''Tax''
-      },{ url: ''https://api.54.179.218.151.nip.io/api/search/v3/api-docs'', name: ''Search'' },{
-      url: ''https://api.54.179.218.151.nip.io/api/payment/v3/api-docs'', name: ''Payment'' }]'
+    URLS: '[{ url: ''https://api.staging.54.179.218.151.nip.io/api/product/v3/api-docs'', name: ''Product''
+      },{ url: ''https://api.staging.54.179.218.151.nip.io/api/media/v3/api-docs'', name: ''Media'' },{ url:
+      ''https://api.staging.54.179.218.151.nip.io/api/customer/v3/api-docs'', name: ''Customer'' },{ url:
+      ''https://api.staging.54.179.218.151.nip.io/api/cart/v3/api-docs'', name: ''Cart'' },{ url: ''https://api.staging.54.179.218.151.nip.io/api/order/v3/api-docs'',
+      name: ''Order'' },{ url: ''https://api.staging.54.179.218.151.nip.io/api/inventory/v3/api-docs'', name:
+      ''Inventory'' },{ url: ''https://api.staging.54.179.218.151.nip.io/api/location/v3/api-docs'', name:
+      ''Location'' },{ url: ''https://api.staging.54.179.218.151.nip.io/api/tax/v3/api-docs'', name: ''Tax''
+      },{ url: ''https://api.staging.54.179.218.151.nip.io/api/search/v3/api-docs'', name: ''Search'' },{
+      url: ''https://api.staging.54.179.218.151.nip.io/api/payment/v3/api-docs'', name: ''Payment'' }]'
     OAUTH_CLIENT_ID: swagger-ui
     OAUTH_USE_PKCE: 'true'
 product:
@@ -133,12 +133,12 @@ sampledata:
     SPRING_DATASOURCE_USERNAME: admin
     SPRING_DATASOURCE_PASSWORD: admin
     SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://identity.54.179.218.151.nip.io/realms/Yas
-    CORS_ALLOWED_ORIGINS: https://storefront.54.179.218.151.nip.io,https://backoffice.54.179.218.151.nip.io
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://identity.staging.54.179.218.151.nip.io/realms/Yas
+    CORS_ALLOWED_ORIGINS: https://storefront.staging.54.179.218.151.nip.io,https://backoffice.staging.54.179.218.151.nip.io
 
 istio:
   enabled: true
-  domain: api.54.179.218.151.nip.io
+  domain: api.staging.54.179.218.151.nip.io
 
 tailscale:
   backendIp: "54.179.218.151"
