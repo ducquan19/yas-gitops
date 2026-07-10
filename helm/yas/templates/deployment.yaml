@@ -135,6 +135,34 @@ spec:
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
               value: "*"
             {{- end }}
+            {{- if eq $serviceName "storefront-bff" }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_PROVIDER
+              value: keycloak
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID
+              value: storefront-bff
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET
+              value: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_AUTHORIZATION_GRANT_TYPE
+              value: authorization_code
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_SCOPE
+              value: openid,profile,email,roles
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_REDIRECT_URI
+              value: "{baseUrl}/login/oauth2/code/{registrationId}"
+            {{- end }}
+            {{- if eq $serviceName "backoffice-bff" }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_PROVIDER
+              value: keycloak
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_CLIENT_ID
+              value: backoffice-bff
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_CLIENT_SECRET
+              value: TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_AUTHORIZATION_GRANT_TYPE
+              value: authorization_code
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_SCOPE
+              value: openid,profile,email,roles
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_REDIRECT_URI
+              value: "{baseUrl}/login/oauth2/code/{registrationId}"
+            {{- end }}
             {{- if $serviceConfig.uiHost }}
             - name: UI_HOST
               value: {{ $serviceConfig.uiHost | quote }}

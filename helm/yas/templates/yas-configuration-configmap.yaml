@@ -56,21 +56,6 @@ data:
                 jwk-set-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
                 user-info-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/userinfo
                 user-name-attribute: preferred_username
-            registration:
-              keycloak:
-                provider: keycloak
-                client-id: storefront-bff
-                client-secret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn #gitleaks:allow
-                authorization-grant-type: authorization_code
-                scope: openid, profile, email, roles
-                redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-              api-client:
-                provider: keycloak
-                client-id: backoffice-bff
-                client-secret: TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF #gitleaks:allow
-                authorization-grant-type: authorization_code
-                scope: openid, profile, email, roles
-                redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
       datasource:
         username: {{ .Values.global.postgresql.username }}
