@@ -1,0 +1,179 @@
+# helm/yas/values-aws-prod.yaml
+# AWS Production environment - Single EKS Cluster
+
+global:
+  domain: dev.yas.io
+  keycloak:
+    # Sử dụng internal K8s DNS (giữ nguyên)
+    issuerUri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas
+  postgresql:
+    username: admin
+    password: admin  # ← Đổi sang AWS Secrets Manager trong production
+  kafka:
+    bootstrapServers: infra-kafka.infrastructure.svc.cluster.local:9092
+  redis:
+    host: infra-redis.infrastructure.svc.cluster.local
+    port: 6379
+  elasticsearch:
+    uris: http://infra-elasticsearch.infrastructure.svc.cluster.local:9200
+
+# ECR image prefix
+_ecr_prefix: &ecr_prefix "ducquan19"
+
+# --- BFF ---
+storefront-bff:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-storefront-bff"
+    tag: latest
+  service:
+    type: ClusterIP  # ← Đổi từ NodePort sang ClusterIP (dùng Ingress)
+  uiHost: "https://storefront.dev.yas.io"
+
+backoffice-bff:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-backoffice-bff"
+    tag: latest
+  service:
+    type: ClusterIP
+  uiHost: "https://backoffice.dev.yas.io"
+
+# --- Frontend ---
+storefront-nextjs:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-storefront"
+    tag: latest
+  service:
+    type: ClusterIP
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: "https://storefront.dev.yas.io"
+    API_BASE_PATH: "http://storefront-bff:8082/api"
+
+backoffice-nextjs:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-backoffice"
+    tag: latest
+  service:
+    type: ClusterIP
+  env:
+    NEXT_PUBLIC_API_BASE_PATH: "https://backoffice.dev.yas.io"
+    API_BASE_PATH: "http://backoffice-bff:8082/api"
+
+# --- Swagger UI ---
+swagger:
+  enabled: true
+  service:
+    type: ClusterIP
+  env:
+    URLS: "[{ url: 'https://api.dev.yas.io/product/v3/api-docs', name: 'Product' },{ url: 'https://api.dev.yas.io/media/v3/api-docs', name: 'Media' },{ url: 'https://api.dev.yas.io/customer/v3/api-docs', name: 'Customer' },{ url: 'https://api.dev.yas.io/cart/v3/api-docs', name: 'Cart' },{ url: 'https://api.dev.yas.io/order/v3/api-docs', name: 'Order' },{ url: 'https://api.dev.yas.io/inventory/v3/api-docs', name: 'Inventory' },{ url: 'https://api.dev.yas.io/location/v3/api-docs', name: 'Location' },{ url: 'https://api.dev.yas.io/tax/v3/api-docs', name: 'Tax' },{ url: 'https://api.dev.yas.io/search/v3/api-docs', name: 'Search' },{ url: 'https://api.dev.yas.io/payment/v3/api-docs', name: 'Payment' }]"
+    OAUTH_CLIENT_ID: "swagger-ui"
+    OAUTH_USE_PKCE: "true"
+
+# --- Backend Services ---
+product:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-product"
+    tag: latest
+  service:
+    type: ClusterIP
+
+cart:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-cart"
+    tag: latest
+  service:
+    type: ClusterIP
+
+order:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-order"
+    tag: latest
+  service:
+    type: ClusterIP
+
+customer:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-customer"
+    tag: latest
+  service:
+    type: ClusterIP
+
+inventory:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-inventory"
+    tag: latest
+  service:
+    type: ClusterIP
+
+media:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-media"
+    tag: latest
+  service:
+    type: ClusterIP
+
+search:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-search"
+    tag: latest
+  service:
+    type: ClusterIP
+
+tax:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-tax"
+    tag: latest
+  service:
+    type: ClusterIP
+
+location:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-location"
+    tag: latest
+  service:
+    type: ClusterIP
+
+payment:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-payment"
+    tag: latest
+  service:
+    type: ClusterIP
+
+sampledata:
+  enabled: true
+  image:
+    repository: "ducquan19/yas-sampledata"
+    tag: latest
+  service:
+    type: ClusterIP
+  env:
+    SPRING_DATASOURCE_PRODUCT_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/product"
+    SPRING_DATASOURCE_MEDIA_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/media"
+    SPRING_DATASOURCE_USERNAME: "admin"
+    SPRING_DATASOURCE_PASSWORD: "admin"
+    SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://identity.dev.yas.io/realms/Yas"
+    CORS_ALLOWED_ORIGINS: "https://storefront.dev.yas.io,https://backoffice.dev.yas.io"
+
+# Tắt Tailscale (không dùng trong AWS)
+tailscale:
+  backendIp: ""
+
+# Bật Istio nếu cần (optional)
+istio:
+  enabled: false
+  domain: api.dev.yas.io
