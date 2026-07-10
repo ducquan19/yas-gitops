@@ -182,6 +182,8 @@ def resetTag(String valuesFile, String svcKey, String tag) {
 def getStableTag(String valuesFile, String svcKey) {
     return sh(
         script: """
+            # Ensure we have enough history to find the stable commit
+            git fetch --depth=50 origin main || true
             STABLE_COMMIT=\$(git log -E --grep="^(developer_build|cleanup_dev):" --invert-grep -n 1 --format="%H")
             if [ -z "\$STABLE_COMMIT" ]; then
                 echo "main"
