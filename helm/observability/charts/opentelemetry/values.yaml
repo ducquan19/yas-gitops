@@ -12,15 +12,23 @@ opentelemetryCollectorConfig:
           endpoint: 0.0.0.0:4317
         http:
           endpoint: 0.0.0.0:4318
+
   processors:
     batch: {}
 
   exporters:
+    debug: {}
+
     otlphttp:
       endpoint: http://observability-tempo:4318
+
   service:
     pipelines:
       traces:
-        receivers: [otlp]
-        processors: [batch]
-        exporters: [otlphttp]
+        receivers:
+          - otlp
+        processors:
+          - batch
+        exporters:
+          - debug
+          - otlphttp
