@@ -64,6 +64,7 @@ spec:
   - metadata:
       name: pg-data
     spec:
+      storageClassName: ebs-sc
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:

@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: yas-aws
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: staging
+            namespace: yas-staging
+          - env: dev
+            namespace: yas-dev
+  template:
+    metadata:
+      name: "yas-{{env}}"
+    spec:
+      project: yas
+      source:
+        repoURL: https://github.com/ducquan19/yas-gitops.git
+        targetRevision: main
+        path: helm/yas
+        helm:
+          valueFiles:
+            - values.yaml
+            - "values-aws-{{env}}.yaml"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

@@ -48,6 +48,7 @@ spec:
   - metadata:
       name: kafka-data
     spec:
+      storageClassName: ebs-sc
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
