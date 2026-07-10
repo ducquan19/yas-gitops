@@ -30,9 +30,11 @@ spec:
               BACKOFFICE_ID=$(/opt/keycloak/bin/kcadm.sh get clients -r Yas -q clientId=backoffice-bff --fields id --format csv --noquotes | tail -n 1)
 
               /opt/keycloak/bin/kcadm.sh update clients/${STOREFRONT_ID} -r Yas \
+                -s 'secret=ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn' \
                 -s 'redirectUris=["http://storefront.yas.local/*","https://storefront.{{ .Values.global.domain | default "yas.io" }}/*"]' \
                 -s 'webOrigins=["http://storefront.yas.local","https://storefront.{{ .Values.global.domain | default "yas.io" }}"]'
 
               /opt/keycloak/bin/kcadm.sh update clients/${BACKOFFICE_ID} -r Yas \
+                -s 'secret=TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF' \
                 -s 'redirectUris=["http://backoffice.yas.local/*","https://backoffice.{{ .Values.global.domain | default "yas.io" }}/*"]' \
                 -s 'webOrigins=["http://backoffice.yas.local","https://backoffice.{{ .Values.global.domain | default "yas.io" }}"]'
