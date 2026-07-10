@@ -71,68 +71,25 @@ spec:
   - {} # Allow all — public UI endpoint
 
 ---
-# 2e. Cho phép nginx ingress trực tiếp vào product (yas-public-api-ingress bypass BFF)
+# 2e. Cho phép nginx ingress trực tiếp vào các microservices (openapi-ingress bypass BFF)
+{{- range $svcName := list "product" "cart" "order" "customer" "media" "inventory" "search" "tax" "sampledata" "payment" "rating" "recommendation" "location" }}
+---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-ingress-to-product
+  name: allow-ingress-to-{{ $svcName }}
   namespace: {{ $.Release.Namespace }}
 spec:
   selector:
     matchLabels:
-      app: product
+      app: {{ $svcName }}
   action: ALLOW
   rules:
-  - {} # Allow all — product được expose trực tiếp qua public-api-ingress
+  - {} # Allow all — swagger UI (v3/api-docs) và public APIs cần public accessible
+{{- end }}
 
 ---
-# 2f. Cho phép nginx ingress trực tiếp vào search (yas-public-api-ingress bypass BFF)
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-ingress-to-search
-  namespace: {{ $.Release.Namespace }}
-spec:
-  selector:
-    matchLabels:
-      app: search
-  action: ALLOW
-  rules:
-  - {} # Allow all — search được expose trực tiếp qua public-api-ingress
-
----
-# 2g. Cho phép nginx ingress trực tiếp vào sampledata
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-ingress-to-sampledata
-  namespace: {{ $.Release.Namespace }}
-spec:
-  selector:
-    matchLabels:
-      app: sampledata
-  action: ALLOW
-  rules:
-  - {} # Allow all — sampledata cần accessible từ BFF qua nginx workaround
-
----
-# 2h. Cho phép nginx ingress trực tiếp vào media (yas-media-ingress bypass BFF)
-#     Browser load ảnh trực tiếp qua /api/media/** → media:8082
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-ingress-to-media
-  namespace: {{ $.Release.Namespace }}
-spec:
-  selector:
-    matchLabels:
-      app: media
-  action: ALLOW
-  rules:
-  - {} # Allow all — media images phải public accessible
-
----
-# 2i. Cho phép nginx ingress trực tiếp vào swagger (yas-swagger-ingress bypass BFF)
+# 2f. Cho phép nginx ingress trực tiếp vào swagger (yas-swagger-ingress bypass BFF)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
