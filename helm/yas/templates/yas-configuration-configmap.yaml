@@ -51,6 +51,7 @@ data:
           client:
             provider:
               keycloak:
+                issuer-uri: http://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas
                 authorization-uri: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas/protocol/openid-connect/auth
                 token-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/token
                 jwk-set-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
