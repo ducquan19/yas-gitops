@@ -23,7 +23,6 @@ data:
                 - Path=/api/product/**
               filters:
                 - StripPrefix=1
-                - TokenRelay=
             - id: location_api
               uri: http://location:8082
               order: -1
@@ -135,7 +134,6 @@ data:
                 - Path=/api/sampledata/**
               filters:
                 - RewritePath=/api/(?<segment>.*), /$\{segment}
-                - TokenRelay=
             - id: openapi
               uri: forward:///v3/api-docs
               order: -1
