@@ -275,7 +275,7 @@ swagger:
     OAUTH_CLIENT_ID: swagger-ui
     OAUTH_USE_PKCE: 'true'
 istio:
-  enabled: false
+  enabled: true
   domain: api.yas.io
 location:
   syncWave: 2
