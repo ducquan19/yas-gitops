@@ -35,7 +35,7 @@ storefront-bff:
   enabled: true
   image:
     repository: ducquan19/yas-storefront-bff
-    tag: main
+    tag: latest
   resources:
     requests:
       memory: 256Mi
@@ -72,7 +72,7 @@ backoffice-bff:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice-bff
-    tag: main
+    tag: latest
   resources:
     requests:
       memory: 256Mi
