@@ -162,6 +162,16 @@ spec:
               value: StripPrefix=1
             - name: SPRING_CLOUD_GATEWAY_ROUTES_2_FILTERS_1
               value: TokenRelay=
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_3_ID
+              value: sampledata_api_direct
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_3_URI
+              value: http://sampledata:8094
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_3_ORDER
+              value: "-100"
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_0
+              value: Path=/api/sampledata/**
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_3_FILTERS_0
+              value: RewritePath=/api/(?<segment>.*),/$\{segment}
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
               value: "*"
             {{- end }}
