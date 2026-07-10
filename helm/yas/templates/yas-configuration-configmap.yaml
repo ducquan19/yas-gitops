@@ -47,11 +47,14 @@ data:
         oauth2:
           resourceserver:
             jwt:
-              issuer-uri: https://identity.yas.io/realms/Yas
+              jwk-set-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
           client:
             provider:
               keycloak:
-                issuer-uri: https://identity.yas.io/realms/Yas
+                authorization-uri: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas/protocol/openid-connect/auth
+                token-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/token
+                jwk-set-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
+                user-info-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/userinfo
 
       datasource:
         username: {{ .Values.global.postgresql.username }}
@@ -74,11 +77,11 @@ data:
 
     springdoc:
       oauthflow:
-        authorization-url: https://identity.yas.io/realms/Yas/protocol/openid-connect/auth
-        token-url: https://identity.yas.io/realms/Yas/protocol/openid-connect/token
+        authorization-url: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas/protocol/openid-connect/auth
+        token-url: https://identity.{{ .Values.global.domain | default "yas.io" }}/realms/Yas/protocol/openid-connect/token
 
     yas:
-      publicUrl: https://api.yas.io/api/media
+      publicUrl: https://api.{{ .Values.global.domain | default "yas.io" }}/api/media
       services:
         cart: http://cart:8082/cart
         customer: http://customer:8082/customer
