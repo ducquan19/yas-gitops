@@ -5,9 +5,8 @@
 #   2. Full service URLs
 #
 # TSV column layout:
-#   1  service_name   2  branch    3  image_tag   4  cluster_name
-#   5  values_file    6  values_key  7  argocd_app  8  access_host
-#   9  node_port
+#   1  service_name   2  branch    3  image_tag
+#   4  values_file    5  values_key
 set -euo pipefail
 
 PLAN_FILE="${1:-developer-build-plan.tsv}"
@@ -18,23 +17,7 @@ if [[ ! -f "$PLAN_FILE" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 1. ArgoCD applications
-# ---------------------------------------------------------------------------
-echo ""
-echo "┌──────────────────────────────────────────────────────────────────┐"
-echo "│          ArgoCD applications that will be synced                 │"
-echo "└──────────────────────────────────────────────────────────────────┘"
-awk -F '\t' '
-  {
-    key = $7 "\t" $5
-    if (!seen_app[key]++) {
-      printf "  %-20s  →  %s\n", $7, $5
-    }
-  }
-' "$PLAN_FILE"
-
-# ---------------------------------------------------------------------------
-# 2. Service access URLs
+# 1. Service access URLs
 # ---------------------------------------------------------------------------
 echo ""
 echo "┌──────────────────────────────────────────────────────────────────┐"
@@ -52,7 +35,7 @@ echo "  NOTE: Wait ~60 s for ArgoCD to finish syncing before testing."
 echo "────────────────────────────────────────────────────────────────────"
 
 # ---------------------------------------------------------------------------
-# 3. Generate HTML snippet for Jenkins Build Description
+# 2. Generate HTML snippet for Jenkins Build Description
 # ---------------------------------------------------------------------------
 cat << 'EOF' > urls.html
 <br/><br/>

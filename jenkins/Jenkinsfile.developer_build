@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     def changed = sh(
-                        script: 'git status --porcelain helm/yas/values-*.yaml',
+                        script: 'git status --porcelain helm/yas/values*.yaml',
                         returnStdout: true
                     ).trim()
 
@@ -61,7 +61,7 @@ pipeline {
                             git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ducquan19/yas-gitops.git
                             git config user.email "ducq317@gmail.com"
                             git config user.name "ducquan19"
-                            git add helm/yas/values-*.yaml
+                            git add helm/yas/values*.yaml
                             git commit -m "developer_build: update service image tags [build #${BUILD_NUMBER}]"
                             git push -u origin HEAD:main
                         '''

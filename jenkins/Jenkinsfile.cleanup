@@ -113,7 +113,7 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
 
         stage('Show diff') {
             steps {
-                sh 'git diff -- helm/yas/values-*.yaml || true'
+                sh 'git diff -- helm/yas/values*.yaml || true'
             }
         }
 
@@ -124,7 +124,7 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
             steps {
                 script {
                     def changed = sh(
-                        script: 'git status --porcelain helm/yas/values-*.yaml',
+                        script: 'git status --porcelain helm/yas/values*.yaml',
                         returnStdout: true
                     ).trim()
 
@@ -138,7 +138,7 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
                             git remote set-url origin https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/ducquan19/yas-gitops.git
                             git config user.email "ducq317@gmail.com"
                             git config user.name "ducquan19"
-                            git add helm/yas/values-*.yaml
+                            git add helm/yas/values*.yaml
                             git commit -m "cleanup_dev: reset image tags to main [build #${BUILD_NUMBER}]"
                             git push -u origin HEAD:main
                         '''
@@ -172,7 +172,7 @@ SELECTIVE     → chỉ reset những service bạn bật checkbox bên dưới.
 def resetTag(String valuesFile, String svcKey, String tag) {
     echo "  Resetting ${svcKey} in ${valuesFile} → ${tag}"
     sh """
-        printf '%s\\t%s\\t%s\\tcluster-x\\t%s\\t%s\\tN/A\\tN/A\\tN/A\\n' \
+        printf '%s\\t%s\\t%s\\t%s\\t%s\\n' \
             '${svcKey}' '${tag}' '${tag}' '${valuesFile}' '${svcKey}' \
             > /tmp/reset-plan-${svcKey}.tsv
         bash jenkins/scripts/update-values.sh /tmp/reset-plan-${svcKey}.tsv
