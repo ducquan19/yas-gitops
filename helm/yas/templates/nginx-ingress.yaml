@@ -54,6 +54,13 @@ spec:
     - host: api.{{ .Values.global.domain | default "yas.io" }}
       http:
         paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 8082
           - path: /storefront
             pathType: Prefix
             backend:
