@@ -58,8 +58,16 @@ data:
                 user-name-attribute: preferred_username
             registration:
               keycloak:
+                provider: keycloak
+                client-id: storefront-bff
+                client-secret: ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn #gitleaks:allow
+                scope: openid, profile, email, roles
                 redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
               api-client:
+                provider: keycloak
+                client-id: backoffice-bff
+                client-secret: TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF #gitleaks:allow
+                scope: openid, profile, email, roles
                 redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
       datasource:
