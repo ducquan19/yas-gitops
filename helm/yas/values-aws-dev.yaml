@@ -32,8 +32,7 @@ storefront-nextjs:
     tag: latest
   env:
     NEXT_PUBLIC_API_BASE_PATH: https://storefront.54.179.218.151.nip.io
-    API_BASE_PATH: http://storefront-bff:8082/api
-    RESTART_DATE: "2026-07-11"
+    API_BASE_PATH: https://storefront.54.179.218.151.nip.io/api
 backoffice-nextjs:
   enabled: true
   image:
@@ -41,8 +40,7 @@ backoffice-nextjs:
     tag: main
   env:
     NEXT_PUBLIC_API_BASE_PATH: https://backoffice.54.179.218.151.nip.io
-    API_BASE_PATH: http://backoffice-bff:8082/api
-    RESTART_DATE: "2026-07-11"
+    API_BASE_PATH: https://backoffice.54.179.218.151.nip.io/api
 swagger:
   enabled: true
   env:
