@@ -2,8 +2,7 @@
 # print-access-urls.sh
 # Reads the plan TSV (produced by resolve-branch-tags.sh) and prints:
 #   1. Which ArgoCD applications will be synced
-#   2. Full service URLs  →  http://<worker-ip>:<NodePort>
-#   3. /etc/hosts entries the developer needs to add
+#   2. Full service URLs
 #
 # TSV column layout:
 #   1  service_name   2  branch    3  image_tag   4  cluster_name
@@ -39,91 +38,28 @@ awk -F '\t' '
 # ---------------------------------------------------------------------------
 echo ""
 echo "┌──────────────────────────────────────────────────────────────────┐"
-echo "│   Service endpoints  (http://WORKER_IP:NodePort)                 │"
-echo "│   Add the hosts entries below so domain names resolve locally.   │"
+echo "│   Service endpoints                                              │"
 echo "└──────────────────────────────────────────────────────────────────┘"
 echo ""
-printf "  %-22s %-10s %-22s %s\n" "SERVICE" "CLUSTER" "IMAGE TAG" "URL"
-printf "  %-22s %-10s %-22s %s\n" "-------" "-------" "---------" "---"
+printf "  %-22s %s\n" "SERVICE" "URL"
+printf "  %-22s %s\n" "-------" "---"
+printf "  %-22s %s\n" "Storefront" "http://storefront.54.179.218.151.nip.io/"
+printf "  %-22s %s\n" "Backoffice" "http://backoffice.54.179.218.151.nip.io/"
+printf "  %-22s %s\n" "Swagger" "http://api.54.179.218.151.nip.io/swagger-ui"
 
-while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
-                         values_key argocd_app access_host node_port; do
-  [[ -z "${svc_name:-}" ]] && continue
-
-  # Determine domain name based on service
-  domain="api.yas.local"
-  if [[ "$svc_name" == "storefront" || "$svc_name" == "storefront-nextjs" ]]; then
-    domain="storefront.yas.local"
-  elif [[ "$svc_name" == "backoffice" || "$svc_name" == "backoffice-nextjs" ]]; then
-    domain="backoffice.yas.local"
-  fi
-
-  if [[ -n "${node_port:-}" ]]; then
-    url="http://${domain}:${node_port}"
-  else
-    url="http://${domain}:<NodePort>"
-  fi
-
-  # Truncate long SHA tags for readability
-  short_tag="${image_tag:0:12}"
-  [[ "${#image_tag}" -gt 12 ]] && short_tag="${short_tag}…"
-
-  printf "  %-22s %-10s %-22s %s\n" "$svc_name" "$cluster_name" "$short_tag" "$url"
-done < "$PLAN_FILE"
-
-# ---------------------------------------------------------------------------
-# 3. /etc/hosts hint
-# ---------------------------------------------------------------------------
-echo ""
-echo "┌──────────────────────────────────────────────────────────────────┐"
-echo "│   Add to your hosts file (if not already present)               │"
-echo "│   Windows : C:\\Windows\\System32\\drivers\\etc\\hosts              │"
-echo "│   Linux   : /etc/hosts                                           │"
-echo "└──────────────────────────────────────────────────────────────────┘"
-awk -F '\t' '
-  {
-    ip = $8
-    if (!seen[ip]++) {
-      printf "  %-18s  storefront.yas.local backoffice.yas.local api.yas.local\n", ip
-    }
-  }
-' "$PLAN_FILE"
-
-echo ""
-echo "  Example:  echo '100.91.182.4  storefront.yas.local backoffice.yas.local api.yas.local' >> /etc/hosts"
-echo "  Then open:  http://api.yas.local:30011  (tax-service)"
 echo ""
 echo "  NOTE: Wait ~60 s for ArgoCD to finish syncing before testing."
 echo "────────────────────────────────────────────────────────────────────"
 
 # ---------------------------------------------------------------------------
-# 4. Generate HTML snippet for Jenkins Build Description
+# 3. Generate HTML snippet for Jenkins Build Description
 # ---------------------------------------------------------------------------
 cat << 'EOF' > urls.html
 <br/><br/>
 <b>Service Endpoints:</b><br/>
 <ul>
+<li><b>Storefront</b>: <a href="http://storefront.54.179.218.151.nip.io/" target="_blank">http://storefront.54.179.218.151.nip.io/</a></li>
+<li><b>Backoffice</b>: <a href="http://backoffice.54.179.218.151.nip.io/" target="_blank">http://backoffice.54.179.218.151.nip.io/</a></li>
+<li><b>Swagger</b>: <a href="http://api.54.179.218.151.nip.io/swagger-ui" target="_blank">http://api.54.179.218.151.nip.io/swagger-ui</a></li>
+</ul>
 EOF
-
-while IFS=$'\t' read -r svc_name branch image_tag cluster_name values_file \
-                         values_key argocd_app access_host node_port; do
-  [[ -z "${svc_name:-}" ]] && continue
-
-  # Determine domain name based on service
-  domain="api.yas.local"
-  if [[ "$svc_name" == "storefront" || "$svc_name" == "storefront-nextjs" ]]; then
-    domain="storefront.yas.local"
-  elif [[ "$svc_name" == "backoffice" || "$svc_name" == "backoffice-nextjs" ]]; then
-    domain="backoffice.yas.local"
-  fi
-
-  if [[ -n "${node_port:-}" ]]; then
-    url="http://${domain}"
-  else
-    url="http://${domain}"
-  fi
-
-  echo "<li><b>${svc_name}</b>: <a href=\"${url}\" target=\"_blank\">${url}</a></li>" >> urls.html
-done < "$PLAN_FILE"
-
-echo "</ul>" >> urls.html
