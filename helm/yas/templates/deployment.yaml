@@ -112,7 +112,7 @@ spec:
             - name: SPRING_CONFIG_IMPORT
               value: optional:file:/opt/yas/config/application.yaml{{- if contains "bff" $serviceName }},optional:file:/opt/yas/gateway-routes-config/gateway-routes.yaml{{- end }}
             - name: JAVA_TOOL_OPTIONS
-              value: "-javaagent:/otel/opentelemetry-javaagent.jar"
+              value: "--add-opens=java.base/java.lang=ALL-UNNAMED -javaagent:/otel/opentelemetry-javaagent.jar"
             - name: OTEL_SERVICE_NAME
               value: {{ $serviceName | quote }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT

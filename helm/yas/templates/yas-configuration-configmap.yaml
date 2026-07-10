@@ -55,6 +55,12 @@ data:
                 token-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/token
                 jwk-set-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/certs
                 user-info-uri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas/protocol/openid-connect/userinfo
+                user-name-attribute: preferred_username
+            registration:
+              keycloak:
+                redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+              api-client:
+                redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
       datasource:
         username: {{ .Values.global.postgresql.username }}
