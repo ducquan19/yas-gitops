@@ -158,7 +158,7 @@ order:
   enabled: true
   image:
     repository: ducquan19/yas-order
-    tag: main
+    tag: 9d7f1177590aaa26e986227c3541f68f2c43d05d
   resources:
     requests:
       memory: 256Mi
