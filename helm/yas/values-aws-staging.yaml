@@ -1,5 +1,5 @@
 global:
-  domain: yas.io
+  domain: 54.179.218.151.nip.io
   keycloak:
     issuerUri: http://infra-keycloak.infrastructure.svc.cluster.local/realms/Yas
   postgresql:
@@ -31,27 +31,28 @@ storefront-nextjs:
     repository: ducquan19/yas-storefront
     tag: latest
   env:
-    NEXT_PUBLIC_API_BASE_PATH: https://storefront.yas.io
-    API_BASE_PATH: http://storefront-bff:8082/api
+    NEXT_PUBLIC_API_BASE_PATH: https://storefront.54.179.218.151.nip.io
+    API_BASE_PATH: https://storefront.54.179.218.151.nip.io/api
 backoffice-nextjs:
   enabled: true
   image:
     repository: ducquan19/yas-backoffice
     tag: main
   env:
-    NEXT_PUBLIC_API_BASE_PATH: https://backoffice.yas.io
-    API_BASE_PATH: http://backoffice-bff:8082/api
+    NEXT_PUBLIC_API_BASE_PATH: https://backoffice.54.179.218.151.nip.io
+    API_BASE_PATH: https://backoffice.54.179.218.151.nip.io/api
 swagger:
   enabled: true
   env:
-    URLS: '[{ url: ''https://api.yas.io/product/v3/api-docs'', name: ''Product'' },{
-      url: ''https://api.yas.io/media/v3/api-docs'', name: ''Media'' },{ url: ''https://api.yas.io/customer/v3/api-docs'',
-      name: ''Customer'' },{ url: ''https://api.yas.io/cart/v3/api-docs'', name: ''Cart''
-      },{ url: ''https://api.yas.io/order/v3/api-docs'', name: ''Order'' },{ url:
-      ''https://api.yas.io/inventory/v3/api-docs'', name: ''Inventory'' },{ url: ''https://api.yas.io/location/v3/api-docs'',
-      name: ''Location'' },{ url: ''https://api.yas.io/tax/v3/api-docs'', name: ''Tax''
-      },{ url: ''https://api.yas.io/search/v3/api-docs'', name: ''Search'' },{ url:
-      ''https://api.yas.io/payment/v3/api-docs'', name: ''Payment'' }]'
+    URLS: '[{ url: ''https://api.54.179.218.151.nip.io/api/product/v3/api-docs'', name: ''Product''
+      },{ url: ''https://api.54.179.218.151.nip.io/api/media/v3/api-docs'', name: ''Media'' },{ url:
+      ''https://api.54.179.218.151.nip.io/api/customer/v3/api-docs'', name: ''Customer'' },{ url:
+      ''https://api.54.179.218.151.nip.io/api/cart/v3/api-docs'', name: ''Cart'' },{ url: ''https://api.54.179.218.151.nip.io/api/order/v3/api-docs'',
+      name: ''Order'' },{ url: ''https://api.54.179.218.151.nip.io/api/inventory/v3/api-docs'', name:
+      ''Inventory'' },{ url: ''https://api.54.179.218.151.nip.io/api/location/v3/api-docs'', name:
+      ''Location'' },{ url: ''https://api.54.179.218.151.nip.io/api/tax/v3/api-docs'', name: ''Tax''
+      },{ url: ''https://api.54.179.218.151.nip.io/api/search/v3/api-docs'', name: ''Search'' },{
+      url: ''https://api.54.179.218.151.nip.io/api/payment/v3/api-docs'', name: ''Payment'' }]'
     OAUTH_CLIENT_ID: swagger-ui
     OAUTH_USE_PKCE: 'true'
 product:
@@ -68,7 +69,7 @@ order:
   enabled: true
   image:
     repository: ducquan19/yas-order
-    tag: main
+    tag: latest
 customer:
   enabled: true
   image:
@@ -84,6 +85,23 @@ media:
   image:
     repository: ducquan19/yas-media
     tag: main
+  initContainers:
+    - name: copy-sample-images
+      image: ducquan19/yas-sample-images:main
+      command:
+        - sh
+        - -c
+        - cp -R /sample-images/. /images/
+      volumeMounts:
+        - name: sample-images
+          mountPath: /images
+  extraVolumes:
+    - name: sample-images
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: sample-images
+      mountPath: /images
+      readOnly: true
 search:
   enabled: true
   image:
@@ -115,9 +133,12 @@ sampledata:
     SPRING_DATASOURCE_USERNAME: admin
     SPRING_DATASOURCE_PASSWORD: admin
     SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://identity.yas.io/realms/Yas
-    CORS_ALLOWED_ORIGINS: https://storefront.yas.io,https://backoffice.yas.io
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://identity.54.179.218.151.nip.io/realms/Yas
+    CORS_ALLOWED_ORIGINS: https://storefront.54.179.218.151.nip.io,https://backoffice.54.179.218.151.nip.io
 
 istio:
-  enabled: false
-  domain: api.yas.io
+  enabled: true
+  domain: api.54.179.218.151.nip.io
+
+tailscale:
+  backendIp: "54.179.218.151"
