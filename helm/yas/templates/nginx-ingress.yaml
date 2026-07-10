@@ -110,6 +110,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: infra-keycloak
+                name: identity
                 port:
                   number: 80
