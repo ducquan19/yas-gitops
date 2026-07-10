@@ -37,6 +37,13 @@ spec:
     - host: backoffice.{{ .Values.global.domain | default "yas.io" }}
       http:
         paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 8082
           - path: /
             pathType: Prefix
             backend:
