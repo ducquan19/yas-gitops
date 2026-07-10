@@ -17,7 +17,7 @@ spec:
       initContainers:
       - name: remove-meta-properties
         image: busybox:1.36
-        command: ['sh', '-c', 'rm -f /var/lib/kafka/data/meta.properties']
+        command: ['sh', '-c', 'rm -f /var/lib/kafka/data/meta.properties && chown -R 1000:1000 /var/lib/kafka/data']
         volumeMounts:
         - name: kafka-data
           mountPath: /var/lib/kafka/data
