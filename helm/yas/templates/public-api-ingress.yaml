@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yas-public-api-ingress
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /product/storefront/$2
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - storefront.{{ .Values.global.domain | default "yas.io" }}
+        - api.{{ .Values.global.domain | default "yas.io" }}
+      secretName: yas-tls-secret
+  rules:
+    - host: storefront.{{ .Values.global.domain | default "yas.io" }}
+      http:
+        paths:
+          - path: /api/product/storefront(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: product
+                port:
+                  number: 8082
+    - host: api.{{ .Values.global.domain | default "yas.io" }}
+      http:
+        paths:
+          - path: /api/product/storefront(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: product
+                port:
+                  number: 8082
