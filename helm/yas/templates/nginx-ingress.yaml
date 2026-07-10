@@ -49,6 +49,13 @@ spec:
                 name: storefront-bff
                 port:
                   number: 8082
+          - path: /logout
+            pathType: Prefix
+            backend:
+              service:
+                name: storefront-bff
+                port:
+                  number: 8082
           - path: /
             pathType: Prefix
             backend:
@@ -74,6 +81,13 @@ spec:
                 port:
                   number: 8082
           - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: backoffice-bff
+                port:
+                  number: 8082
+          - path: /logout
             pathType: Prefix
             backend:
               service:
