@@ -103,7 +103,7 @@ payment:
   enabled: true
   image:
     repository: ducquan19/yas-payment
-    tag: main
+    tag: latest
 sampledata:
   enabled: true
   image:
