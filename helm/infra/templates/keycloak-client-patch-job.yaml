@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: infra-keycloak-client-patch
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: keycloak-client-patch
+          image: quay.io/keycloak/keycloak:26.0.2
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              /opt/keycloak/bin/kcadm.sh config credentials \
+                --server http://infra-keycloak.{{ .Release.Namespace }}.svc.cluster.local \
+                --realm master \
+                --user admin \
+                --password admin
+
+              STOREFRONT_ID=$(/opt/keycloak/bin/kcadm.sh get clients -r Yas -q clientId=storefront-bff --fields id --format csv --noquotes | tail -n 1)
+              BACKOFFICE_ID=$(/opt/keycloak/bin/kcadm.sh get clients -r Yas -q clientId=backoffice-bff --fields id --format csv --noquotes | tail -n 1)
+
+              /opt/keycloak/bin/kcadm.sh update clients/${STOREFRONT_ID} -r Yas \
+                -s 'redirectUris=["http://storefront.yas.local/*","https://storefront.{{ .Values.global.domain | default "yas.io" }}/*"]' \
+                -s 'webOrigins=["http://storefront.yas.local","https://storefront.{{ .Values.global.domain | default "yas.io" }}"]'
+
+              /opt/keycloak/bin/kcadm.sh update clients/${BACKOFFICE_ID} -r Yas \
+                -s 'redirectUris=["http://backoffice.yas.local/*","https://backoffice.{{ .Values.global.domain | default "yas.io" }}/*"]' \
+                -s 'webOrigins=["http://backoffice.yas.local","https://backoffice.{{ .Values.global.domain | default "yas.io" }}"]'
