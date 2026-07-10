@@ -60,4 +60,4 @@ while IFS=$'\t' read -r service_name branch image_tag cluster_name values_file v
 done < "$plan_file"
 
 echo "GitOps values diff:"
-git diff -- helm/yas/values-*.yaml || true
+git diff -- helm/yas/values*.yaml || true
