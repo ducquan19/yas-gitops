@@ -10,7 +10,8 @@ spec:
   {} # Không có allow rule nào -> Chặn tất cả
 
 ---
-# 2a. Cho phép Nginx Ingress Controller (kube-system) gọi vào storefront-bff
+# 2a. Cho phép tất cả traffic vào storefront-bff (public endpoint qua nginx)
+#     Nginx ingress không có Istio sidecar nên không thể dùng source.namespaces/principals
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -22,12 +23,10 @@ spec:
       app: storefront-bff
   action: ALLOW
   rules:
-  - from:
-    - source:
-        namespaces: ["istio-system", "kube-system"]
+  - {} # Allow all — nginx ingress không có sidecar, không thể xác thực namespace
 
 ---
-# 2b. Cho phép Nginx Ingress Controller (kube-system) gọi vào backoffice-bff
+# 2b. Cho phép tất cả traffic vào backoffice-bff (public endpoint qua nginx)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -39,12 +38,10 @@ spec:
       app: backoffice-bff
   action: ALLOW
   rules:
-  - from:
-    - source:
-        namespaces: ["istio-system", "kube-system"]
+  - {} # Allow all — nginx ingress không có sidecar
 
 ---
-# 2c. Cho phép Nginx Ingress Controller gọi vào storefront-nextjs (UI)
+# 2c. Cho phép tất cả traffic vào storefront-nextjs (public UI)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -56,12 +53,10 @@ spec:
       app: storefront-nextjs
   action: ALLOW
   rules:
-  - from:
-    - source:
-        namespaces: ["istio-system", "kube-system"]
+  - {} # Allow all — public UI endpoint
 
 ---
-# 2d. Cho phép Nginx Ingress Controller gọi vào backoffice-nextjs (UI)
+# 2d. Cho phép tất cả traffic vào backoffice-nextjs (public UI)
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -73,9 +68,7 @@ spec:
       app: backoffice-nextjs
   action: ALLOW
   rules:
-  - from:
-    - source:
-        namespaces: ["istio-system", "kube-system"]
+  - {} # Allow all — public UI endpoint
 
 ---
 # 3. Cho phép BFF gọi vào Core Microservices — một policy per service
