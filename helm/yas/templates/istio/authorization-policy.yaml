@@ -1,15 +1,5 @@
 {{- if .Values.istio.enabled }}
----
-# 1. Mặc định CHẶN tất cả (Default Deny) trong namespace
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: default-deny-all
-  namespace: {{ $.Release.Namespace }}
-spec:
-  {} # Không có allow rule nào -> Chặn tất cả
 
----
 # 2a. Cho phép tất cả traffic vào storefront-bff (public endpoint qua nginx)
 #     Nginx ingress không có Istio sidecar nên không thể dùng source.namespaces/principals
 apiVersion: security.istio.io/v1beta1
