@@ -28,7 +28,7 @@ backoffice-bff:
     tag: latest
   uiHost: https://backoffice.54.179.218.151.nip.io
   env:
-    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API_CLIENT_AUTHORIZATION_GRANT_TYPE: authorization_code
+    SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_API__CLIENT_AUTHORIZATION_GRANT_TYPE: authorization_code
 storefront-nextjs:
   enabled: true
   image:
