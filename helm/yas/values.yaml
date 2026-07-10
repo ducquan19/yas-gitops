@@ -11,7 +11,6 @@ global:
     port: 6379
   elasticsearch:
     uris: http://infra-elasticsearch.infrastructure.svc.cluster.local:9200
-
 storefront-nextjs:
   syncWave: 7
   enabled: true
@@ -27,10 +26,10 @@ storefront-nextjs:
       cpu: 500m
   service:
     type: ClusterIP
+    port: 3000
   env:
-    NEXT_PUBLIC_API_BASE_PATH: "https://storefront.yas.io"
-    API_BASE_PATH: "http://storefront-bff:8082/api"
-
+    NEXT_PUBLIC_API_BASE_PATH: https://storefront.yas.io
+    API_BASE_PATH: http://storefront-bff:8082/api
 storefront-bff:
   syncWave: 6
   enabled: true
@@ -46,8 +45,9 @@ storefront-bff:
       cpu: 500m
   service:
     type: ClusterIP
-  uiHost: "https://storefront.yas.io"
-
+    port: 8082
+  uiHost: https://storefront.yas.io
+  isBackend: true
 backoffice-nextjs:
   syncWave: 7
   enabled: true
@@ -63,10 +63,10 @@ backoffice-nextjs:
       cpu: 500m
   service:
     type: ClusterIP
+    port: 3000
   env:
-    NEXT_PUBLIC_API_BASE_PATH: "https://backoffice.yas.io"
-    API_BASE_PATH: "http://backoffice-bff:8082/api"
-
+    NEXT_PUBLIC_API_BASE_PATH: https://backoffice.yas.io
+    API_BASE_PATH: http://backoffice-bff:8082/api
 backoffice-bff:
   syncWave: 6
   enabled: true
@@ -82,8 +82,9 @@ backoffice-bff:
       cpu: 500m
   service:
     type: ClusterIP
-  uiHost: "https://backoffice.yas.io"
-
+    port: 8082
+  uiHost: https://backoffice.yas.io
+  isBackend: true
 product:
   syncWave: 2
   enabled: true
@@ -99,7 +100,8 @@ product:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 media:
   syncWave: 1
   enabled: true
@@ -115,7 +117,8 @@ media:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 customer:
   syncWave: 1
   enabled: true
@@ -131,7 +134,8 @@ customer:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 cart:
   syncWave: 3
   enabled: false
@@ -147,7 +151,8 @@ cart:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 order:
   syncWave: 4
   enabled: true
@@ -163,7 +168,8 @@ order:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 inventory:
   syncWave: 3
   enabled: true
@@ -179,7 +185,8 @@ inventory:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 tax:
   syncWave: 1
   enabled: true
@@ -195,7 +202,8 @@ tax:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 search:
   syncWave: 1
   enabled: true
@@ -211,7 +219,8 @@ search:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 sampledata:
   syncWave: 5
   enabled: true
@@ -228,15 +237,15 @@ sampledata:
       cpu: 500m
   service:
     type: ClusterIP
+    port: 8094
   env:
-    SPRING_DATASOURCE_PRODUCT_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/product"
-    SPRING_DATASOURCE_MEDIA_URL: "jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/media"
-    SPRING_DATASOURCE_USERNAME: "admin"
-    SPRING_DATASOURCE_PASSWORD: "admin"
-    SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://identity.yas.io/realms/Yas"
-    CORS_ALLOWED_ORIGINS: "https://storefront.yas.io,https://backoffice.yas.io"
-
+    SPRING_DATASOURCE_PRODUCT_URL: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/product
+    SPRING_DATASOURCE_MEDIA_URL: jdbc:postgresql://infra-postgresql.infrastructure.svc.cluster.local:5432/media
+    SPRING_DATASOURCE_USERNAME: admin
+    SPRING_DATASOURCE_PASSWORD: admin
+    SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://identity.yas.io/realms/Yas
+    CORS_ALLOWED_ORIGINS: https://storefront.yas.io,https://backoffice.yas.io
 swagger:
   syncWave: 7
   enabled: true
@@ -253,16 +262,21 @@ swagger:
       cpu: 500m
   service:
     type: ClusterIP
+    port: 8080
   env:
-    URLS: "[{ url: 'https://api.yas.io/product/v3/api-docs', name: 'Product' },{ url: 'https://api.yas.io/media/v3/api-docs', name: 'Media' },{ url: 'https://api.yas.io/customer/v3/api-docs', name: 'Customer' },{ url: 'https://api.yas.io/cart/v3/api-docs', name: 'Cart' },{ url: 'https://api.yas.io/order/v3/api-docs', name: 'Order' },{ url: 'https://api.yas.io/inventory/v3/api-docs', name: 'Inventory' },{ url: 'https://api.yas.io/location/v3/api-docs', name: 'Location' },{ url: 'https://api.yas.io/tax/v3/api-docs', name: 'Tax' },{ url: 'https://api.yas.io/search/v3/api-docs', name: 'Search' },{ url: 'https://api.yas.io/payment/v3/api-docs', name: 'Payment' }]"
-    OAUTH_CLIENT_ID: "swagger-ui"
-    OAUTH_USE_PKCE: "true"
-
-
+    URLS: '[{ url: ''https://api.yas.io/product/v3/api-docs'', name: ''Product'' },{
+      url: ''https://api.yas.io/media/v3/api-docs'', name: ''Media'' },{ url: ''https://api.yas.io/customer/v3/api-docs'',
+      name: ''Customer'' },{ url: ''https://api.yas.io/cart/v3/api-docs'', name: ''Cart''
+      },{ url: ''https://api.yas.io/order/v3/api-docs'', name: ''Order'' },{ url:
+      ''https://api.yas.io/inventory/v3/api-docs'', name: ''Inventory'' },{ url: ''https://api.yas.io/location/v3/api-docs'',
+      name: ''Location'' },{ url: ''https://api.yas.io/tax/v3/api-docs'', name: ''Tax''
+      },{ url: ''https://api.yas.io/search/v3/api-docs'', name: ''Search'' },{ url:
+      ''https://api.yas.io/payment/v3/api-docs'', name: ''Payment'' }]'
+    OAUTH_CLIENT_ID: swagger-ui
+    OAUTH_USE_PKCE: 'true'
 istio:
   enabled: false
   domain: api.yas.io
-
 location:
   syncWave: 2
   enabled: true
@@ -278,7 +292,8 @@ location:
       cpu: 500m
   service:
     type: ClusterIP
-
+    port: 8082
+  isBackend: true
 payment:
   syncWave: 2
   enabled: true
@@ -294,3 +309,5 @@ payment:
       cpu: 500m
   service:
     type: ClusterIP
+    port: 8082
+  isBackend: true
