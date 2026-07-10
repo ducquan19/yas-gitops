@@ -101,6 +101,9 @@ opentelemetry:
 
 kiali-server:
   enabled: true
+  deployment:
+    accessible_namespaces:
+      - '**'
   auth:
     strategy: anonymous
   external_services:
