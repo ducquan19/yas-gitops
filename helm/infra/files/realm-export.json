@@ -646,7 +646,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "TVacLC0cQ8tiiEKiTVerTb2YvwQ1TRJF",
       "redirectUris": [
-        "http://backoffice/*",
+        "*", "http://backoffice/*",
         "http://localhost:3000/*",
         "http://localhost:8087/*",
         "http://backoffice.yas.local/*",
@@ -995,7 +995,7 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "ZrU9I0q2uXBglBnmvyJdkl1lf0ncr8tn",
       "redirectUris": [
-        "http://storefront/*",
+        "*", "http://storefront/*",
         "http://localhost:8087/*",
         "http://storefront.yas.local/*",
         "http://storefront.yas.local/redirect",
