@@ -35,4 +35,4 @@ kube-prometheus-stack:
             - grafana.yas.io
 
 kiali-server:
-  enabled: true
+  enabled: false
