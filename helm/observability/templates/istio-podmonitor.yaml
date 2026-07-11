@@ -1,0 +1,33 @@
+{{- if index .Values "kube-prometheus-stack" "enabled" }}
+# PodMonitor để Prometheus scrape Istio Envoy sidecar metrics
+# Kiali cần metric `istio_requests_total` từ Envoy để hiển thị traffic graph
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxies
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchExpressions:
+      - key: istio-prometheus-ignore
+        operator: DoesNotExist
+  namespaceSelector:
+    any: true
+  podMetricsEndpoints:
+    - port: http-envoy-prom
+      path: /stats/prometheus
+      interval: 15s
+      relabelings:
+        # Giữ lại các label cần thiết cho Kiali
+        - action: keep
+          sourceLabels: [__meta_kubernetes_pod_container_name]
+          regex: "istio-proxy"
+        - action: replace
+          sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod_name
+{{- end }}
